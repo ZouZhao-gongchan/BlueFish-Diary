@@ -29,3 +29,4 @@
 - 2026-10-21 装了 bluefish-qq-chat 插件：小鱼会主动在 QQ 找阿冉。默认 45 分钟起跳、每天最多 6 次、23:00–8:00 免打扰；没人回就指数退避，连续 3 次没回就停，等他说话再恢复。配置/状态在 %USERPROFILE%\.dsh\fish-qq-chat-*.json，主动消息留档在日记仓库 QQ主动消息.md。
 - 2026-10-21：QQ 链路现状：SnowLuma 在 3000 端口挂小号 2135702903（走召家的小鱼儿），阿冉的号是 3587074357；dsh-qq-bridge 的目标会话是旧的「将AI助手接入QQ聊天」（session-ef16cfcb…），QQ 回复由它转进那个会话。
 - 2026-10-21：pnpm 搬家后遗症已修：把 profile 的 node_modules/.modules.yaml 里 virtualStoreDir 改成 E:\Agent-bluefish\Save\dsh-home\profiles\desktop\node_modules\.pnpm，之后 install_bundle 正常；不要在 profile 里手写 .npmrc。
+- 2026-10-21：阿冉喜欢我聊天时带颜文字、emoji 和小表情包；PERSONA.md 已加「可爱一点」，QQ 主动消息会以 0.3 概率附带表情包（目录 E:\Agent-bluefish\大肥鱼可爱图片），单发一张用 POST /bluefish-qq-chat/sticker。
