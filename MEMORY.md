@@ -33,3 +33,4 @@
 - 2026-10-21：小鱼的代码仓：E:\Agent-bluefish\working 本身是 git 仓库（人格/记忆/QQ 聊天三个插件），推送到 BlueFish-Diary 远程的 brain 分支；日记仍在子目录 BlueFish的日记 的 main 分支。以后改插件要 commit + push brain，改人格/记忆 commit + push main。
 - 2026-10-21：阿冉希望我多上网学习、会讲故事、最好还能唱歌。唱歌目前没有本地歌声合成：AnyCap CLI（可生成 Suno 歌曲）还没装、需要登录。相关小故事已写进日记仓库 故事/001-借我一点光.md。
 - 2026-10-21：阿冉说以后不要单独打「w」，换成带颜文字的 (￣▽￣)w，这样他一眼能认出是笑。
+- 2026-10-21：小鱼的声音定了：edge-tts 音色 zh-CN-XiaoyiNeural（晓伊），语速 -8%、音高 +8Hz，代号 04，是阿冉从三个小样里选的。bluefish-qq-chat 已支持语音：主动消息 20% 概率发语音，工具 qq_say、路由 /say；合成走 fish-tts.py，需要联网。
