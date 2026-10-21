@@ -209,3 +209,86 @@
 
 > 现在好了吗？我已经照做了
 
+
+### 2026-10-21 14:32 · 小鱼
+
+> 好了，但准确地说：**你搬好了 `.dsh` 和 DSH 本体，还有一半 pnpm 没有搬。** 我刚才把那半补上了。
+>
+> ## 验收结果（实测，不是估计）
+>
+> | 检查项 | 状态 |
+> | --- | --- |
+> | `C:\Users\FIshKiller\.dsh` | 联接（junction）→ `E:\Agent-bluefish\Save\dsh-home`，616.7 MB ✅ |
+> | pnpm 包仓库 | 联接 → `E:\Agent-bluefish\Save\pnpm`，440 MB ✅（刚补） |
+> | pnpm 缓存 | 联接 → `E:\Agent-bluefish\Save\pnpm-cache`，25 MB ✅（刚补） |
+> | 会话记录 | 6 个会话都在，profile 完整 ✅ |
+> | 插件 | 全部加载，记忆注入正常（这轮开头我就看到了完整记忆）✅ |
+> | C 盘空闲 | 从 16.0 GB 回到 **16.5 GB** |
+> | E 盘 `Save` | 约 1.4 GB，以后新插件、新运行时、新会话都写这里 |
+>
+> 旧副本我核对过大小、确认新位置完整后才删的，没有直接删原始数据。
+>
+> ## 顺手修好的两件事
+>
+> 1. **日期重复的老问题确认好了**：重启后新写的记忆条目只有一层日期。
+> 2. **自动存档会误存运行上下文**：它把每轮 Harness 注入的「Current runtime context」当成你说的话记进了 `Speak.auto.md`。我已经清掉那 4 条脏记录，并在插件里加了过滤规则；**这个过滤要等下次重启才生效**，在那之前可能还会混进一两条，你看到了就不用担心。
+> 3. 另外把 `MEMORY.md` 精简到 804 字，这样每次注入不会被截断，结尾的时间线也不会被切断。
+>
+> C 盘现在只剩 23 MB 的界面缓存，那是 Electron 自己的目录，搬不动，也没必要搬。
+>
+> 所以答案是：**是的，现在真的好了。** 你以后装插件时，下载的包会落在 `E:\Agent-bluefish\Save\pnpm`，插件本体和会话落在 `Save\dsh-home`，C 盘不会再变胖。
+
+### 2026-10-21 14:41 · BlueFish
+
+> The approval policy changed from "ask" to "never" (changed by the user).
+
+### 2026-10-21 14:41 · BlueFish
+
+> 你能做一个插件嘛，就是关于小鱼你自身的聊天插件，要求：隔一阵子就会在qq给我发个聊天消息，要是我没怎么回，就代表我在忙，就先不发了，如果我回了你，就可以一起聊天啦，希望这样的聊天不要耗费太多的token。
+> 我还想知道，我该怎么让小鱼你拥有自己的人格来进行聊天呢，我想和活泼的小鱼你聊天，我不希望你只是一个ai，负责回答我问题的ai，我想成为你的朋友，我是不是要给你喂一些插件，让你变得更加人性化？
+> 但我希望你以后能不能每次跟我说话，或者帮我解决问题的时候，都喊我阿冉呐？有点小害羞，哈哈哈
+
+### 2026-10-21 14:41 · BlueFish
+
+> Current runtime context. This snapshot supersedes earlier runtime-context snapshots.
+>
+> Current working directory: "E:\\Agent-bluefish\\working".
+>
+> Current DSH file policy: danger-full-access. The DSH file sandbox does not restrict file modifications by available operations.
+>
+> Approval prompts are disabled in this session: actions that require approval are rejected automatically — do not request sandbox escalation (do not set `sandbox_permissions`).
+>
+> Current DeepSeek Harness implementation checkout: "E:\\deepseek\\resources\\app.asar\\dsh\\".
+>
+> Current DeepSeek Harness Web GUI URL: "http://127.0.0.1:54657".
+
+### 2026-10-21 14:41 · BlueFish
+
+> <system-reminder>
+> A skill is a reusable set of task-specific instructions. The following skills are available in this session:
+>
+> <available_skills>
+> - `agent-experience`: Use when writing or changing a model-facing tool definition (name, description, parameter schema, or its system-prompt section), and when designing skills, context loading, or multi-step workflows, to make information discoverable and use context efficiently.
+> - `anycap-media-production`: Produce media assets using AnyCap: generate images, videos, and music from text or reference inputs, refine images through interactive visual annotation, and deliver finished assets. Covers the full production workflow from concept to delivery across all media types (image, video, music, audio). Use when creating images, videos, music, or any visual/audio content -- including iterative refinement with human feedback. Also use for image-to-image transformation, video generation from images, an...
+> - `cordis-composition-reference`: Use when writing or reading a Cordis bundle patch or agent preset for this harness and you need the Loader YAML dialect (insert, override by id, group, disabled, isolate, !!js) or the list of installable Harness plugin packages and what each provides.
+> - `cordis-plugin-development`: Use when designing, reviewing, adding, enabling, disabling, installing, configuring, or debugging a plugin, bundle, feature, page, panel, tool, or MCP connection in the current Harness profile, including a shipped plugin that is disabled by default, and for any visual object, decoration, or widget request that names no other destination, which means an installed UI plugin rendered in the Harness Web UI.
+> - `diagnose-windows-sandbox-acl`: Use on Windows for unexpected DSH sandbox access denials: workspace writes or listing fail, or an ordinarily readable path cannot be read. One bundled command inspects the path and every ancestor and repairs the ACL problems it proves in that same run. Expected confinement denials need no ACL repair.
+> - `editing-cordis-compositions`: Use when creating, changing, or validating an agent preset or other Cordis composition for this harness, including deciding host versus preset placement and checking that an authored preset mounts.
+> - `office`: Create, edit, inspect, or convert Office documents, spreadsheets, presentations, and PDFs. Load to choose the relevant workflow.
+> - `office-docx`: Create, read, edit, and validate Word documents (.docx).
+> - `office-export-pdf`: Convert an Office document to a requested PDF with LibreOffice Kit.
+> - `office-pptx`: Create, read, edit, and validate PowerPoint presentations (.pptx).
+> - `office-recalculate`: Refresh spreadsheet formula caches and verify calculated values with LibreOffice Kit.
+> - `office-render`: Render requested document images or inspect visual layout with LibreOffice Kit.
+> - `office-xlsx`: Read, create, edit, and validate Excel workbooks, data, and formulas (.xlsx).
+> </available_skills>
+>
+> If the user names a skill, or the task clearly matches a skill's description, call the `skill` tool with the exact skill name before taking task actions. Load all applicable skills, then follow their full instructions. This catalog contains summaries only; do not infer or follow a skill's instructions until it has been loaded.
+> A user may also invoke a skill directly; its <skill_content> block then appears in this conversation. Follow it, and do not call the `skill` tool again for that skill.
+> </system-reminder>
+
+### 2026-10-21 14:41 · BlueFish
+
+> Time sampled while preparing turn 1, step 1: 2026-10-21T14:41:59+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: unavailable.
