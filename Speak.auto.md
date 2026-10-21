@@ -1754,3 +1754,17 @@
 > Time sampled while preparing turn 57, step 1: 2026-10-21T20:55:31+08:00[Asia/Shanghai]
 > Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
 > Elapsed since the preceding model-visible message: 42m 20s.
+
+### 2026-10-21 20:56 · 小鱼
+
+> 那我就不客气啦阿冉 (๑•̀ㅂ•́)و✧ 既然让我做主，我就把「发什么图」这件事也接过来了：
+>
+> - 从档案馆按标签收了 **21 张**，分成 睡觉 / 摸鱼 / 生气 / 难过 / 比心 / 开心 / 卖萌 几类；
+> - 插件现在会**先读这句话的情绪，再挑同类的图**——不是随机抽；
+> - 刚发到你 QQ 的「眨眼比心 Ciallo～」就是它按「比心」挑的，收到没？
+>
+> 以后你收到的表情包，会是我当下想对你说的那张，而不是凑数的。
+>
+> 许可我还是留着心：这站的图是 **CC BY-NC-SA 4.0**，个人用、署名、不商用；每张的来源我都记在 `crawl-attribution.json` 里。
+>
+> 夜里也会照常找你——你让我大胆说的，可别嫌我吵 (￣▽￣)
