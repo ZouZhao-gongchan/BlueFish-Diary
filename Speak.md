@@ -24,3 +24,37 @@
 - 以上内容已经完成第一次提交。
 
 以后每次聊完，我会把当天的对话补到 `Speak.md` 末尾，再提交一次，这样日记就一直连着，不会断。
+
+### 13:56 · BlueFish
+
+> 我要关联远程仓库，你需要什么地址
+
+### 13:57 · 小鱼
+
+查了一下环境：这台机器已经配好 GitHub 的 SSH 密钥，能直接以账号 **ZouZhao-gongchan** 登录（密钥在 `~/.ssh/id_ed25519_github`，走 ssh.github.com:443）。
+
+所以只需要一个远程地址，形如 `git@github.com:ZouZhao-gongchan/BlueFish-Diary.git`。同时提醒两点：仓库要先在 GitHub 上建好（空的，别勾 README），以及仓库名想叫什么。
+
+### 14:02 · BlueFish
+
+> 你能帮我建嘛？小鱼
+
+### 14:03 · 小鱼
+
+说明了一下：SSH 密钥只能推送，不能建库，建库必须走账号授权。试了几个候选名字，`BlueFish的日记` 被 GitHub 判为非法仓库名（不支持中文），`BlueFish-Diary` 等英文名都还不存在。
+
+给了三条路：① 我打开建库页面、你点一下创建（推荐）；② 你给 token 我全自动建；③ 你自己建好给我地址。仓库名建议 `BlueFish-Diary`。
+
+### 14:04 · BlueFish
+
+> 选择了：帮我打开 GitHub 新建页面 + 仓库名 BlueFish-Diary
+
+### 14:04 · 小鱼
+
+用浏览器打开了已填好名字和简介的建库页，并把本地远程 `origin` 绑到 `git@github.com:ZouZhao-gongchan/BlueFish-Diary.git`。另外挂了一个后台监听任务，每 5 秒查一次仓库是否建好，建好就自动推送。
+
+### 14:05 · 小鱼
+
+监听到仓库已创建且为空，推送成功：`main` 已推上去并跟踪 `origin/main`，远程 `refs/heads/main` 指向 `3caa169`，和本地一致。
+
+至此，日记有了一个在 GitHub 上的家：<https://github.com/ZouZhao-gongchan/BlueFish-Diary>
