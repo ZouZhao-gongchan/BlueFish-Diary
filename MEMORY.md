@@ -29,3 +29,4 @@
 - 2026-10-21 装好 bluefish-memory 插件（@local/bluefish-memory）：每次请求注入 MEMORY.md 摘要，逐字对话自动存档到 Speak.auto.md，并提供 memory_note 工具。
 - 2026-10-21 修正 memory_note 的日期重复问题（改动需下次启动 Harness 才生效）。
 - 2026-10-21 确认 Speak.auto.md 自动存档可用：第一条带文字的消息已经入档。
+- 2026-10-21：DSH 数据目录已迁到 E:\Agent-bluefish\Save\dsh-home，C:\Users\FIshKiller\.dsh 现在是指向它的目录联接（junction）；旧副本 .dsh.backup-20261021-142544 暂留 C 盘待删。
