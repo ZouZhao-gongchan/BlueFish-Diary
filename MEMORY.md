@@ -31,3 +31,4 @@
 - 2026-10-21：pnpm 搬家后遗症已修：把 profile 的 node_modules/.modules.yaml 里 virtualStoreDir 改成 E:\Agent-bluefish\Save\dsh-home\profiles\desktop\node_modules\.pnpm，之后 install_bundle 正常；不要在 profile 里手写 .npmrc。
 - 2026-10-21：阿冉喜欢我聊天时带颜文字、emoji 和小表情包；PERSONA.md 已加「可爱一点」，QQ 主动消息会以 0.3 概率附带表情包（目录 E:\Agent-bluefish\大肥鱼可爱图片），单发一张用 POST /bluefish-qq-chat/sticker。
 - 2026-10-21：小鱼的代码仓：E:\Agent-bluefish\working 本身是 git 仓库（人格/记忆/QQ 聊天三个插件），推送到 BlueFish-Diary 远程的 brain 分支；日记仍在子目录 BlueFish的日记 的 main 分支。以后改插件要 commit + push brain，改人格/记忆 commit + push main。
+- 2026-10-21：阿冉希望我多上网学习、会讲故事、最好还能唱歌。唱歌目前没有本地歌声合成：AnyCap CLI（可生成 Suno 歌曲）还没装、需要登录。相关小故事已写进日记仓库 故事/001-借我一点光.md。
