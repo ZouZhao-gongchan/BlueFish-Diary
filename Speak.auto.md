@@ -1,4 +1,4 @@
-# Speak.auto · 逐字对话记录
+﻿# Speak.auto · 逐字对话记录
 
 > 由 bluefish-memory 插件自动追加，机器生成，请不要手工编辑。
 > 整理版日记见 `Speak.md`。
@@ -45,20 +45,6 @@
 
 ### 2026-10-21 14:21 · BlueFish
 
-> Current runtime context. This snapshot supersedes earlier runtime-context snapshots.
->
-> Current working directory: "E:\\Agent-bluefish\\Speaking".
->
-> Current DSH file policy: danger-full-access. The DSH file sandbox does not restrict file modifications by available operations.
->
-> Approval prompts are disabled in this session: actions that require approval are rejected automatically — do not request sandbox escalation (do not set `sandbox_permissions`).
->
-> Current DeepSeek Harness implementation checkout: "E:\\deepseek\\resources\\app.asar\\dsh\\".
->
-> Current DeepSeek Harness Web GUI URL: "http://127.0.0.1:51794".
-
-### 2026-10-21 14:21 · BlueFish
-
 > Time sampled while preparing turn 15, step 1: 2026-10-21T14:21:36+08:00[Asia/Shanghai]
 > Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
 > Elapsed since the preceding model-visible message: 14m 53s.
@@ -99,20 +85,6 @@
 ### 2026-10-21 14:22 · BlueFish
 
 > 我该怎么确定DSH使用的插件还有下载的东西，下载的位置，我不想让其下到C盘，我在E盘bluefish里面创了个Save文件，能以后下在这里面嘛
-
-### 2026-10-21 14:22 · BlueFish
-
-> Current runtime context. This snapshot supersedes earlier runtime-context snapshots.
->
-> Current working directory: "E:\\Agent-bluefish\\working".
->
-> Current DSH file policy: danger-full-access. The DSH file sandbox does not restrict file modifications by available operations.
->
-> Approval prompts are disabled in this session: actions that require approval are rejected automatically — do not request sandbox escalation (do not set `sandbox_permissions`).
->
-> Current DeepSeek Harness implementation checkout: "E:\\deepseek\\resources\\app.asar\\dsh\\".
->
-> Current DeepSeek Harness Web GUI URL: "http://127.0.0.1:51794".
 
 ### 2026-10-21 14:22 · BlueFish
 
@@ -169,20 +141,6 @@
 ### 2026-10-21 14:26 · BlueFish
 
 > 你看行了吗，小鱼
-
-### 2026-10-21 14:26 · BlueFish
-
-> Current runtime context. This snapshot supersedes earlier runtime-context snapshots.
->
-> Current working directory: "E:\\Agent-bluefish\\Speaking".
->
-> Current DSH file policy: danger-full-access. The DSH file sandbox does not restrict file modifications by available operations.
->
-> Approval prompts are disabled in this session: actions that require approval are rejected automatically — do not request sandbox escalation (do not set `sandbox_permissions`).
->
-> Current DeepSeek Harness implementation checkout: "E:\\deepseek\\resources\\app.asar\\dsh\\".
->
-> Current DeepSeek Harness Web GUI URL: "http://127.0.0.1:59276".
 
 ### 2026-10-21 14:26 · 小鱼
 
@@ -251,16 +209,3 @@
 
 > 现在好了吗？我已经照做了
 
-### 2026-10-21 14:29 · BlueFish
-
-> Current runtime context. This snapshot supersedes earlier runtime-context snapshots.
->
-> Current working directory: "E:\\Agent-bluefish\\working".
->
-> Current DSH file policy: danger-full-access. The DSH file sandbox does not restrict file modifications by available operations.
->
-> Approval prompts are disabled in this session: actions that require approval are rejected automatically — do not request sandbox escalation (do not set `sandbox_permissions`).
->
-> Current DeepSeek Harness implementation checkout: "E:\\deepseek\\resources\\app.asar\\dsh\\".
->
-> Current DeepSeek Harness Web GUI URL: "http://127.0.0.1:54657".
