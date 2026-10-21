@@ -42,6 +42,11 @@
 | `provider` / `model` | 空 | 空 = 用 DSH 当前默认模型 |
 | `stickerDir` | `E:\Agent-bluefish\大肥鱼可爱图片` | 表情包目录（png/jpg/gif/webp） |
 | `stickerChance` | `0.3` | 每次主动说话后附一张表情包的概率（1 = 每次都发） |
+| `voiceEnabled` | `true` | 语音总开关 |
+| `voiceChance` | `0.2` | 主动消息改用语音的概率（失败自动退回文字） |
+| `voice` / `voiceRate` / `voicePitch` | `zh-CN-XiaoyiNeural` / `-8%` / `+8Hz` | 阿冉选的 04 嗓音 |
+| `ttsScript` | `E:\Agent-bluefish\working\fish-tts.py` | edge-tts 合成脚本 |
+| `python` | Python 3.14 绝对路径 | 宿主进程的 PATH 里 python 不一定对，所以写绝对路径 |
 | `personaFile` | 日记仓库 `PERSONA.md` | 人格文件 |
 | `memoryFile` | 日记仓库 `MEMORY.md` | 记忆节选 |
 | `logFile` | 日记仓库 `QQ主动消息.md` | 主动消息留档 |
@@ -52,6 +57,14 @@
 - `POST /bluefish-qq-chat/check` —— 只按规则判断一次「现在该不该说」，该说才说（用来诊断退避逻辑）
 - `POST /bluefish-qq-chat/nudge` —— 立刻发一条（测试用，绕过免打扰和间隔）
 - `POST /bluefish-qq-chat/sticker` —— 单独发一张表情包（测目录用）
+- `POST /bluefish-qq-chat/say` —— 用语音说一句（body: `{"text": "..."}`）
 - `POST /bluefish-qq-chat/save` —— 改配置（body 里给要改的键）
+
+## 语音
+
+- 引擎：`edge-tts`（微软在线），音色 `zh-CN-XiaoyiNeural`，语速 -8%，音高 +8Hz——阿冉从三个小样里选的 04。
+- 主动消息有 20% 概率直接发语音条；失败自动退回文字。
+- 工具 `qq_say`：任何会话里我都能主动用这条嗓子说一句。
+- 需要联网；延迟约 1–3 秒。想换成本地离线的 GPT-SoVITS，是下一步的事。
 
 每条主动消息的 token 用量会记进状态和日志里（`tokens.in` / `tokens.out`），方便核对开销。

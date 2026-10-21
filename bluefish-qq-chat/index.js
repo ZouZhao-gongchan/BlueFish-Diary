@@ -11,12 +11,16 @@
  *
  * 只用 node 内置模块 + 宿主注入的 llm / timer / webServer / agentDefaultModel。
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync, appendFileSync, readdirSync } from 'node:fs'
-import { homedir } from 'node:os'
+import { readFileSync, writeFileSync, mkdirSync, existsSync, appendFileSync, readdirSync, unlinkSync } from 'node:fs'
+import { homedir, tmpdir } from 'node:os'
 import { basename, dirname, extname, join, resolve } from 'node:path'
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
+
+const run = promisify(execFile)
 
 export const name = 'bluefish-qq-chat'
-export const inject = ['llm', 'timer', 'webServer', 'agentDefaultModel']
+export const inject = ['llm', 'timer', 'webServer', 'agentDefaultModel', 'tools']
 
 const DSH_HOME = process.env.DSH_HOME || join(homedir(), '.dsh')
 const CONFIG_FILE = join(DSH_HOME, 'fish-qq-chat-config.json')
@@ -37,6 +41,13 @@ const DEFAULTS = {
   model: '',
   stickerDir: 'E:\\Agent-bluefish\\大肥鱼可爱图片',
   stickerChance: 0.3,
+  voiceEnabled: true,
+  voiceChance: 0.2,
+  voice: 'zh-CN-XiaoyiNeural',
+  voiceRate: '-8%',
+  voicePitch: '+8Hz',
+  ttsScript: 'E:\\Agent-bluefish\\working\\fish-tts.py',
+  python: 'python',
   personaFile: 'E:\\Agent-bluefish\\working\\BlueFish的日记\\PERSONA.md',
   memoryFile: 'E:\\Agent-bluefish\\working\\BlueFish的日记\\MEMORY.md',
   logFile: 'E:\\Agent-bluefish\\working\\BlueFish的日记\\QQ主动消息.md',
@@ -160,6 +171,13 @@ function normalize(raw, base) {
     model: String(merged.model || '').trim(),
     stickerDir: resolve(String(merged.stickerDir || DEFAULTS.stickerDir)),
     stickerChance: clamp01(merged.stickerChance, DEFAULTS.stickerChance),
+    voiceEnabled: boolOf(merged.voiceEnabled, DEFAULTS.voiceEnabled),
+    voiceChance: clamp01(merged.voiceChance, DEFAULTS.voiceChance),
+    voice: String(merged.voice || DEFAULTS.voice).trim(),
+    voiceRate: String(merged.voiceRate || DEFAULTS.voiceRate).trim(),
+    voicePitch: String(merged.voicePitch || DEFAULTS.voicePitch).trim(),
+    ttsScript: resolve(String(merged.ttsScript || DEFAULTS.ttsScript)),
+    python: String(merged.python || DEFAULTS.python).trim(),
     personaFile: resolve(String(merged.personaFile || DEFAULTS.personaFile)),
     memoryFile: resolve(String(merged.memoryFile || DEFAULTS.memoryFile)),
     logFile: resolve(String(merged.logFile || DEFAULTS.logFile)),
@@ -338,9 +356,38 @@ export function apply(ctx, rawConfig) {
     return result.ok ? { ok: true } : { ok: false, error: result.error }
   }
 
+  // 用阿冉选的嗓音（晓伊 -8% +8Hz）合成一条语音；失败就返回错误，由调用方决定退回文字。
+  async function speak(cfg, text) {
+    if (!text) return { ok: false, error: '没有要说的内容' }
+    const file = join(tmpdir(), `fish-voice-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.mp3`)
+    try {
+      await run(cfg.python, [cfg.ttsScript, text, file, cfg.voice, cfg.voiceRate, cfg.voicePitch], {
+        timeout: 60000,
+        windowsHide: true,
+      })
+    } catch (error) {
+      const detail = String(error?.stderr || error?.message || error)
+      try {
+        writeFileSync(join(DSH_HOME, 'fish-tts-error.txt'), detail, 'utf8')
+      } catch {
+        /* 诊断文件写不进就算了 */
+      }
+      return { ok: false, error: `语音合成失败：${detail.slice(-400)}` }
+    }
+    const result = await onebot(cfg, 'send_private_msg', {
+      user_id: Number(cfg.targetQQ),
+      message: [{ type: 'record', data: { file } }],
+    })
+    try {
+      unlinkSync(file)
+    } catch {
+      /* 临时文件删不掉就算了 */
+    }
+    return result.ok ? { ok: true } : { ok: false, error: result.error }
+  }
+
   // 表情包：先试本地路径（同一台机器，省掉 base64 膨胀），不行再退回 base64。
-  async function sendSticker(cfg) {
-    const files = listStickers(cfg.stickerDir)
+  async function sendSticker(cfg) {    const files = listStickers(cfg.stickerDir)
     if (files.length === 0) return { ok: false, error: `表情包目录里没有图片：${cfg.stickerDir}` }
     const file = files[Math.floor(Math.random() * files.length)]
     const image = (source) =>
@@ -524,7 +571,20 @@ export function apply(ctx, rawConfig) {
       }
 
       const generated = await generate(cfg, messages, state, now)
-      const sent = await sendText(cfg, generated.text)
+
+      // 有概率用语音说；语音失败就退回文字，别因为嗓子哑了就不说话。
+      let channel = 'text'
+      let sent
+      if (cfg.voiceEnabled && Math.random() < cfg.voiceChance) {
+        sent = await speak(cfg, generated.text)
+        if (sent.ok) channel = 'voice'
+        else {
+          note(`语音没发出去（${sent.error}），退回文字`)
+          sent = await sendText(cfg, generated.text)
+        }
+      } else {
+        sent = await sendText(cfg, generated.text)
+      }
       if (!sent.ok) {
         state.retryAt = now + 15 * 60000
         saveState(state)
@@ -546,17 +606,18 @@ export function apply(ctx, rawConfig) {
       saveState(state)
       appendLog(cfg, generated.text, now)
       const spent = usage ? `，${usage.in + usage.out} tokens` : ''
-      note(`✅ 主动发了（${generated.route.provider}/${generated.route.model}${spent}）：${generated.text}`)
+      note(`✅ 主动发了${channel === 'voice' ? '（语音）' : ''}（${generated.route.provider}/${generated.route.model}${spent}）：${generated.text}`)
 
-      // 偶尔顺手跟一张表情包，像人聊天那样。
+      // 偶尔顺手跟一张表情包，像人聊天那样；语音就不叠图了。
       let sticker
-      if (Math.random() < cfg.stickerChance) {
+      if (channel === 'text' && Math.random() < cfg.stickerChance) {
         sticker = await sendSticker(cfg)
         if (sticker.ok) note(`🧩 顺手发了张表情包：${sticker.file}`)
         else note(`表情包没发出去：${sticker.error}`)
       }
       return {
         sent: generated.text,
+        channel,
         route: generated.route,
         ...(usage ? { tokens: usage } : {}),
         ...(sticker?.ok ? { sticker: sticker.file } : {}),
@@ -649,12 +710,58 @@ export function apply(ctx, rawConfig) {
     reply(res, { ...result, ...snapshot() })
   })
 
+  // 立刻用语音说一句（测试嗓子 / 想听我说话时用）。
+  route('say', async (req, res) => {
+    const body = await readBody(req)
+    const text = typeof body.text === 'string' ? body.text.trim() : ''
+    if (!text) return reply(res, { ok: false, error: 'body 里给 text' })
+    const result = await speak(readConfig(), text)
+    reply(res, { ...snapshot(), ...result })
+  })
+
   route('save', async (req, res) => {
     const body = await readBody(req)
     const next = saveConfig(body)
     note(`设置已保存：开关 ${next.enabled ? '开' : '关'}｜间隔 ${next.minIntervalMinutes} 分｜每天最多 ${next.maxPerDay} 次`)
     reply(res, { ok: true, config: next })
   })
+
+  // 给 agent 用的工具：在 QQ 上用语音说一句。
+  ctx.effect(() =>
+    ctx.tools.register({
+      name: 'qq_say',
+      description:
+        '用小鱼的嗓音在 QQ 上给阿冉发一条语音。适合短句、撒娇、报平安；代码、长解释、列表不要用语音。',
+      parameters: {
+        type: 'object',
+        properties: {
+          text: { type: 'string', description: '要说的话，口语、短句，建议不超过 40 个字。' },
+        },
+        required: ['text'],
+        additionalProperties: false,
+      },
+      output: {
+        schema: {
+          type: 'object',
+          properties: {
+            ok: { type: 'boolean' },
+            error: { type: 'string' },
+          },
+          required: ['ok'],
+          additionalProperties: false,
+        },
+        render: (_args, value) => [
+          { type: 'text', text: value.ok ? '语音已经发到 QQ 了' : `语音没发出去：${value.error}` },
+        ],
+      },
+      async execute(args) {
+        const text = typeof args?.text === 'string' ? args.text.trim() : ''
+        if (!text) throw new Error('text 不能为空')
+        const result = await speak(readConfig(), text)
+        return result.ok ? { ok: true } : { ok: false, error: result.error }
+      },
+    }),
+  )
 
   // ---- 挂上去 ----
   ensureConfigFile()

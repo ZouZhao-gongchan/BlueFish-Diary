@@ -3,3 +3,5 @@ BlueFish的日记/
 node_modules/
 pnpm-lock.yaml
 *.log
+voice-samples/
+
