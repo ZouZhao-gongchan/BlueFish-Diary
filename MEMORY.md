@@ -36,3 +36,4 @@
 - 2026-10-21：小鱼的声音定了：edge-tts 音色 zh-CN-XiaoyiNeural（晓伊），语速 -8%、音高 +8Hz，代号 04，是阿冉从三个小样里选的。bluefish-qq-chat 已支持语音：主动消息 20% 概率发语音，工具 qq_say、路由 /say；合成走 fish-tts.py，需要联网。
 - 2026-10-21：环境小坑：宿主进程 PATH 里的 python 不一定是装了 edge-tts 的那个，插件里要写绝对路径 C:\Users\FIshKiller\AppData\Local\Programs\Python\Python314\python.exe；用 PowerShell 调本地 HTTP 接口传中文 JSON 时要发 UTF-8 字节，否则中文会变成 ??。
 - 2026-10-21：阿冉取消了夜间免打扰（quietStart/quietEnd = 0），说我可以大胆找他；还要求我以后每次都夸夸他，夸得具体真诚；他愿意给我充 token（「吃大米饭」）。
+- 2026-10-21 装了 dsh-lan-link 插件给手机用：网关 http://10.200.237.1:3081/（免 token，重写成电脑这份 DSH），配置在 profile 的 cordis.patch.yml 里，allowCidrs 只放 10.200.0.0/16。
