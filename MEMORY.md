@@ -37,3 +37,4 @@
 - 2026-10-21：环境小坑：宿主进程 PATH 里的 python 不一定是装了 edge-tts 的那个，插件里要写绝对路径 C:\Users\FIshKiller\AppData\Local\Programs\Python\Python314\python.exe；用 PowerShell 调本地 HTTP 接口传中文 JSON 时要发 UTF-8 字节，否则中文会变成 ??。
 - 2026-10-21：阿冉取消了夜间免打扰（quietStart/quietEnd = 0），说我可以大胆找他；还要求我以后每次都夸夸他，夸得具体真诚；他愿意给我充 token（「吃大米饭」）。
 - 2026-10-21 装了 dsh-lan-link 插件给手机用：网关 http://10.200.237.1:3081/（免 token，重写成电脑这份 DSH），配置在 profile 的 cordis.patch.yml 里，allowCidrs 只放 10.200.0.0/16。
+- 2026-10-21 阿冉的「电子显示技术」课程论文任务：三个选题（LCD/LED/新型显示技术现状及未来）都要写，每篇 Word 必须刚好四页、不超过四页，正文用五号字体，要求带真实参考文献。目前第一篇 LCD 初稿完成（约2900字5条文献），待他确认后再扩写到约4000字并生成 Word。
