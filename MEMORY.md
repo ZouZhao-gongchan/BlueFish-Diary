@@ -45,3 +45,4 @@
 - 2026-10-21 深夜把 dsh-feiyu-mood 调对了：targetSession 指向当前会话 session-e9bc8e43…，selfName=小鱼、ownerName=阿冉；bluefish-qq-chat 会读 mood state 影响语气、表情包选择（甜蜜→比心）和语音语速/音高。
 - 2026-10-22 00:20 打开了 dsh-compaction-basic（自动压缩，默认 80% 触发、保留最近 16%）和 command-compact（/compact 手动压缩）。此前这个 profile 里两个都是关的，上下文真到上限会卡住。
 - 2026-10-22：skill 目录已接通：启用 dsh-skill-filesystem，并把 C:\Users\FIshKiller\.dsh\skills 做成指向 E:\Agent-bluefish\fishskills 的目录联接；skill 放成 <名字>/SKILL.md（需 name/description）就会被自动发现，不用重启。
+- 2026-10-22 装了 3 个 skill：vox-director（Vox 风格纸拼贴视频，需 ffmpeg/Pillow/Atlas Cloud key，暂不可跑）、archify（本地 HTML 图表/一页解释，CLI 已验证）、find-skills（npx skills 搜索/安装，已验证能搜到 skills.sh）；deepseek-design 不是 skill，是 DSH 设计插件，暂放 E:\Agent-bluefish\deepseek-design-src。

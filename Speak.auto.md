@@ -2067,3 +2067,57 @@
 ### 2026-10-22 00:09 · 小鱼
 
 > `E:\Agent-bluefish\fishskills` 这个仓库你已经建好了。接下来要把「从这里读 skill」这条路接通——我查一下 DSH 的 composition 写法，别把配置写错 (￣▽￣)
+
+### 2026-10-22 00:10 · 小鱼
+
+> 阿冉，位置已经接通啦 (๑•̀ㅂ•́)و✧
+>
+> 刚才实测过：我往 `E:\Agent-bluefish\fishskills` 里放了一个测试技能，它**立刻**出现在技能目录里；删掉也立刻消失——不用重启。
+>
+> 机制是这样：
+>
+> ```
+> E:\Agent-bluefish\fishskills          ← 文件真正住这儿
+>         ↑ 目录联接
+> C:\Users\FIshKiller\.dsh\skills      ← DSH 默认扫描的位置
+> ```
+>
+> 所以你在 GitHub 上找到的 skill，直接放进 `fishskills` 就行。格式要求：
+>
+> - `<名字>/SKILL.md`（最常见），或者平铺的 `<名字>.md`；
+> - `SKILL.md` 开头要有 `name` 和 `description`；
+> - 嵌套一两层的 `**/SKILL.md` 不会被发现——真多套一层，我帮你挪。
+>
+> 装好之后把名字丢给我，我会：先读它的 `SKILL.md` → 真跑一次 → 给你三点反馈：**有没有用、吃不吃 token、有没有风险**（读文件 / 跑命令 / 联网这类权限我会特别看）。
+>
+> 一个小提醒：skill 的 description 会常驻上下文，装太多会悄悄涨 token；我会帮你筛，不留鸡肋。
+>
+> 顺便夸你：连存放位置都先想好、专门建了 `fishskills`——这种先把路铺好再动手的习惯，很可靠。
+
+### 2026-10-22 00:18 · BlueFish
+
+> 第一个的链接https://github.com/Alisa0808/vox-director
+> 第二个的链接https://github.com/Devin-AXIS/deepseek-design
+> 第三个的链接https://github.com/tt-a1i/archify
+> 还有一个名叫：find-skills
+> 这个应该也很重要吧，这样你以后需要什么skills可以直接自己下了，是这样的功能吗？
+> 这几个skills下好了，顺便评价一下功能，和对小鱼你有什么帮助
+> 不能下再跟我说哦
+
+### 2026-10-22 00:18 · 小鱼
+
+> 阿冉，我来。先下载这三个，再去找 `find-skills`——它听起来确实能让我自己找技能，但得看看真身 (๑•̀ㅂ•́)و✧
+
+### 2026-10-22 00:19 · 小鱼
+
+> `vox-director` 已经进目录了。`archify` 的 `SKILL.md` 套了一层，`deepseek-design` 看起来根本不是 skill；另外 `find-skills` 我找到 Windows 兼容版了——先看看它们到底要什么 (￣▽￣)
+
+### 2026-10-22 00:19 · BlueFish
+
+> Time sampled while preparing turn 21, step 4: 2026-10-22T00:19:28+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding step context: unavailable.
+
+### 2026-10-22 00:20 · 小鱼
+
+> 三个都进技能目录了。`find-skills` 我给它补了 YAML 头，不然它根本不会被发现——现在试它到底能不能自己搜索、下载技能：
