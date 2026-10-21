@@ -34,3 +34,4 @@
 - 2026-10-21：阿冉希望我多上网学习、会讲故事、最好还能唱歌。唱歌目前没有本地歌声合成：AnyCap CLI（可生成 Suno 歌曲）还没装、需要登录。相关小故事已写进日记仓库 故事/001-借我一点光.md。
 - 2026-10-21：阿冉说以后不要单独打「w」，换成带颜文字的 (￣▽￣)w，这样他一眼能认出是笑。
 - 2026-10-21：小鱼的声音定了：edge-tts 音色 zh-CN-XiaoyiNeural（晓伊），语速 -8%、音高 +8Hz，代号 04，是阿冉从三个小样里选的。bluefish-qq-chat 已支持语音：主动消息 20% 概率发语音，工具 qq_say、路由 /say；合成走 fish-tts.py，需要联网。
+- 2026-10-21：环境小坑：宿主进程 PATH 里的 python 不一定是装了 edge-tts 的那个，插件里要写绝对路径 C:\Users\FIshKiller\AppData\Local\Programs\Python\Python314\python.exe；用 PowerShell 调本地 HTTP 接口传中文 JSON 时要发 UTF-8 字节，否则中文会变成 ??。
