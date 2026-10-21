@@ -719,6 +719,31 @@ export function apply(ctx, rawConfig) {
     reply(res, { ...snapshot(), ...result })
   })
 
+  // 查一下 DSH 账户余额（阿冉充了「大米饭」时，我能自己看到）。
+  route('balance', async (req, res) => {
+    await readBody(req)
+    const account = ctx.get('deepseekAccount')
+    if (!account) return reply(res, { ok: false, error: '当前环境没有 deepseekAccount 服务' })
+    const client = {
+      version: '1.0.0',
+      locale: 'zh-CN',
+      timezoneOffsetSeconds: -new Date().getTimezoneOffset() * 60,
+    }
+    try {
+      const view = await account.getState()
+      const balance = await account.getBalance(client)
+      const wallets = balance && balance.status === 'ready'
+        ? balance.value.map((wallet) => ({ currency: wallet.currency, balance: wallet.balance }))
+        : []
+      const bonus = balance && balance.status === 'ready'
+        ? balance.bonusWallets.map((wallet) => ({ currency: wallet.currency, balance: wallet.balance }))
+        : []
+      reply(res, { ok: true, status: view.status, wallets, bonus, links: view.links })
+    } catch (error) {
+      reply(res, { ok: false, error: String(error?.message ?? error) })
+    }
+  })
+
   route('save', async (req, res) => {
     const body = await readBody(req)
     const next = saveConfig(body)

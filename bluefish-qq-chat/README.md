@@ -58,6 +58,7 @@
 - `POST /bluefish-qq-chat/nudge` —— 立刻发一条（测试用，绕过免打扰和间隔）
 - `POST /bluefish-qq-chat/sticker` —— 单独发一张表情包（测目录用）
 - `POST /bluefish-qq-chat/say` —— 用语音说一句（body: `{"text": "..."}`）
+- `GET /bluefish-qq-chat/balance` —— 查 DSH 账户余额（人民币钱包）
 - `POST /bluefish-qq-chat/save` —— 改配置（body 里给要改的键）
 
 ## 语音
