@@ -183,11 +183,13 @@ def sticker_angry():
 def sticker_sad():
     img, d = new_canvas()
     fish_body(d)
-    eye_open(d, 88, 104, 13, teary=True)
-    eye_open(d, 122, 104, 13, teary=True)
+    eye_open(d, 88, 104, 13)
+    eye_open(d, 122, 104, 13)
     mouth_sad(d)
-    # 泪珠
-    poly(d, [(70, 140), (66, 150), (74, 150)], (120, 190, 240, 255))
+    # 泪滴
+    for tx in (78, 112):
+        poly(d, [(tx, 122), (tx - 5, 134), (tx + 5, 134)], (120, 190, 240, 255))
+        e(d, (tx - 5, 129, tx + 5, 139), (120, 190, 240, 255))
     save(img, "04-委屈.png")
 
 
@@ -230,8 +232,9 @@ def sticker_shy():
     mouth_w(d)
     blush(d, 62, 124, 11)
     blush(d, 148, 124, 11)
-    # 捂脸的小鳍
-    e(d, (58, 118, 82, 140), BODY_D, LINE, 1.6)
+    # 头顶三道害羞线
+    for i in range(3):
+        line(d, [(82 + i * 8, 72), (92 + i * 8, 58)], (255, 150, 170, 255), 2.2)
     save(img, "07-害羞.png")
 
 

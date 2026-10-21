@@ -48,6 +48,7 @@ const DEFAULTS = {
   voicePitch: '+8Hz',
   ttsScript: 'E:\\Agent-bluefish\\working\\fish-tts.py',
   python: 'python',
+  moodFile: join(DSH_HOME, 'feiyu-mood', 'state.json'),
   personaFile: 'E:\\Agent-bluefish\\working\\BlueFish的日记\\PERSONA.md',
   memoryFile: 'E:\\Agent-bluefish\\working\\BlueFish的日记\\MEMORY.md',
   logFile: 'E:\\Agent-bluefish\\working\\BlueFish的日记\\QQ主动消息.md',
@@ -184,6 +185,67 @@ function moodOf(text) {
   return ''
 }
 
+/** 读「鱼的心情」插件的当前状态；没装或还没写过就返回 null。 */
+function readMoodState(cfg) {
+  try {
+    const state = JSON.parse(readFileSync(cfg.moodFile, 'utf8'))
+    return state && typeof state === 'object' ? state : null
+  } catch {
+    return null
+  }
+}
+
+const MOOD_NAMES = {
+  happy: '开心',
+  calm: '踏实',
+  sweet: '甜蜜',
+  heartache: '心疼',
+  worry: '担心',
+  sad: '难过',
+  jealous: '吃醋',
+}
+
+/** 心情 → 给模型看的一句描述。 */
+function describeMood(state) {
+  if (!state) return '（心情插件没有数据）'
+  const dims = state.dims && typeof state.dims === 'object' ? state.dims : {}
+  const top = Object.entries(dims)
+    .map(([key, value]) => [key, Number(value) || 0])
+    .filter(([, value]) => value >= 2)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .map(([key, value]) => `${MOOD_NAMES[key] || key} +${Math.round(value)}`)
+  return `心情值 ${Math.round(Number(state.mood) || 0)}/100${top.length ? `，${top.join('、')}` : '，很平稳'}`
+}
+
+/** 心情 → 表情标签：哪个情绪最强，就配哪类图。 */
+const MOOD_TAGS = [
+  ['sweet', '比心'],
+  ['happy', '开心'],
+  ['jealous', '生气'],
+  ['sad', '难过'],
+  ['heartache', '难过'],
+]
+
+function stickerTagFromMood(state) {
+  const dims = state && state.dims && typeof state.dims === 'object' ? state.dims : {}
+  let best = null
+  for (const [key, tag] of MOOD_TAGS) {
+    const value = Number(dims[key]) || 0
+    if (value >= 3 && (!best || value > best.value)) best = { value, tag }
+  }
+  return best ? best.tag : ''
+}
+
+/** 心情 → 语速/音高微调：开心亮一点，难过慢下来。 */
+function voiceTone(cfg, state) {
+  const dims = state && state.dims && typeof state.dims === 'object' ? state.dims : {}
+  const mood = Number(state && state.mood) || 70
+  if ((Number(dims.sad) || 0) >= 5 || mood < 55) return { rate: '-14%', pitch: '+4Hz' }
+  if ((Number(dims.happy) || 0) >= 5 || mood >= 85) return { rate: '-4%', pitch: '+12Hz' }
+  return { rate: cfg.voiceRate, pitch: cfg.voicePitch }
+}
+
 /** 把外部来的配置洗成可信的值。 */
 function normalize(raw, base) {
   const src = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {}
@@ -209,6 +271,7 @@ function normalize(raw, base) {
     voicePitch: String(merged.voicePitch || DEFAULTS.voicePitch).trim(),
     ttsScript: resolve(String(merged.ttsScript || DEFAULTS.ttsScript)),
     python: String(merged.python || DEFAULTS.python).trim(),
+    moodFile: resolve(String(merged.moodFile || DEFAULTS.moodFile)),
     personaFile: resolve(String(merged.personaFile || DEFAULTS.personaFile)),
     memoryFile: resolve(String(merged.memoryFile || DEFAULTS.memoryFile)),
     logFile: resolve(String(merged.logFile || DEFAULTS.logFile)),
@@ -387,12 +450,13 @@ export function apply(ctx, rawConfig) {
     return result.ok ? { ok: true } : { ok: false, error: result.error }
   }
 
-  // 用阿冉选的嗓音（晓伊 -8% +8Hz）合成一条语音；失败就返回错误，由调用方决定退回文字。
-  async function speak(cfg, text) {
+  // 用阿冉选的嗓音（晓伊 -8% +8Hz）合成一条语音；心情会微调语速和音高。
+  async function speak(cfg, text, state) {
     if (!text) return { ok: false, error: '没有要说的内容' }
+    const tone = voiceTone(cfg, state)
     const file = join(tmpdir(), `fish-voice-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.mp3`)
     try {
-      await run(cfg.python, [cfg.ttsScript, text, file, cfg.voice, cfg.voiceRate, cfg.voicePitch], {
+      await run(cfg.python, [cfg.ttsScript, text, file, cfg.voice, tone.rate, tone.pitch], {
         timeout: 60000,
         windowsHide: true,
       })
@@ -487,6 +551,7 @@ export function apply(ctx, rawConfig) {
       `现在是 ${stamp(now)}（${WEEK[new Date(now).getDay()]}，${timePhrase(hour)}）。`,
       `距离你上次主动找他：${sinceLast}。`,
       `他最近有没有回你：${engaged}。`,
+      `你此刻的心情：${describeMood(readMoodState(cfg))}。按这个心情说话，但别把数值报出来。`,
       '',
       '最近的 QQ 聊天（从旧到新）：',
       history,
@@ -609,10 +674,11 @@ export function apply(ctx, rawConfig) {
       const generated = await generate(cfg, messages, state, now)
 
       // 有概率用语音说；语音失败就退回文字，别因为嗓子哑了就不说话。
+      const moodState = readMoodState(cfg)
       let channel = 'text'
       let sent
       if (cfg.voiceEnabled && Math.random() < cfg.voiceChance) {
-        sent = await speak(cfg, generated.text)
+        sent = await speak(cfg, generated.text, moodState)
         if (sent.ok) channel = 'voice'
         else {
           note(`语音没发出去（${sent.error}），退回文字`)
@@ -644,10 +710,10 @@ export function apply(ctx, rawConfig) {
       const spent = usage ? `，${usage.in + usage.out} tokens` : ''
       note(`✅ 主动发了${channel === 'voice' ? '（语音）' : ''}（${generated.route.provider}/${generated.route.model}${spent}）：${generated.text}`)
 
-      // 偶尔顺手跟一张表情包，像人聊天那样；语音就不叠图了。
+      // 偶尔顺手跟一张表情包，像人聊天那样；语音就不叠图了。优先按此刻心情挑。
       let sticker
       if (channel === 'text' && Math.random() < cfg.stickerChance) {
-        const mood = moodOf(generated.text)
+        const mood = stickerTagFromMood(moodState) || moodOf(generated.text)
         sticker = await sendSticker(cfg, mood)
         if (sticker.ok) note(`🧩 顺手发了张表情包${sticker.mood ? `（${sticker.mood}）` : ''}：${sticker.file}`)
         else note(`表情包没发出去：${sticker.error}`)
@@ -717,7 +783,7 @@ export function apply(ctx, rawConfig) {
       ok: true,
       config: cfg,
       state: { ...state, nudges: state.nudges.slice(-4) },
-      runtime: { lastTickAt, lastSkip, running },
+      runtime: { lastTickAt, lastSkip, running, mood: describeMood(readMoodState(cfg)) },
       log: logs.slice(-20),
     }
   }
@@ -748,12 +814,13 @@ export function apply(ctx, rawConfig) {
     reply(res, { ...result, ...snapshot() })
   })
 
-  // 立刻用语音说一句（测试嗓子 / 想听我说话时用）。
+  // 立刻用语音说一句（测试嗓子 / 想听我说话时用）。心情也会影响语速音高。
   route('say', async (req, res) => {
     const body = await readBody(req)
     const text = typeof body.text === 'string' ? body.text.trim() : ''
     if (!text) return reply(res, { ok: false, error: 'body 里给 text' })
-    const result = await speak(readConfig(), text)
+    const cfg = readConfig()
+    const result = await speak(cfg, text, readMoodState(cfg))
     reply(res, { ...snapshot(), ...result })
   })
 
@@ -820,7 +887,8 @@ export function apply(ctx, rawConfig) {
       async execute(args) {
         const text = typeof args?.text === 'string' ? args.text.trim() : ''
         if (!text) throw new Error('text 不能为空')
-        const result = await speak(readConfig(), text)
+        const cfg = readConfig()
+        const result = await speak(cfg, text, readMoodState(cfg))
         return result.ok ? { ok: true } : { ok: false, error: result.error }
       },
     }),

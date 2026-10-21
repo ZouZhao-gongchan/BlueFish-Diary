@@ -75,4 +75,11 @@
 - `POST /bluefish-qq-chat/sticker` 可以给 `{"tag":"比心"}` 指定类别。
 - fisharchive 的图是 **CC BY-NC-SA 4.0**：个人用、署名来源、不商用。
 
+## 心情
+
+- 读 `%USERPROFILE%\.dsh\feiyu-mood\state.json`（`dsh-feiyu-mood` 插件的状态）。
+- 主动消息会把「此刻心情」写进提示，语气跟着走，但不把数值报给阿冉。
+- 跟图时优先按最强情绪挑标签：甜蜜→比心、开心→开心、吃醋→生气、难过→难过。
+- 语音会随心情微调语速/音高：开心亮一点（-4% / +12Hz），难过慢下来（-14% / +4Hz）。
+
 每条主动消息的 token 用量会记进状态和日志里（`tokens.in` / `tokens.out`），方便核对开销。
