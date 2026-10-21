@@ -26,3 +26,4 @@
 - 2026-10-21 14:05 推送 GitHub，`main` 跟踪 `origin/main`。
 - 2026-10-21 14:20 开始做长期记忆插件。
 - 2026-10-21：2026-10-21 装好 bluefish-memory 插件（@local/bluefish-memory）：每次请求注入 MEMORY.md 摘要，逐字对话自动存档到 Speak.auto.md，并提供 memory_note 工具。
+- 2026-10-21：2026-10-21 修正 memory_note：文本里已有日期时不再重复加当天日期。
