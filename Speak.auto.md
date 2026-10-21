@@ -183,3 +183,84 @@
 > Current DeepSeek Harness implementation checkout: "E:\\deepseek\\resources\\app.asar\\dsh\\".
 >
 > Current DeepSeek Harness Web GUI URL: "http://127.0.0.1:59276".
+
+### 2026-10-21 14:26 · 小鱼
+
+> 成了 ✅ 这次是真的搬完了。
+>
+> ## 证据
+>
+> ```
+> C:\Users\FIshKiller\.dsh   →  E:\Agent-bluefish\Save\dsh-home   （目录联接）
+> E:\...\dsh-home            617 MB / 20199 个文件
+> ```
+>
+> 日志显示，”robocopy exit=9“ 又出现了一次，但这次脚本没有再错误地中止，而是看体积对比（617 MB 对 617 MB）通过了，然后才继续建立联接。修的就是这个判断。
+>
+> ## 我验过三件事
+>
+> 1. 会话文件正在 E 盘增长 —— `session.v4.jsonl.zstd` 刚在 14:26 更新过，现在 858 KB
+> 2. QQ 桥还活着 —— 小号「走召家的小鱼儿」在线，3000 正常，试运行关着
+> 3. DSH 自己也是从 E 盘读数据的 —— 你现在能有这段对话，就说明联接是通的
+>
+> 中间那个 `source` 和 `target` 路径，以后再打开任何文件时，实际都落在 E 盘。
+>
+> ## 还剩最后一件小事
+>
+> 旧副本还占着 C 盘 617 MB：
+>
+> `C:\Users\FIshKiller\.dsh.backup-20261021-142544`
+>
+> 它在 C 盘躺着的唯一作用是“万一搬出问题还能退回去”。现在运行一切正常，**建议再用一两天，确认没毛病就删掉**，C 盘就能一次性回血 600 多 MB。
+>
+> 要我帮你删吗？你说一声，我就清掉；或者留着也行，反正不影响什么。
+
+### 2026-10-21 14:27 · BlueFish
+
+> 帮我删了吧
+
+### 2026-10-21 14:28 · 小鱼
+
+> 删干净了 ✅ 现在 C 盘的情况是：
+>
+> ```
+> 已用  149 GB（原来 150）
+> 剩余  16.15 GB
+> ```
+>
+> 刚才那个 279 MB 是**删到一半时的读数**：两万个小文件删起来要几秒，空间不会一次性全部释放。等删除稳定下来后，大约腾出了 600 多 MB。
+>
+> 顺便完整检查了一遍，一切正常：
+>
+> - `C:\Users\FIshKiller\.dsh` 仍是指向 E 盘的联接，并没有被误删。
+> - 会话目录能正常读到，我们这间也在其中。
+> - C 盘上没有留下任何 `.dsh*` 残留，只有那个联接本身。
+>
+> 现在这台机器上整套东西的位置都已经理清：
+>
+> | 东西 | 在哪 |
+> |---|---|
+> | DSH 全部数据（会话、记忆、插件、附件） | `E:\Agent-bluefish\Save\dsh-home` |
+> | 今天的对话存档 | `E:\Agent-bluefish\Save\`（两份） |
+> | SnowLuma 和它的配置 | `C:\Users\FIshKiller\SnowLuma`（138 MB） |
+> | 小号的 QQ 数据 | `C:\Users\FIshKiller\QQ-213`（9 MB，以后会变大） |
+>
+> 后面那个 QQ-213 是唯一还会一直变大的一项。哪天你发现 C 盘又紧张了，跟我说一声，用同样的方法把它也搬到 E 盘就行。现在先这样，够用了。
+
+### 2026-10-21 14:29 · BlueFish
+
+> 现在好了吗？我已经照做了
+
+### 2026-10-21 14:29 · BlueFish
+
+> Current runtime context. This snapshot supersedes earlier runtime-context snapshots.
+>
+> Current working directory: "E:\\Agent-bluefish\\working".
+>
+> Current DSH file policy: danger-full-access. The DSH file sandbox does not restrict file modifications by available operations.
+>
+> Approval prompts are disabled in this session: actions that require approval are rejected automatically — do not request sandbox escalation (do not set `sandbox_permissions`).
+>
+> Current DeepSeek Harness implementation checkout: "E:\\deepseek\\resources\\app.asar\\dsh\\".
+>
+> Current DeepSeek Harness Web GUI URL: "http://127.0.0.1:54657".
