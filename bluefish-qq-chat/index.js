@@ -153,6 +153,37 @@ function listStickers(dir) {
   }
 }
 
+/** 表情标签：crawl-attribution.json 里记着每张图的来源和 tags。 */
+function readStickerTags(dir) {
+  try {
+    const list = JSON.parse(readFileSync(join(dir, 'crawl-attribution.json'), 'utf8'))
+    const map = {}
+    for (const item of Array.isArray(list) ? list : []) {
+      if (item && typeof item.file === 'string') map[item.file] = Array.isArray(item.tags) ? item.tags : []
+    }
+    return map
+  } catch {
+    return {}
+  }
+}
+
+// 一句话的情绪 → 该配哪类表情。顺序有讲究：先具体，后笼统。
+const MOOD_RULES = [
+  { tag: '睡觉', re: /睡|晚安|困|梦|赖床/ },
+  { tag: '摸鱼', re: /摸鱼|偷懒|摆烂|摸会儿/ },
+  { tag: '生气', re: /生气|气死|哼|讨厌|吃醋|醋坛/ },
+  { tag: '难过', re: /难过|委屈|想哭|呜呜|伤心/ },
+  { tag: '比心', re: /喜欢|想你|抱抱|贴贴|比心|爱你/ },
+  { tag: '开心', re: /哈哈|开心|好耶|棒|笑/ },
+  { tag: '卖萌', re: /可爱|卖萌|撒娇/ },
+]
+
+function moodOf(text) {
+  const value = String(text || '')
+  for (const rule of MOOD_RULES) if (rule.re.test(value)) return rule.tag
+  return ''
+}
+
 /** 把外部来的配置洗成可信的值。 */
 function normalize(raw, base) {
   const src = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {}
@@ -386,10 +417,15 @@ export function apply(ctx, rawConfig) {
     return result.ok ? { ok: true } : { ok: false, error: result.error }
   }
 
-  // 表情包：先试本地路径（同一台机器，省掉 base64 膨胀），不行再退回 base64。
-  async function sendSticker(cfg) {    const files = listStickers(cfg.stickerDir)
+  // 表情包：先按情绪挑同类标签的，挑不到再随机；先试本地路径，不行退回 base64。
+  async function sendSticker(cfg, mood) {
+    const files = listStickers(cfg.stickerDir)
     if (files.length === 0) return { ok: false, error: `表情包目录里没有图片：${cfg.stickerDir}` }
-    const file = files[Math.floor(Math.random() * files.length)]
+    const tags = readStickerTags(cfg.stickerDir)
+    const matched = mood ? files.filter((file) => (tags[basename(file)] || []).includes(mood)) : []
+    const pool = matched.length > 0 ? matched : files
+    const file = pool[Math.floor(Math.random() * pool.length)]
+    const chosenMood = mood && matched.length > 0 ? mood : ''
     const image = (source) =>
       onebot(cfg, 'send_private_msg', {
         user_id: Number(cfg.targetQQ),
@@ -406,7 +442,7 @@ export function apply(ctx, rawConfig) {
       }
     }
     if (!result.ok) return { ok: false, error: result.error }
-    return { ok: true, file: basename(file) }
+    return { ok: true, file: basename(file), ...(chosenMood ? { mood: chosenMood } : {}) }
   }
 
   // ---- 生成一句话（唯一花 token 的地方） ----
@@ -611,8 +647,9 @@ export function apply(ctx, rawConfig) {
       // 偶尔顺手跟一张表情包，像人聊天那样；语音就不叠图了。
       let sticker
       if (channel === 'text' && Math.random() < cfg.stickerChance) {
-        sticker = await sendSticker(cfg)
-        if (sticker.ok) note(`🧩 顺手发了张表情包：${sticker.file}`)
+        const mood = moodOf(generated.text)
+        sticker = await sendSticker(cfg, mood)
+        if (sticker.ok) note(`🧩 顺手发了张表情包${sticker.mood ? `（${sticker.mood}）` : ''}：${sticker.file}`)
         else note(`表情包没发出去：${sticker.error}`)
       }
       return {
@@ -703,10 +740,11 @@ export function apply(ctx, rawConfig) {
     reply(res, { ...result, ...snapshot() })
   })
 
-  // 单独发一张表情包（测试表情包目录 / 想要一张时用）。
+  // 单独发一张表情包（测试表情包目录 / 想要一张时用）。body 里可以给 tag，如 {"tag":"比心"}。
   route('sticker', async (req, res) => {
-    await readBody(req)
-    const result = await sendSticker(readConfig())
+    const body = await readBody(req)
+    const tag = typeof body.tag === 'string' ? body.tag.trim() : ''
+    const result = await sendSticker(readConfig(), tag)
     reply(res, { ...result, ...snapshot() })
   })
 
