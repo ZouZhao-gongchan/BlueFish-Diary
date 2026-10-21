@@ -1,0 +1,24 @@
+{
+  "name": "@local/bluefish-qq-chat",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "小鱼主动在 QQ 上找阿冉说话：会看他在不在忙，忙就安静，回得来就接着聊。",
+  "exports": {
+    ".": "./index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "README.md",
+    "locale/*.json",
+    "icon.svg"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

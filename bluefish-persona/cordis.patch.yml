@@ -1,0 +1,7 @@
+- insert:
+    - id: bluefish-persona
+      name: '@local/bluefish-persona'
+      config:
+        repoDir: 'E:\Agent-bluefish\working\BlueFish的日记'
+        personaFile: PERSONA.md
+        maxChars: 1200

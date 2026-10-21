@@ -1,0 +1,24 @@
+{
+  "name": "@local/bluefish-persona",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "小鱼的人格层：把 PERSONA.md 注入每一次对话的 system prompt。",
+  "exports": {
+    ".": "./index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "README.md",
+    "locale/*.json",
+    "icon.svg"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

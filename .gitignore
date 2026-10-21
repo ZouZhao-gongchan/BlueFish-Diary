@@ -1,0 +1,5 @@
+# 日记是另一个仓库（working/BlueFish的日记），不要在这里重复追踪
+BlueFish的日记/
+node_modules/
+pnpm-lock.yaml
+*.log

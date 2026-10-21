@@ -1,0 +1,10 @@
+- insert:
+    - id: bluefish-memory
+      name: '@local/bluefish-memory'
+      config:
+        repoDir: 'E:\Agent-bluefish\working\BlueFish的日记'
+        memoryFile: MEMORY.md
+        autoLogFile: Speak.auto.md
+        autoLog: true
+        digestChars: 1200
+        git: true

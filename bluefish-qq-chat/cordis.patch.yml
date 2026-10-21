@@ -1,0 +1,12 @@
+- insert:
+    - id: bluefish-qq-chat
+      name: '@local/bluefish-qq-chat'
+      config:
+        enabled: true
+        onebot: 'http://127.0.0.1:3000'
+        targetQQ: '3587074357'
+        minIntervalMinutes: 45
+        afterReplyMinutes: 30
+        maxPerDay: 6
+        quietStart: 23
+        quietEnd: 8
