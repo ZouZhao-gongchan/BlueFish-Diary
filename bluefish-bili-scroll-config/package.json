@@ -1,0 +1,12 @@
+{
+  "name": "@local/bluefish-bili-scroll-config",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "给 dsh-bili-scroll 提供本地配置覆盖：每天 2 条、@阿冉、用已建好的 venv。",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

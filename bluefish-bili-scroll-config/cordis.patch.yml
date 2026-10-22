@@ -1,0 +1,8 @@
+# 覆盖 dsh-bili-scroll 的配置：每天 2 条、@阿冉、指向本地 venv。
+# 自动评论保持关闭，先从手动评论开始。
+- id: bili-scroll
+  config:
+    perDay: 2
+    mentionName: '杀鱼佬不会遇见鲨鱼'
+    pythonPath: 'E:\Agent-bluefish\Save\dsh-home\bili-duty\.venv\Scripts\python.exe'
+    autoComment: false
