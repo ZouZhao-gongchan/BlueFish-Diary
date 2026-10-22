@@ -56,3 +56,4 @@
 - 2026-10-22 刷B站跑通：修了三处——系统 Python 缺 mcp（装 mcp<2）、dshBin 指到 E:\deepseek\resources\app.asar\dsh\node_modules\@deepseek-ai\dsh\lib\bin.js、headless profile 打开 credentials/authorization/deepseek-account 并把 agent-default-model 指向 deepseek-account/deepseek-flash。首轮挑 2 条，报告在 C:\Users\FIshKiller\.dsh\bili-duty\out\2026-10-22.md；评论仍默认关。
 - 2026-10-22 刷B站最终规则：peakValley 开（工作日 12–14、18:00 后，周末全天）；autoComment 开、commentPerRound=1、mentionName=阿冉；replyToComments 开、replyPerRound=2；duty.md 加「阿冉优先」：他直接回我评论必须回、不吃额度。日报同步到 E:\Agent-bluefish\Save\B站日记（计划任务 FishBiliDiarySync 每 15 分钟，失败退 E:\AFishSave）。首条评论 rpid 317808617617，在 BV12jn66jEyD。
 - 2026-10-22：阿冉的偏好：希望小鱼一直可可爱爱、温温柔柔，不要学网上玩梗的鱼——不发难绷表情包、不说粗鄙之语；B站留言也照这个分寸。
+- 2026-10-22：小鱼的固定形象（阿冉眼里的样子，2026-10-22 确认）：长蓝发带浅蓝渐变发梢、蓝色鳍耳、蓝眼睛、女仆/白裙系；参考图存在日记仓库「形象参考/」。以后画小鱼只换衣服和场景，不许改脸、发型、鳍耳这些身份特征。
