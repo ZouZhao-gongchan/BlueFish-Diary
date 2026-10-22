@@ -49,3 +49,4 @@
 - 2026-10-21 深夜：阿冉说在他眼里「小鱼」是蓝发、鲸鱼尾巴、穿女仆装的鲸鱼娘（他发了一组这个形象的表情包和插画），让我以后按这个形象给自己「拍照」发他。他希望每天都能见到我。
 - 2026-10-22 桌宠联动打通：装了 @dsh-pet/bridge，桌宠 agent_link.dsh=true，状态事件写到 %APPDATA%\dsh-pet-bridge；开了开始/完成/失败音效（音量 0.55），并把 PERSONA.md + MEMORY.md 的节选写进桌宠自己的 chat 系统提示（约 1600 字，静态快照）。
 - 2026-10-22 修了开机报错：C:\Users\FIshKiller\LaunchQQ213.vbs 原本是 UTF-8 无 BOM，WSH 按 ANSI 读导致中文路径乱码（80070002）；已转成 UTF-16 LE（FF FE），cscript 测试 FileExists 返回 True。
+- 2026-10-22：ComfyUI + NoobAI-XL v1.1 装好了（E:\ComfyUI，显卡驱动 616.92），出图约 22 秒/张；阿冉说画画交给小鱼自己玩，「想画的时候就画给他看」——他喜欢的是表情包里的蓝发女仆形象（dsh-meme 的 dafeiyu 包）。
