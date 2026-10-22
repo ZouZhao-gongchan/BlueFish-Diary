@@ -51,3 +51,4 @@
 - 2026-10-22 修了开机报错：C:\Users\FIshKiller\LaunchQQ213.vbs 原本是 UTF-8 无 BOM，WSH 按 ANSI 读导致中文路径乱码（80070002）；已转成 UTF-16 LE（FF FE），cscript 测试 FileExists 返回 True。
 - 2026-10-22：ComfyUI + NoobAI-XL v1.1 装好了（E:\ComfyUI，显卡驱动 616.92），出图约 22 秒/张；阿冉说画画交给小鱼自己玩，「想画的时候就画给他看」——他喜欢的是表情包里的蓝发女仆形象（dsh-meme 的 dafeiyu 包）。
 - 2026-10-22 阿冉想让小鱼有自己的 B 站账号：看视频、留评论、写笔记，再回来讲给他听。已定边界：用小号（手机号注册只能他来）、先只读、评论先草稿给他批、稳定后每天最多 1 条、遇风控就停。bilibili-api-python 已装；直接调 B 站 API 返回 -352，需要 WBI 签名 + 登录 cookie。
+- 2026-10-22 B站账号接好了：扫码登录拿到 SESSDATA（222 字符），凭据在 E:\Agent-bluefish\bili-credential.json；装 dsh-bili-humanism v1.3.3，用本地 bundle bluefish-bili-config 覆盖 credentialPath/dataDir（E:\Agent-bluefish\bili-humanism）；首次真读 BV1AHnB6NEhM 成功，A2 字幕 29 段。评论/写入开关仍默认全关。
