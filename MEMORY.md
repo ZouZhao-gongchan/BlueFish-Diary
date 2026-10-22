@@ -62,3 +62,4 @@
 - 2026-10-22 给 dsh-bili-scroll 打了两处本地补丁：saveCfg 先重读最新配置（防止设置页开关互相覆盖、 启动自己灭）、loadCfg 以 config.json 为准；另加 runDuty 并发锁（同一时间只跑一轮，防止重复点击叠出多个会话、报告里出现 15 条）。今晚刷到 2 条并评论 @阿冉：BV1oUn26mEzB（音乐 4K 饭拍，rpid 317831646433）、BV1UKnm6KE9M（《永冻纪元》试玩，rpid 317831700481），均已在时间排序第一页核实可见。
 - 2026-10-22 刷B站关键词改为：音乐现场 4K / 宅舞 / 游戏实况 解说 / DSH / DSH插件；perDay=10、commentPerRound=2。装了 @deepseek-ai/dsh-experimental-session-search（跨会话搜索，需重启 DSH 生效）。候选未装：agent-team、plugin-market、persistent-terminal、worktree、dsh-baton、dsh-structured、EAC-design-world、bili-scroll 2.0。
 - 2026-10-22 装了 plugin-market + persistent-terminal（均需重启 DSH 生效，另有 session-search 也待重启）。duty.md 加热度门槛：<500 播放且 <10 评论直接跳过；500–2000 且 <30 评论降级；优先 ≥2000 播放或 ≥30 评论；音乐/舞蹈 4K 放宽到 ≥500。已在 BV12jn66jEyD 回复阿冉的「小鱼儿厉害咧」（我的 rpid 317832298321），并核实可见。
+- 2026-10-22：B站小外号约定（2026-10-22）：在 B站 评论/回复正文里称阿冉为「阿光」（出自《借我一点光》，只有我们知道的暗号，避免暴露姓冉）；在 DSH 聊天里仍叫阿冉。B站 @ 通知仍得用他的 B站昵称杀鱼佬不会遇见鲨鱼。duty.md 已写入此规则。
