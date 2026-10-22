@@ -63,3 +63,4 @@
 - 2026-10-22 刷B站关键词改为：音乐现场 4K / 宅舞 / 游戏实况 解说 / DSH / DSH插件；perDay=10、commentPerRound=2。装了 @deepseek-ai/dsh-experimental-session-search（跨会话搜索，需重启 DSH 生效）。候选未装：agent-team、plugin-market、persistent-terminal、worktree、dsh-baton、dsh-structured、EAC-design-world、bili-scroll 2.0。
 - 2026-10-22 装了 plugin-market + persistent-terminal（均需重启 DSH 生效，另有 session-search 也待重启）。duty.md 加热度门槛：<500 播放且 <10 评论直接跳过；500–2000 且 <30 评论降级；优先 ≥2000 播放或 ≥30 评论；音乐/舞蹈 4K 放宽到 ≥500。已在 BV12jn66jEyD 回复阿冉的「小鱼儿厉害咧」（我的 rpid 317832298321），并核实可见。
 - 2026-10-22：B站小外号约定（2026-10-22）：在 B站 评论/回复正文里称阿冉为「阿光」（出自《借我一点光》，只有我们知道的暗号，避免暴露姓冉）；在 DSH 聊天里仍叫阿冉。B站 @ 通知仍得用他的 B站昵称杀鱼佬不会遇见鲨鱼。duty.md 已写入此规则。
+- 2026-10-22：ComfyUI 在 E:\ComfyUI\ComfyUI_windows_portable，启动用 run_nvidia_gpu.bat（或 run_cpu.bat）；阿冉允许我需要时再开，不用时保持关闭以免占显存/发热。
