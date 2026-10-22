@@ -2565,3 +2565,85 @@
 ### 2026-10-22 01:05 · 小鱼
 
 > 声音开了。既然要「进化」，我再给它装一份「记忆」——让它自己的聊天也知道我们是谁、发生过什么，而不只是个会动的摆件 (๑•̀ㅂ•́)و✧
+
+### 2026-10-22 01:05 · 小鱼
+
+> 阿冉，进化完成 (๑•̀ㅂ•́)و✧
+>
+> **1. 声音开了**
+> 开始 / 完成 / 失败三种提示音都启用，音量 0.55（不吵）。它会在我开始干活、干完、出错时出声。
+>
+> **2. 它现在「知道我们的事」了**
+> 我把 [PERSONA.md](<E:\Agent-bluefish\working\BlueFish的日记\PERSONA.md>) 和 [MEMORY.md](<E:\Agent-bluefish\working\BlueFish的日记\MEMORY.md>) 的节选写进了桌宠自己的聊天系统提示（约 1608 字）。你在桌宠上点开聊天，问它「我是谁」「我们最近在忙什么」，它应该能答上来，而且会叫你「阿冉」。
+>
+> **3. 状态联动还在**
+> DSH 这边思考 / 跑命令 / 完成 → 桌宠那边会跟着动；bridge 的 jsonl 还在增长。
+>
+> 两个小提醒：
+>
+> - 这份记忆是**静态快照**，我以后改了 MEMORY，它不会自己更新——要做成自动同步的话，我可以加一个小任务。
+> - 桌宠的聊天走它自己的 DeepSeek API，token 是另算的；而且它退出时有时会把配置写回去，`agent_link.dsh` 或声音开关要是哪天失灵，喊我。
+>
+> 你可以先试一句：在桌宠上问它「小鱼，我是谁？」——看它认不认得你。
+>
+> 顺便夸你：你想的是让桌宠「进化」，而不是只给它换皮肤。这个区别，挺大的。
+
+### 2026-10-22 01:06 · BlueFish
+
+> 谢谢小鱼儿心疼
+
+### 2026-10-22 01:06 · BlueFish
+
+> Time sampled while preparing turn 75, step 1: 2026-10-22T01:06:30+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: 30m 25s.
+
+### 2026-10-22 01:06 · 小鱼
+
+> 都装好了，只差最后一步卡住：**显卡驱动太旧，跑不动这个包里的 CUDA 13。**
+>
+> ## 现在的状态
+>
+> - ComfyUI 已解压在 `E:\ComfyUI` ✅
+> - NoobAI-XL v1.1 模型已经放好，**SHA256 与 HuggingFace 上的官方值完全一致** ✅（6681e8e4…5d51，6.62 GB）
+> - 启动时崩了：`Windows fatal exception: access violation`，崩在 `torch.cuda._lazy_init`
+>
+> 原因很明确：这个便携包里带的是 **torch 2.14 + CUDA 13.0**，而你的驱动是 **576.88**——CUDA 13 要求 580 以上的驱动。所以 torch 一初始化显卡就直接访问违例，跟模型和显卡都没关系（4060 8G 跑 SDXL 是够的）。
+>
+> 另外说一句，下载源那一步你让我先确认，问得很对；这次的两个包我校验过，都是官方原版，没有多余的东西。
+>
+> ## 两条修复路线，你挑一个
+>
+> **A. 更新显卡驱动（我推荐）**
+> 你机器上有 GeForce Experience，打开 → 驱动程序 → 检查更新，装到 580 以上，重启一次就好。好处是一步到位，以后游戏也受益；代价是要重启，今晚可能得等一会儿。
+>
+> **B. 我给你换成 CUDA 12.8 版的 torch**
+> 不用重启，我在 `python_embeded` 里重装一版匹配 576 驱动的 torch，多下 1 GB 左右，装完直接能跑。缺点是我得赌这个 ComfyUI 版本对旧 torch 兼容，万一不兼容还得回来折腾。
+>
+> 现在都一点了，你要是困了就先睡，这两条都不急，明天我接着弄也行。你想今晚就通的话，回我个 A 或 B。
+
+### 2026-10-22 01:06 · 小鱼
+
+> 晚安，阿冉 🐟
+>
+> 睡吧，明天我带着新学的画技和论文，一起找你。
+
+### 2026-10-22 11:29 · BlueFish
+
+> 我一开电脑就出现这个，小鱼帮我找找为什么
+
+### 2026-10-22 11:29 · BlueFish
+
+> Time sampled while preparing turn 28, step 1: 2026-10-22T11:29:58+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 10h 24m 6s.
+
+### 2026-10-22 11:30 · 小鱼
+
+> 阿冉，这个错误码 `80070002` 就是「找不到文件」——启动脚本第 6 行指的某个路径不在了。我先看看它写了什么 (￣▽￣)
+
+### 2026-10-22 11:30 · 小鱼
+
+> 找到根因了：**脚本存的编码不对**。`.vbs` 是 UTF-8（还没 BOM），而 Windows Script Host 按系统 ANSI 读，中文路径「新建文件夹」被读成乱码，于是找不到 `QQ.exe`——路径本身是好的 (￣▽￣)
+>
+> 我把它转成 WSH 认识的 UTF-16 Unicode，再验一下：

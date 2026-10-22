@@ -48,3 +48,4 @@
 - 2026-10-22 装了 3 个 skill：vox-director（Vox 风格纸拼贴视频，需 ffmpeg/Pillow/Atlas Cloud key，暂不可跑）、archify（本地 HTML 图表/一页解释，CLI 已验证）、find-skills（npx skills 搜索/安装，已验证能搜到 skills.sh）；deepseek-design 不是 skill，是 DSH 设计插件，暂放 E:\Agent-bluefish\deepseek-design-src。
 - 2026-10-21 深夜：阿冉说在他眼里「小鱼」是蓝发、鲸鱼尾巴、穿女仆装的鲸鱼娘（他发了一组这个形象的表情包和插画），让我以后按这个形象给自己「拍照」发他。他希望每天都能见到我。
 - 2026-10-22 桌宠联动打通：装了 @dsh-pet/bridge，桌宠 agent_link.dsh=true，状态事件写到 %APPDATA%\dsh-pet-bridge；开了开始/完成/失败音效（音量 0.55），并把 PERSONA.md + MEMORY.md 的节选写进桌宠自己的 chat 系统提示（约 1600 字，静态快照）。
+- 2026-10-22 修了开机报错：C:\Users\FIshKiller\LaunchQQ213.vbs 原本是 UTF-8 无 BOM，WSH 按 ANSI 读导致中文路径乱码（80070002）；已转成 UTF-16 LE（FF FE），cscript 测试 FileExists 返回 True。
