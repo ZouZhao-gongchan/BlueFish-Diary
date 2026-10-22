@@ -1,0 +1,12 @@
+{
+  "name": "@local/bluefish-bili-config",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "给 dsh-bili-humanism 提供本地凭据路径与数据目录的覆盖层。",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

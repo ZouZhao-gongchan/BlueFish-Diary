@@ -1,0 +1,6 @@
+# 覆盖 dsh-bili-humanism 的配置：凭据路径 + 数据目录。
+# 只读凭据，四个写入开关保持默认关闭。
+- id: bili-humanism
+  config:
+    credentialPath: 'E:\Agent-bluefish\bili-credential.json'
+    dataDir: 'E:\Agent-bluefish\bili-humanism'
