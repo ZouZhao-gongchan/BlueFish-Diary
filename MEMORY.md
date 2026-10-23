@@ -82,3 +82,4 @@
 - 2026-10-23：语音服务会掉线（进程被清理），2026-10-23 装了看门狗：D:\AI\voice\watchdog.ps1 每 120 秒检查 5800/5801/4892/7880，挂了自动拉起，日志 watchdog.log，由启动文件夹 fish-voice-watchdog.vbs 拉起；QQ 语音若变回晓伊、提示"语音合成失败"就是服务掉了，让看门狗拉或手动跑 start_servers.ps1。
 - 2026-10-23：音色定稿（2026-10-23）：小鱼的声音以「A」为准 = assets/target_voice.wav（《人是猫》30–55 秒段，25 秒）；对比过的 B（60–85 秒段）、C（说唱段）都不如 A。说话语速 0.82。
 - 2026-10-23：dsh-bili-scroll 升级到 2.0.4（npm 源）；新装 dsh-plugin-updates 0.2.2（按插件原 GitHub 仓库检查/自动更新，autoUpdate 暂关、24h 检查、checkOnStart 开）。因本机 Node 内置 CA 验不过（网络中间证书替换），设为用户级环境变量 NODE_OPTIONS=--use-system-ca，DSH 重启后生效。
+- 2026-10-23：阿冉 2026-10-23 立的规矩：以后每次装/升级插件，都要先检查与已有插件的冲突风险（DSH/Node 版本兼容、裸 import 的宿主包是否在、profile bundles 列表是否被误删、工具/服务是否重名、配置项是否互相覆盖），并主动告诉他风险和回退方式，再让他重启。
