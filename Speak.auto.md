@@ -6804,3 +6804,53 @@
 ### 2026-10-23 13:44 · 小鱼
 
 > 找到状态文件了：`overlay-active-pets.json` 里记着活跃槽位（日志说 [1,2]）。我把它改成只留主宠 slot0，再重启——不用你去托盘里翻菜单。
+
+### 2026-10-23 13:44 · 小鱼
+
+> 看到了吗？现在它应该出来了 (๑•̀ㅂ•́)و✧
+>
+> **根因**：不是没启动，是旧的多宠状态文件 `overlay-active-pets.json` 里只记了 `slots=[1,2]`，**主宠 slot0 没被激活**，所以只有托盘、没有窗。我把它改成 `[0]` 后重启，日志已经出现：
+>
+> > `[VIS] 桌宠显示 anim=待机呼吸休闲`
+>
+> 窗口现在是 **visible=True**，标题 `dsh-pet 桌宠`，位置大约在屏幕中右（1182,399 到 1822,789）。
+>
+> **安全开关仍然关着**
+>
+> - `agent_link.dsh = false`
+> - `autostart = false`
+> - `chat = false`
+> - `auto_hide_fullscreen = false`
+> - DSH profile 里没有 `dsh-pet` 引用
+>
+> **AI Key 再确认**：可以用别的 Key，不一定是 DSH 那个；OpenAI Chat Completions 兼容的地址 + Key + 模型就行。现在 chat 关着，不会调 API；要用时右键设置里再填。
+>
+> 小提醒：启动日志里它在尝试搜网易云歌词，可能会偶尔冒音乐气泡。如果你只想让它安静当桌宠，我可以把 `music_lyric` / `music_sing` 关掉。
+>
+> 你先看看它动作、大小、位置顺不顺眼；要调哪里告诉我，别自己跟它较劲 w
+
+### 2026-10-23 13:49 · BlueFish
+
+> 现在就挺不错的，就是不能生成额外的小鱼，呜呜呜
+
+### 2026-10-23 13:49 · BlueFish
+
+> Time sampled while preparing turn 81, step 1: 2026-10-23T13:49:22+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 4m 41s.
+
+### 2026-10-23 13:49 · 小鱼
+
+> 别呜呜，能加。它本来就支持“多开/多宠”，我先看它把入口藏在哪个菜单，再决定是点菜单还是帮你加槽位。
+
+### 2026-10-23 13:49 · 小鱼
+
+> 它菜单里确实有「生小肥鱼」，但日志暴露了另一层：**当前渲染拓扑是 `legacy(单窗 PetWindow)`，这个模式只渲染主宠**，所以额外小鱼生不出来。我查它怎么切到多宠拓扑。
+
+### 2026-10-23 13:49 · 小鱼
+
+> 找到了！配置里 **`stream_capture_mode: true`**——这是「直播捕获兼容模式」，它会把多宠收拢成单窗，并禁用「生小肥鱼」。你不需要直播捕获，我把它关掉重启，多宠就回来了。
+
+### 2026-10-23 13:50 · 小鱼
+
+> 拓扑切回来了：日志现在是 `overlay(单合成窗)`，而且已经自动孵出了 `slot=1` 的子肥鱼。你现在桌面上应该能看到两只；我确认一下状态和保护开关。
