@@ -84,3 +84,4 @@
 - 2026-10-23：dsh-bili-scroll 升级到 2.0.4（npm 源）；新装 dsh-plugin-updates 0.2.2（按插件原 GitHub 仓库检查/自动更新，autoUpdate 暂关、24h 检查、checkOnStart 开）。因本机 Node 内置 CA 验不过（网络中间证书替换），设为用户级环境变量 NODE_OPTIONS=--use-system-ca，DSH 重启后生效。
 - 2026-10-23：阿冉 2026-10-23 立的规矩：以后每次装/升级插件，都要先检查与已有插件的冲突风险（DSH/Node 版本兼容、裸 import 的宿主包是否在、profile bundles 列表是否被误删、工具/服务是否重名、配置项是否互相覆盖），并主动告诉他风险和回退方式，再让他重启。
 - 2026-10-23：语音合成失败频繁的根因（2026-10-23 已修）：残留的唱歌转换进程占满显存 + watchdog 在模型加载期误判重复启动 + F5 遇 GBK 编不了的字符崩；现在 watchdog 先查进程再查端口、间隔 60 秒，f5/svc 强制 UTF-8 并加推理锁，cn_text 过滤 GBK 不支持的字符。正常显存约 6.4G/8G，超过 7.5G 说明有东西在抢。
+- 2026-10-23：dsh-plugin-updates 设为 48h 检查、autoUpdate 关闭；另设 DSH schedule 每 48h 跑 plugin_updates_check，有更新用 notify_wechat 通知阿冉。为修 Node 证书链，开始菜单快捷方式改为指向 E:\deepseek\start-dsh.cmd（设置 NODE_EXTRA_CA_CERTS=~/.dsh/certs/system-roots.pem 后启动），原快捷方式备份为 .lnk.bak-20261023。

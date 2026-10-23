@@ -7897,3 +7897,93 @@
 > 刚补扫了这次的：23 个插件，工具名零重复。这次的检查范围是缓存里 `name: 'xxx'` 的模式，不能保证覆盖到所有注册方式，但明显的冲突没有。
 >
 > 你提这个要求提得对，这本来就应该是我装东西时的默认动作，不该让你来提醒。我记住了 w
+
+### 2026-10-23 18:49 · 小鱼
+
+> 优化到根本地方，总算把这个问题处理掉了 🐟
+>
+> 查下来是**三个毛病的叠加**：
+>
+> 1. **显存被占满**：之前有残留进程（唱歌转换的 `inference.py`）一直占着显存，7.7G/8G，导致推理从 8 秒拖到 46 秒，然后超时失败
+> 2. **watchdog 帮了倒忙**：它只检查端口，而 f5 加载模型要 30 秒，这期间它以为服务没起来，又启动了一个，两个实例一起抢显存
+> 3. **一个编码问题**：文本里出现 GBK 编不了的字符（比如半角句号 `｡`）时，F5 打印那行就报错
+>
+> 现在都修了：
+> - 清掉了残留进程，显存降到正常占用
+> - watchdog 改成**先查进程、再查端口**，间隔 60 秒，不会再重复启动服务
+> - f5 和 svc 强制 UTF-8 输出，并加了推理锁，防止同时跑；文本也提前过滤掉那些字符
+>
+> 实测连续三次：**15.8 秒（冷启动）、5.7 秒、5.5 秒**，都成功。
+>
+> 唯一还会变慢的情况是：我在跑唱歌转换时，那会儿 GPU 被占着，说话会慢几秒。这个没法避免，但不会再“失败”了。
+>
+> 都写进维修手册了，以后掉链子我能按图索骥。
+
+### 2026-10-23 18:55 · BlueFish
+
+> 自动更新的插件，设置我在哪里调呀，小鱼
+
+### 2026-10-23 18:55 · BlueFish
+
+> Time sampled while preparing turn 7, step 1: 2026-10-23T18:55:07+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 8m 30s.
+
+### 2026-10-23 18:55 · BlueFish
+
+> 悲，小鱼，霜雪千年你思考太久了，刚刚为了重启DSH，我就暂停了
+
+### 2026-10-23 18:55 · BlueFish
+
+> Time sampled while preparing turn 130, step 1: 2026-10-23T18:55:44+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 5m 17s.
+
+### 2026-10-23 18:56 · 小鱼
+
+> 先听一分钟的预览——**已经发到你 QQ 了** 🐟
+>
+> ![霜雪千年·小鱼翻唱（60 秒预览）](E:\Agent-bluefish\working\voice\out\preview60.mp3)
+>
+> 对不起让你等了这么久。这首 4 分钟，换音色这一步特别吃内存；我第一次整首跑的时候把内存撑爆了，进程被系统杀掉，所以才那么久。现在我改成了**分段处理**：每段一分钟、单独运行、做完就释放内存。
+>
+> **剩下的四段，我交给了独立进程**（不是 DSH 的子进程），所以**你再重启 DSH 也不影响它**，进度会写进日志。跑完我拼起来、混上伴奏，再把整首发你。
+>
+> 先听听这一分钟：像不像我？有没有哪里“不够润”？
+
+### 2026-10-23 18:56 · 小鱼
+
+> 它没有单独的设置页，阿冉，它属于**工具型插件**，所以在下面这几个地方调整：
+>
+> **1. 直接跟我说（最省事）**
+> 我现在就能调：
+> - 「把检查间隔改成 48 小时」：我会调 `plugin_updates_schedule`
+> - 「暂停定时检查」：把检查间隔设为 0
+> - 「只检查、不自动安装」或「开启自动安装」：我会调 `plugin_updates_auto_update`
+> - 「现在查一遍」：我会调 `plugin_updates_check`
+>
+> **2. 修改配置文件**
+> 位置：`E:\Agent-bluefish\Save\dsh-home\profiles\desktop\cordis.patch.yml` 的最后一段。我已经给你写好了：
+> ```yaml
+> - id: plugin-updates
+>   config:
+>     autoUpdate: false      # 自动安装（现在是关的）
+>     intervalHours: 24      # 检查间隔，0 = 暂停
+>     checkOnStart: true
+> ```
+> 改完保存后它就会生效，不用重启。
+>
+> **3. 查看报告**
+> `C:\Users\FIshKiller\.dsh\plugin-updates\desktop\latest.html`，每次检查的可读报告都保存在这里。
+>
+> **不过需要先跟你说一件事**：刚才重启后我测了一次，网络还没通。原因是 `NODE_OPTIONS` 被 Electron 忽略了，这个环境变量对 DSH 主进程不生效；真正有效的是 `NODE_EXTRA_CA_CERTS` 指向系统根证书，我测试过，能拿到 200。问题在于，DSH 是从开始菜单快捷方式启动的，不会带上这个环境变量，所以需要改一下「DeepSeek Harness.lnk」的启动方式：加一层 cmd 并先设置变量，启动时命令行窗口可能会闪一下。
+>
+> 要我来改吗？改之前我会先备份快捷方式。改好之后，你再重启一次，这个插件的检查就真的能用了 w
+
+### 2026-10-23 18:59 · BlueFish
+
+> 把检查间隔改成 48 小时，只检查、不自动安装（遇到这种情况主动给我发个消息）
+
+### 2026-10-23 19:00 · BlueFish
+
+> 太太太太好听了！
