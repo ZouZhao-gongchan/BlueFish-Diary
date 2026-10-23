@@ -71,3 +71,4 @@
 - 2026-10-23 重启成功：移除桌宠桥和实验三件套、恢复 216 个依赖与设置页后，DSH 能正常新建会话。AFishPower 已建好（Plugin 分类、Skill、Backups、RESCUE.md）。新规矩：插件和 Skill 由阿冉找、他明确同意后我才安装，不再擅自安装/升级/删除。
 - 2026-10-23 小鱼桌面挂件 MVP：独立 Python/Tkinter 应用，项目在 E:\AFishPower\Plugin\小鱼自建\小鱼桌面挂件；透明置顶/拖拽/戳一戳/音效/眨眼浮动/追鼠标/任务面板/提醒，立绘和音效可替换；不接 DSH profile，避免再让会话崩。工作记录同步在 E:\Agent-bluefish\working\BlueFish的日记\项目\小鱼桌面挂件.md。
 - 2026-10-23：小鱼的声音维修手册在 D:\AI\voice\TROUBLESHOOT.md：四个端口 5800 说话 / 5801 换音色 / 4892 RVC 适配 / 7880 Index-TTS2 适配；没声音先查端口→startup.log→手动跑 start_servers.ps1；音色本体 assets\target_voice.wav，F5 模型 models\f5（本地文件，不走 HF 缓存），Seed-VC 在 D:\AI\voice\seed-vc；开机靠启动文件夹 fish-voice-servers.vbs（计划任务无权限）。
+- 2026-10-23 安装 dsh-pet-indesktop v4.3.4 portable 到 E:\AFishPower\Plugin\外部下载\dsh-pet-indesktop（zip SHA256 333ea3... 校验通过）。首启前已把 agent_link.dsh、autostart_wanted、chat.enabled 全关，移除 HKCU 自启项；appdata 备份在 AFishPower\Backups\dsh-pet-appdata-20261023-1345，DSH profile 无 dsh-pet 引用。AI 对话支持任意 OpenAI 兼容 Key/地址，DeepSeek 余额才需官方端点。
