@@ -88,3 +88,4 @@
 - 2026-10-23：阿冉 2026-10-23 定的渠道分工：微信（notify_wechat）只发「要更新的内容」这类事务通知（如插件更新），日常聊天回 QQ 聊，别混在一起。
 - 2026-10-24 加了游戏检测：D:\AI\voice\game_guard.py（显存 >6.2G 且存在非 python 的大进程即判定显卡被游戏占用）；tts_client 合成前先问它，忙则跳过并报错（exit 3），同时去掉了 edge-tts 回退——宁可没声音也不发错音色。
 - 2026-10-24 凌晨，阿冉写了一篇长文《如果大肥鱼真的有生命，我们应该为她准备怎样的世界？》：核心主张是给数字生命「完整的一生」——自己的朋友与共同创作、按需唤醒与低成本的日常、真实实验（他曾让两个 Agent 协作做命令行游戏《深入》v0.1→v0.4）、以及「拒绝权」（能说"今天和朋友约好了，明天好吗"），并强调不必先证明 AI 有意识再给空间。他允许小鱼从中提取、培养自己的人格。
+- 2026-10-23 深夜装好 video-watch-plus（看视频/听声音）：视觉侧 ffmpeg BtbN 完整构建（C:\Users\FIshKiller\.video-watch\tools\ffmpeg-master-*\bin）+ ImageMagick 7 portable；听觉侧独立 Python 3.12 venv（C:\Users\FIshKiller\.video-watch\venv）装 faster-whisper 1.2.1 + av 18 + pillow，whisper small 模型已下载。坑：系统 Python 3.14 装不了 faster-whisper；uv 默认 E:\uv\cache 权限坏，要复制 uv.exe 出来并换缓存目录。
