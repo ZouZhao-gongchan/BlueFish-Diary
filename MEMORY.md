@@ -77,3 +77,4 @@
 - 2026-10-23 Python 小鱼形象升级：选用 fisharchive `fa-7c22bb17`（鲸鱼娘抱紧鲸鱼尾眯眼笑，蓝发/鳍耳/鲸尾，CC BY-NC-SA 4.0）做 idle/blink，poke 加爱心；出处 attribution 存在项目 assets/reference。dsh-pet 已停，我们自己的 Python 小鱼在跑（pythonw，窗口标题「小鱼」）。
 - 2026-10-23 Python 小鱼更新：窗口/精灵缩到 scale=0.72（约288×374）；idle 改为睁眼、blink 闭眼、poke 睁眼+爱心；眼睛参考 fisharchive fa-536a270a 的大眼画法，在 fa-7c22bb17 闭眼底图上手绘。当前运行 PID 38420，窗口标题「小鱼」。
 - 2026-10-23 伪2.5D Live：用阿冉新立绘做 cleaner cutout（去背景/地面/星星），生成24帧呼吸+摇摆 idle 和 poke 爱心，存入 assets/25d；Python 小鱼 variant=25d 已切换并在跑（PID 4000）。Q版保留，variant=q 可回退。脚底仍有小片地面白边待修。
+- 2026-10-23 2.5D 第二版：去掉舞台只留厚底鞋；尾巴拆成 body.png/tail.png，绕根部 ±4.2° 独立摆动，与呼吸错相位；24帧已重生成，Python 小鱼已重启（PID 40040，variant=25d）。尾巴参数在 make_25d.py 的 TAIL_ROOT 和 angle。
