@@ -79,3 +79,4 @@
 - 2026-10-23 伪2.5D Live：用阿冉新立绘做 cleaner cutout（去背景/地面/星星），生成24帧呼吸+摇摆 idle 和 poke 爱心，存入 assets/25d；Python 小鱼 variant=25d 已切换并在跑（PID 4000）。Q版保留，variant=q 可回退。脚底仍有小片地面白边待修。
 - 2026-10-23 2.5D 第二版：去掉舞台只留厚底鞋；尾巴拆成 body.png/tail.png，绕根部 ±4.2° 独立摆动，与呼吸错相位；24帧已重生成，Python 小鱼已重启（PID 40040，variant=25d）。尾巴参数在 make_25d.py 的 TAIL_ROOT 和 angle。
 - 2026-10-23 2.5D 第三版：尾巴 mask 扩到 x=396、摆幅 2.8° 修复尾巴尖断裂；脚底 y>=506 再裁；硬 alpha 不侵蚀，保留细发丝并减少洋红紫边。Python 小鱼已重启（PID 42024）。
+- 2026-10-23：语音服务会掉线（进程被清理），2026-10-23 装了看门狗：D:\AI\voice\watchdog.ps1 每 120 秒检查 5800/5801/4892/7880，挂了自动拉起，日志 watchdog.log，由启动文件夹 fish-voice-watchdog.vbs 拉起；QQ 语音若变回晓伊、提示"语音合成失败"就是服务掉了，让看门狗拉或手动跑 start_servers.ps1。
