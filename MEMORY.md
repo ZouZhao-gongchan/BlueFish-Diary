@@ -75,3 +75,4 @@
 - 2026-10-23 dsh-pet-indesktop v4.3.4 首启只剩托盘：根因 overlay-active-pets.json 的 slots=[1,2] 不含 0，主宠 slot0 未活跃；改成 [0] 并重启后窗口可见（标题 dsh-pet 桌宠，640x390）。启动前已关 agent_link.dsh/autostart/chat，auto_hide_fullscreen=false，DSH profile 无 dsh-pet 引用。
 - 2026-10-23 dsh-pet 多宠修复：旧配置 stream_capture_mode=true（直播捕获兼容）会收拢成单窗并禁用「生小肥鱼」；已改为 false 并重启，日志显示 topology=overlay(单合成窗)，active slots [0,1]，已生成 slot1 子肥鱼。注意：右键宠物本体（不是托盘）→「生小肥鱼」；直播捕获兼容模式不要开。
 - 2026-10-23 Python 小鱼形象升级：选用 fisharchive `fa-7c22bb17`（鲸鱼娘抱紧鲸鱼尾眯眼笑，蓝发/鳍耳/鲸尾，CC BY-NC-SA 4.0）做 idle/blink，poke 加爱心；出处 attribution 存在项目 assets/reference。dsh-pet 已停，我们自己的 Python 小鱼在跑（pythonw，窗口标题「小鱼」）。
+- 2026-10-23 Python 小鱼更新：窗口/精灵缩到 scale=0.72（约288×374）；idle 改为睁眼、blink 闭眼、poke 睁眼+爱心；眼睛参考 fisharchive fa-536a270a 的大眼画法，在 fa-7c22bb17 闭眼底图上手绘。当前运行 PID 38420，窗口标题「小鱼」。
