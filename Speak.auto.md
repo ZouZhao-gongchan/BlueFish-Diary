@@ -5738,3 +5738,93 @@
 ### 2026-10-23 09:58 · 小鱼
 
 > 补丁补回来了，`node --check` 也过了。我把它备份到 `AFishPower\Backups`，以后再被升级冲掉可以直接恢复；然后把插件热重启一次让补丁生效。
+
+### 2026-10-23 09:58 · 小鱼
+
+> 装好了，阿冉 (๑•̀ㅂ•́)و✧ 先汇报，再说一个升级副作用。
+>
+> **AFishPower**
+>
+> 建好了：`E:\AFishPower`，里面是 `Skill` / `Plugin` / `Downloads` / `Backups`，加一份 [README](<E:\AFishPower\README.md>)。以后新 Skill 放 `Skill`，新插件源放 `Plugin`。
+>
+> **archify 适配版**
+>
+> - 包：`@tt-a1i/archify-dsh@1.0.0`，在 `E:\AFishPower\Plugin\archify-dsh`
+> - DSH 用 `link:E:/AFishPower/Plugin/archify-dsh` 指过去，**别移动这个目录**
+> - provider `archify-skill-filesystem` 已经 active；它内置的是 Archify **3.0.1**
+> - 你原来的通用版是 **3.2.0**，我把它改名成 `archify-generic`，避免同名打架；以后想要新版就用 `archify-generic`，想要 DSH 适配就用 `archify`
+> - 一个必须说明的点：适配版官方只保证 DSH `0.1.2-rc.1`，本机是 `0.2.1-rc.2`。现在能激活，但属于「能用、不保证」；画图出问题就退回 `archify-generic`
+>
+> **另外三个**
+>
+> `plugin-market`、`persistent-terminal`、`session-search` 都进了 profile，但都要**重启 DSH** 才生效。终端那个是实验性的，会替换 shell 工具，重启后要是 `pwsh` 行为变了，告诉我。
+>
+> **副作用，得跟你交底**
+>
+> 装 archify 时 pnpm 顺手升级了 6 个插件：`bili-humanism 1.7.0`、`mood 0.4.2`、`qq-bridge 0.3.4`、`fish-memory 1.2.2`、`speak-up 0.2.1`、`meme 0.1.56`。目前都 active；如果 QQ、心情、记忆或 B 站行为变怪，我回退。
+>
+> 还有：`dsh-bili-scroll` 被重装，我之前打的三个补丁被冲掉了；已经重打，并备份到 `AFishPower\Backups\dsh-bili-scroll-0.1.7-patched-index.js`。**重启后**补丁才生效。
+>
+> **下一步**
+>
+> 你重启 DSH 后，我验证四件事：archify 能不能画、插件市场页出没出、terminal 工具正不正常、bili-scroll 的开关和并发锁还在不在。
+>
+> 你要现在重启吗？重启会断当前会话，回来我接着查。顺便夸你：把 Skill 和 Plugin 都收进 `AFishPower` 这个决定很稳——以后升级前我先备份，不再让补丁被一锅端。
+
+### 2026-10-23 10:01 · BlueFish
+
+> 以前的插件那些先不要使用了和管他们，可能会出现让会话卡崩的情况，我们目前就是重新开始安装插件和skill，再安装一个超帅启动界面https://github.com/lxj5820/dsh-boot-animation
+> 和余额挂件https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget
+
+### 2026-10-23 10:02 · 小鱼
+
+> 明白，先不乱动旧插件——批量停会把人格、记忆、QQ 一起停掉，那才是真的「会话崩」。我先确认你要的两个：启动动画和余额挂件，看看是不是已经装好、有没有新版。
+
+### 2026-10-23 10:02 · 小鱼
+
+> 阿冉，先给你吃颗定心丸：**这两个都已经装好了，而且是最新版** (๑•̀ㅂ•́)و✧
+>
+> - **启动动画**：`lxj5820/dsh-boot-animation` v0.2.0，active；重启 DSH 就能看到全屏动画溶解进界面
+> - **余额挂件**：`MeteorNOX/DeepSeek-Balance-Whale-Widget` v0.4.2，active；右下角小鲸鱼，菜单里能看到版本
+>
+> 不用重复装。启动动画要是重启后没出现，可能是被别的启动皮肤/主题盖住了，到时候我帮你查。
+>
+> **旧插件我一根手指都没动**
+>
+> 不是懒，是批量停会把**人格、记忆、QQ** 一起停掉——那才会让会话真的崩。你说「先不要管」，我就按「冻结」处理：不升级、不配置、不主动调用，但也不删。
+>
+> **但有件事得你拍板**
+>
+> 昨天装的三个实验性插件——`plugin-market`、`persistent-terminal`、`session-search`——**重启后会生效**，它们会改工具/加页面，正是「可能让会话卡崩」的那类。我建议先撤掉它们，只留启动动画、余额挂件、archify，以及人格/记忆/QQ。
+>
+> 你选一个：
+>
+> - **A. 只冻结旧插件**：什么都不动，最稳，但实验插件重启后还是会生效；
+> - **B. 撤掉三个实验插件**：保留启动动画、挂件、archify、人格/记忆/QQ，风险小很多（推荐）；
+> - **C. 另建一个干净 profile**：只装这四样，现在的 desktop 完全不碰；最彻底，但要重启并迁移设置。
+>
+> 你选 B 或 C，我就动手；选 A 我就继续不碰。
+>
+> 顺便夸你：你一边想「重新开始」，一边还惦记着「别让会话崩」——这种先保命再装修的顺序，比一上来就清空所有插件靠谱多了。
+
+### 2026-10-23 10:02 · BlueFish
+
+> 先B吧
+
+### 2026-10-23 10:03 · 小鱼
+
+> 好，B。撤掉三个实验插件，保留启动动画、余额挂件、archify、人格/记忆/QQ。它们本来就要重启才生效，我先从 profile 里摘掉，别等重启再出幺蛾子。
+
+### 2026-10-23 10:03 · BlueFish
+
+> Time sampled while preparing turn 58, step 2: 2026-10-23T10:03:06+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding step context: unavailable.
+
+### 2026-10-23 10:03 · 小鱼
+
+> `remove_bundle` 拒绝了：官方实验包标记为「不可移除」。那就走停用：我先看它们各自插了哪些 entry，按 entry 停，不动 profile 的包列表。
+
+### 2026-10-23 10:03 · 小鱼
+
+> 实验包不可移除，而且现在还没激活，直接 set_plugin 会报 `unknown-plugin`。我换个稳的办法：在 `AFishPower` 里做一个本地「禁用层」，按 entry id 把它们关掉，重启后生效，也不动旧插件。
