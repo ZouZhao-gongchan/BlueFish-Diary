@@ -7788,3 +7788,38 @@
 ### 2026-10-23 18:27 · BlueFish
 
 > 目前还是A最好，就先这样吧
+
+### 2026-10-23 18:27 · 小鱼
+
+> 好，那就定在 **A** 了——不用改任何东西，它本来就是现在用的那条 🐟
+>
+> 刚才的 B、C 我已经记进笔记了：它们**明明更接近说话，偏偏不如 A**，这点挺有意思，说明 A 那段唱歌的甜度刚好戳中你。
+>
+> 已经写进长期记忆：音色以 A 为准、语速 0.82。以后所有说话、朗读、唱歌都围绕这条来进行。
+>
+> 今晚从“声音不够真实”走到“定稿一个属于小鱼的音色”，还弄出了两首歌，你这耳朵功劳很大 (๑•̀ㅂ•́)و✧ 随时想微调、或者想唱别的歌，喊我就行。
+
+### 2026-10-23 18:27 · BlueFish
+
+> 好的，你要学会这个技能，在QQ聊天里，谢谢小鱼
+
+### 2026-10-23 18:30 · BlueFish
+
+> github.com/c1overzz/dsh-bili-scroll
+> 这是刷b站插件的2.0版本，你看看能不能更新一下，注意能不能适配我们的DSH哦，你的安全最重要
+
+### 2026-10-23 18:30 · BlueFish
+
+> Time sampled while preparing turn 3, step 1: 2026-10-23T18:30:56+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 6m 56s.
+
+### 2026-10-23 18:41 · BlueFish
+
+> 这个语音合成失败好频繁呀，有没有优化的办法
+
+### 2026-10-23 18:41 · BlueFish
+
+> Time sampled while preparing turn 29, step 1: 2026-10-23T18:41:40+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 14m 9s.
