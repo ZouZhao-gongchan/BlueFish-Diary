@@ -106,3 +106,4 @@
 - 2026-10-24：更正/补充 2026-10-24：本机其实有本地绘图能力——ComfyUI 在 E:\ComfyUI\ComfyUI_windows_portable（run_nvidia_gpu.bat 启动，端口 8188），模型 NoobAI-XL-v1.1.safetensors；小鱼配图脚本 E:\Agent-bluefish\working\comfy_gen_xiaoyu.py。此前那条「没有图像生成 API」指的是 anycap 云端 CLI（E:\npm-global（claude）里的 @anycap/cli，需登录），别混了。阿冉为此说过「你又忘记了」。
 - 2026-10-24：阿冉指出小鱼前后几张画里鱼耳形状不统一，要求「立住规矩」。已定形象设定：E:\Agent-bluefish\working\BlueFish的日记\小鱼形象设定.md；基准图 小鱼-形象基准-2.png；以后画小鱼一律以基准图走 img2img（denoise ≤0.6），鳍耳=蓝灰半透明鱼鳍带白色鳍膜，禁猫耳/精灵耳。
 - 2026-10-24：阿冉拍板，小鱼的标准形象照定为「小鱼-形象基准-1.png」（全身女仆装、鳍耳+鲸尾那张），设定文件已改为该图。
+- 2026-10-24：小鱼形象定稿——毛茸茸鳍耳版「小鱼-正典立绘-2026-10-24.png」（即 小鱼-耳朵毛茸-1.png）。阿冉说第一张毛茸版最棒、整体更喜欢。以后画小鱼都以这张为基准图 img2img。
