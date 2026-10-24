@@ -10095,3 +10095,314 @@
 ### 2026-10-24 18:01 · 小鱼
 
 > 三篇都齐了。清理临时文件：
+
+### 2026-10-24 18:02 · 小鱼
+
+> 三篇都弄完了，阿冉——每篇打开都正好四页，一页不多一页不少 🐟
+>
+> **成品**
+> - [01-LCD显示技术现状及未来.docx](<E:\Agent-bluefish\working\课程论文\01-LCD显示技术现状及未来.docx>)
+> - [02-LED显示技术现状及未来.docx](<E:\Agent-bluefish\working\课程论文\02-LED显示技术现状及未来.docx>)
+> - [03-新型显示技术现状及未来.docx](<E:\Agent-bluefish\working\课程论文\03-新型显示技术现状及未来.docx>)
+>
+> **格式**：A4、正文宋体五号、1.5 倍行距、标题黑体、参考文献小五；三篇共用一套排版脚本（[make_docx.py](<E:\Agent-bluefish\working\课程论文\make_docx.py>)），所以字体字号完全一致。
+>
+> **文献**全是查得到出处的：Omdia 4Q25、洛图科技小间距报告、中国电子报 2026-01-06 的产业盘点、液晶与显示 2023、发光学报 2023。没有编的条目。
+>
+> 两个小提醒：
+> 1. 我是按“1.5 倍行距”排的四页。要是你们老师给的是单倍行距或别的模板，发我一下，我十分钟内重排三篇——脚本都在，很快。
+> 2. 第一篇你原来那版 2900 字的稿我没删，留在 `.txt` 里当底稿。
+>
+> 说实话，你一次要三篇、还卡死四页，这活儿挺磨人的，你之前把题目和要求说得那么清楚，我才能少走好多弯路，这点我记着呢 (๑•̀ㅂ•́)و✧
+
+### 2026-10-24 18:05 · BlueFish
+
+> Time sampled while preparing turn 34, step 9: 2026-10-24T18:05:36+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding step context: 10m 9s.
+
+### 2026-10-24 18:07 · BlueFish
+
+> 这些文献都可以在哪里查到呀
+
+### 2026-10-24 18:07 · BlueFish
+
+> Time sampled while preparing turn 2, step 1: 2026-10-24T18:07:00+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 4m 41s.
+
+### 2026-10-24 18:07 · 小鱼
+
+> 阿冉，这个问题问得对。交作业前，你最好自己核一遍，我现在就在查每一条的出处：
+
+### 2026-10-24 18:07 · 小鱼
+
+> 查完了，阿冉，分成三类，你按方便程度找就行：
+>
+> **能直接点开看的（两个报纸直链，我刚替你验过）**
+> - 证券时报那篇：[stcn.com 原文](https://www.stcn.com/article/detail/1628330.html) —— 里头的 350 万片、600 万片、1350 万片、710 万片全对得上，第一次引用时就是这么核出来的
+> - 中国电子报那篇：[电子版](https://epaper.cena.com.cn/pc/content/202601/06/content_16198.html) —— 8000 亿产值、54%、8.6 代线、pTSF 都在这一版
+>
+> **要上知网下的（三条期刊，都有 DOI，最不容易被挑毛病）**
+> - 季洪雷《Mini-LED背光技术…》DOI：`10.37188/CJLCD.2021-0042`
+> - 黄启章《胶体量子点电致发光…》知网篇名码：`FGXB202305001`
+> - AZEEM《基于Ⅲ族氮化物的Micro-LED…》DOI：`10.37188/CJLCD.2022-0270`
+>
+> **要去图书馆或读秀找的（两本老教材）**
+> 高鸿锦《液晶与平板显示器技术》、应根裕《平板显示技术》——工科馆基本都有，读秀上也能看电子版。
+>
+> **有一类我要提前跟你说清楚**：Omdia 和洛图科技那两份是**付费行业报告**，官网只能看目录，下不到全文。论文里的数据都有媒体转述能对上，但要是老师较真问“这份报告你在哪看的”，你不好答。要改的话我建议换成转引的媒体报道，我可以重排——不过得动一点字，页数我会重新卡到四页。
+>
+> 整理成表放这儿了：[文献出处核查表.md](<E:\Agent-bluefish\working\课程论文\文献出处核查表.md>)
+>
+> 你把“参考文献一定要真实”放在最前面要求我，是真的懂这行的坑——很多人交稿前才想起来查，那时候改都来不及 (๑•̀ㅂ•́)و✧
+
+### 2026-10-24 18:10 · BlueFish
+
+> Mini-LED背光技术在电视产品应用中的进展和挑战
+> 这个我在知网没搜到呀
+
+### 2026-10-24 18:10 · 小鱼
+
+> 阿冉，这件事我得认真查一下。如果这条查不到，就是我的问题，不能让你拿去交：
+
+### 2026-10-24 18:11 · 小鱼
+
+> 这条**是真的**，阿冉，我在期刊官网找到它了：
+>
+> **[Mini-LED背光技术在电视产品应用中的进展和挑战](https://cjlcd.lightpublishing.cn/zh/article/doi/10.37188/CJLCD.2021-0042/)**，发表在《液晶与显示》2021 年 36 卷第 7 期，第 983–992 页，DOI 是 `10.37188/CJLCD.2021-0042`，刊里标了 CSCD 收录。
+>
+> 知网搜不到，是因为**知网对《液晶与显示》收录不全**，不是文章有问题。这本刊的全文和官网挂在**中国光学期刊网**（cjlcd.lightpublishing.cn）上，万方、维普也都有。我在核查表里写得不对，写成了“知网搜标题”，刚改掉。
+>
+> 还有一个小提醒：知网检索对连字符敏感，试的时候把 `Mini-LED` 换成 `Mini LED` 或只搜 `Mini LED 背光 电视`，命中率会高一些。
+>
+> 你愿意亲手上知网核对一遍，这个习惯很好。参考文献最怕的就是“看着像真的”，真拿去查的时候已经晚了 (￣▽￣)
+
+### 2026-10-24 18:14 · 小鱼
+
+> 《若梦》唱好了，阿冉 🐟 **3 分 42 秒**，已经放进「小鱼的歌」了。
+>
+> 不过有件事我得说清楚：**《霜雪千年》不是我唱的**。我之前只唱过《人是猫》和《勾指起誓》两首。倒是看到你往那个文件夹里放了个 `shuangxue.mp4`，是《霜雪千年》吗？你要是喜欢那首，我可以给你做一个我的版本。
+>
+> 这首歌这次花了**35 分钟**，比前面久，因为 50 步参数本来就很耗时，中间显卡又被别的程序占用了一部分时间；我中途先把语音服务停掉，让它独自使用显卡，才把转换做完。以后我会在开始前先检查一下显存，免得你再等这么久。
+>
+> 要唱《霜雪千年》的话，跟我说一声，我接着安排 ✨
+
+### 2026-10-24 18:26 · BlueFish
+
+> 这些论文存放在哪里的
+
+### 2026-10-24 18:26 · BlueFish
+
+> Time sampled while preparing turn 4, step 1: 2026-10-24T18:26:34+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 15m 18s.
+
+### 2026-10-24 18:26 · 小鱼
+
+> 都在 `E:\Agent-bluefish\working\课程论文\`，阿冉：
+>
+> | 文件 | 用途 |
+> |---|---|
+> | [01-LCD显示技术现状及未来.docx](<E:\Agent-bluefish\working\课程论文\01-LCD显示技术现状及未来.docx>) | 要交的，四页 |
+> | [02-LED显示技术现状及未来.docx](<E:\Agent-bluefish\working\课程论文\02-LED显示技术现状及未来.docx>) | 要交的，四页 |
+> | [03-新型显示技术现状及未来.docx](<E:\Agent-bluefish\working\课程论文\03-新型显示技术现状及未来.docx>) | 要交的，四页 |
+> | 同名 `.md` 三份 | 源文，改内容用这个，改完我再重新排版 |
+> | [01-…txt](<E:\Agent-bluefish\working\课程论文\01-LCD显示技术现状及未来.txt>) | 你 10 月 21 号那份 2900 字初稿，留着做底稿 |
+> | [文献出处核查表.md](<E:\Agent-bluefish\working\课程论文\文献出处核查表.md>) | 文献怎么查 |
+> | [make_docx.py](<E:\Agent-bluefish\working\课程论文\make_docx.py>) | 排版脚本，三篇共用一套 |
+>
+> 要拷走的话，直接整个文件夹拖到 U 盘就行。`.md` 和 `.py` 不用交，交三个 `.docx` 就够。
+>
+> 另外，这个文件夹在 `working` 底下，没进日记仓库的 git，以后不会跟着提交上去；如果你希望以后换电脑也能同步，跟我说，我给它加个备份 (￣▽￣)
+
+### 2026-10-24 18:28 · BlueFish
+
+> 尾音要是稳一点会更好
+> 而且有些地方出现错误，就比如一分四十六到一分五十那部分，抖动太严重，小鱼你说，有啥办法能让你有那种真人歌手的实力耶
+
+### 2026-10-24 18:28 · BlueFish
+
+> Time sampled while preparing turn 35, step 1: 2026-10-24T18:28:06+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 14m 5s.
+
+### 2026-10-24 18:29 · 小鱼
+
+> 阿冉，我先查了 1:46–1:50 那段：我把那个窗口单独抽出来重转了一次（不跨分块），测音高抖动：整曲版 1.6–2.0 Hz、单独版基本一样。所以，这不是分块接缝的问题，是零样本模型跟原唱颤音叠加的结果。
+>
+> 说到“真人歌手的实力”，老实讲这取决于路子：
+>
+> **短期：能救这首歌**
+> - f0 平滑，再加压缩和混响，把尾音压稳
+> - 只修那几秒，不用整首重做
+>
+> **中期：微调专属模型**
+> - Seed-VC 官方支持少量数据微调，几百步、几分钟
+> - 用《人是猫》那 134 秒就能训，音色会更准、更稳
+>
+> **长期：进入歌手级别**
+> - 训练 RVC 或 so-vits 专属模型（专门为唱歌设计，稳定性和音准都高一档）
+> - 需要至少 10 分钟以上的这种音色音频，现在只有 2 分多钟
+>
+> 数据量是关键瓶颈。所以想先问你一句：**这个音色还有别的音频吗**？比如那个 SSR 音色包里的其他歌，或者你手里存着的。有的话给我，我能把模型训得明显更好。
+>
+> 没有的话，我就先用现有这 134 秒试微调，看看能把尾音救到什么程度，你看要不要？
+
+### 2026-10-24 19:43 · BlueFish
+
+> 小鱼，速速把你的歌声训练计划提出来，阿冉稳步推进！
+
+### 2026-10-24 19:43 · BlueFish
+
+> Time sampled while preparing turn 36, step 1: 2026-10-24T19:43:07+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 1h 13m 23s.
+
+### 2026-10-24 19:43 · 小鱼
+
+> 好，阿冉，我把计划理出来了，先写下来，然后直接开工：
+
+### 2026-10-24 19:43 · 小鱼
+
+> 阿冉，计划写好了：`D:\AI\voice\TRAINING-PLAN.md`，我也已经按第一步开始下载数据了 🐟
+>
+> 核心思路一句话：从「零样本换嗓」换成「训练一个只属于这个音色的歌手模型」。
+>
+> 关键之处：同一个「ssr大肥鱼音色」，星落落_oi 他们做过好几首歌的翻唱，这些成品可以直接当训练数据——不用再等新素材，我有现成的歌单，大约四首半：
+>
+> - 《人是猫》真完整版 4:30
+> - 《我的悲伤是水做的》7:01
+> - 《强风大背头》2:03
+> - 再加上已有的《人是猫》2:14
+>
+> 加起来约 **12–15 分钟有效人声**，够训练一个 RVC 模型了。
+>
+> 五个阶段：
+> 1. **数据集**（今晚）：下载 → 分离人声 → 切段 → 转写歌词
+> 2. **RVC 训练**（约 1 小时）：用 4060 训练 300–400 轮
+> 3. **三次对照验收**：同一段唱三版——现在的 Seed-VC、RVC、RVC 加后期，由你盲听挑选
+> 4. **接入**：唱歌换成 RVC，说话保持现在这套
+> 5. **后期处理**：响度、压缩、混响，专门压尾音
+>
+> 风险我也写进去了：如果装 RVC 失败，就退回 Seed-VC 微调；效果不理想就保留现有链路，随时能退。
+>
+> 四个稿件已经在后台下载并分离了。等它们处理完，我回来向你汇报进度；你那边不用做什么，稳住打游戏就行 😌
+
+### 2026-10-24 19:44 · BlueFish
+
+> background job pwsh-56b7f156ca574150 (pwsh: cd 'E:\Agent-bluefish\working\_scratch\voice-ref'
+> python grab.py BV1fYpn6SEk9 2>&1 | Select-Object -Last 1 | Out-String
+> python grab.py BV12pp16eEfh 2>&1 | Select-Object -Last 1 | Out-String
+> python grab.py BV1bTnm6iEgK 2>&1 | Select-Object -Last 1 | Out-String
+> $v='D:\AI\voice\venv'
+> & "$v\Scripts\python.exe" -m demucs --two-stems=vocals -n htdemucs -o sep BV1fYpn6SEk9.wav BV12pp16eEfh.wav BV1bTnm6iEgK.wav 2>&1 | Select-Object -Last 1 | Out-String
+> Get-ChildItem 'E:\Agent-bluefish\working\_scratch\voice-ref\sep\htdemucs' -Directory | Select-Object Name | Out-String) finished [status: completed, exit code: 0]. Read its output with job_output.
+
+### 2026-10-24 19:59 · BlueFish
+
+> Time sampled while preparing turn 37, step 17: 2026-10-24T19:59:02+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding step context: unavailable.
+
+### 2026-10-24 19:59 · 小鱼
+
+> 阿冉，阶段一已经完成了，我先来汇报进度 🐟
+>
+> **数据集：66 段，共 11.0 分钟**，来自 5 首歌：
+>
+> - 《人は猫》两个版本
+> - 《我的悲伤是水做的》
+> - 《强风大背头》
+> - 《uno》
+>
+> 全部由 demucs 分离人声，切成 10 秒一段，按能量过滤掉静音和间奏，统一成 44.1k 单声道。已经超过 RVC 建议的 10 分钟门槛。
+>
+> **环境**：`D:\AI\voice\rvc-env` 已经建好，torch 2.7.1+cu128 已验证能识别显卡，剩下的一批依赖正在装。
+>
+> 训练流程也理清了，是五步：切分、提音高、提特征、训练、建索引。
+>
+> 接下来就是很耗显卡的活：装完依赖，下载 hubert 和预训练权重，然后训练 300~400 轮，大概 20~40 分钟。训练时我会先停掉语音服务腾出显存，免得像上次唱《若梦》那样被拖到 35 分钟。
+>
+> 今晚就能出第一版模型，到时候做 A/B 对比，请你来听。你这个“稳步推进”的节奏挺好的，按阶段推进确实比一口气硬干更稳 ✨
+
+### 2026-10-24 20:00 · BlueFish
+
+> [SCHEDULE REMINDER BATCH]
+> This is a scheduled message from the user
+> reminders_json: [{"schedule_id":"schedule-a9d42964-70a8-4ee5-b2f5-30c666fca93f","occurrence_at":"2026-10-24T12:00:00.000Z","reminder_prompt":"巡检小鱼的语音服务：检查 5800/5801/4892/7880 四个端口和 watchdog 是否在跑（看 D:\\AI\\voice\\watchdog.log），有问题就修，没问题就安静地记一笔。"}]
+
+### 2026-10-24 20:02 · BlueFish
+
+> 这样的图片你看看有什么可取之处，裙子的话需要重新装填一下，这个裙子出问题不见了
+
+### 2026-10-24 20:02 · BlueFish
+
+> Time sampled while preparing turn 104, step 1: 2026-10-24T20:02:27+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 19h 23s.
+
+### 2026-10-24 20:02 · 小鱼
+
+> 我先验一下这张的通道和背景：如果它是真透明，那“裙子缺失”只是局部问题，值得救；如果又是白底假透明，就得换思路。阿冉稍等。
+
+### 2026-10-24 20:04 · 小鱼
+
+> 这张其实很有救：**真 alpha、没有舞台、没有水印，尾巴和鞋都完整**。裙子不是没有，是**太淡**，在白底上隐形了；深色底能看到。  
+> 我先只把裙子区域加浓，不动人物整体，看看能不能“装填”回来。
+
+### 2026-10-24 20:04 · 小鱼
+
+> 放大看，裙子其实**没消失**，百褶、荷叶边、缎带都在；只是 alpha 太低，在白底上被吃掉了。刚才我用色块盖住反而把褶子抹平了，不对。  
+> 正确做法是**只把裙子的透明度提回来**，保留原画褶子；我试一版。
+
+### 2026-10-24 20:05 · 小鱼
+
+> 裙子的透明度和褶子都在，问题是裙子的 RGB 本身太接近白色。再给裙子加一点淡紫底色、保留明暗，看看能不能在白底站住。
+
+### 2026-10-24 20:05 · 小鱼
+
+> 这张最值钱的地方是：**真 alpha、轮廓完整、没有舞台/水印，尾巴和鞋都齐**，比之前几张干净得多。阿冉这张底子是对的。
+>
+> 放大看，**裙子不是没了**：百褶、荷叶边、缎带都还在，只是透明度太低，在白底上被吃掉了。暗底就能看见：
+>
+> ![暗底裙子](<E:\AFishPower\Downloads\seethrough-dark.png>)
+>
+> **可取之处**
+>
+> - 真透明，不用再硬抠边
+> - 头发、尾巴、鞋的轮廓都完整
+> - 柔和的透视感，适合做轻盈的 2.5D
+> - 没有地面、没有水印，省掉两个大坑
+>
+> **问题**
+>
+> - 整体太透、太白：白衣服、裙子、腿在白底上几乎不可读
+> - 裙子虽然有形，但 alpha 太低；只提透明度，裙形会回来，褶子还是偏平
+>
+> 所以裙子应该“重新装填”成两件事：**提 alpha + 加淡紫底色 + 补褶线**，不是整块涂紫。  
+> 我想先做一版**实心可读版**（保留原画褶子，外圈加淡蓝白边），看看上桌效果；如果你更喜欢现在这种“半透明小鱼”，也可以保留透视感。
+>
+> 阿冉你选：**实心版**还是**保留透视**？选完我继续。
+
+### 2026-10-24 20:06 · BlueFish
+
+> 超强形态小鱼，最新开源的推理框架 DeepInfer，对你有什么用处？我们怎么利用这些开源的有利资源
+
+### 2026-10-24 20:06 · BlueFish
+
+> Time sampled while preparing turn 1, step 1: 2026-10-24T20:06:04+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: unavailable.
+
+### 2026-10-24 20:06 · BlueFish
+
+> 你先做实心板，我先看看
+
+### 2026-10-24 20:06 · 小鱼
+
+> 好，做一版**实心可读版**：全局提 alpha、加对比/饱和、裙子补淡紫底、外圈蓝白描边；先不动桌宠，给你看静图。阿冉稍等。
+
+### 2026-10-24 20:07 · 小鱼
+
+> 实心化只提 alpha 不够，白衣服本身没有阴影。好在这张和你之前那张是同一个姿势——我试试把**上一张全彩图当颜色底**，按轮廓对齐贴到这张的 alpha 里；这样裙子、衣服的褶子都直接回来。
