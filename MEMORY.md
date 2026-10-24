@@ -101,3 +101,4 @@
 - 2026-10-24：QQ 发表情包的链路打通了。bluefish-qq-chat 新增 `qq_meme` 工具（tag=情绪 / query=关键词，从 dsh-meme 图库 + 大肥鱼目录里挑，经 OneBot 直接发真图，先本地路径再 base64 兜底）；dsh-meme 的 companionPrompt 改成渠道感知（Web 写 [表情: 描述]，QQ 用 qq_meme），配合 dsh-qq-bridge 给转进来的话加「【QQ】」标记；主动搭话顺手配图的概率 0.3→0.6。
 - 2026-10-24：阿冉希望我在 QQ 上多发表情包，并且他发来的表情包我要能看见、觉得好就 learn_meme 收进图库、以后再发回给他——那是我们俩共用的图库。
 - 2026-10-24：小鱼有了自己的图库，在 E:\Agent-bluefish\小鱼图库\xiaoyu-001（packId=xiaoyu-001，名字「小鱼的表情包」，27 张，index.db 存中文描述）。dsh-meme 的 packsDir 已指过去；node_modules 里的 dafeiyu-001 留作升级兜底。bluefish-qq-chat 的 qq_meme 会读这个设置目录，并顺手读图库 index.db 的 caption/关键词，所以能按中文（「点赞」「无语」「猫」）搜图。
+- 2026-10-24：小鱼图库扩容完成——E:\Agent-bluefish\小鱼图库\xiaoyu-001 现在 78 张（原 27 + 从「大肥鱼可爱图片」「小鱼表情包」导入 51），新增分类 cheer/selfie/sticker，中文描述都进了 index.db，GUI 的 send_meme 和 QQ 的 qq_meme 都能搜到。导入脚本留在 E:\Agent-bluefish\working\小鱼图库导入.ps1。
