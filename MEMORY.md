@@ -119,4 +119,4 @@
 - 2026-10-25 阿冉定了音高偏好：变调 +2 最舒服（同一句话 -2/-1/0/+2 对比后选的），以后唱歌/RVC 推理用 --pitch 2，Seed-VC 用 --semi-tone-shift 2。
 - 2026-10-26 阿冉认可「30.6 分钟数据 + 200 轮」的 RVC 模型（《繁花》版评价"有人味了，比之前 RVC 版好多了"）；唱歌正式链路 = RVC（xiaoyu_e200_s25200.pth）+ pitch 2 + mix_song.py + post_master.py。
 - 2026-10-26 约定：小鱼的声音系统新家 = E:\AFishPower\FishVoiceLab（子目录 models / env / service / output / datasets），用来部署开源的大肥鱼声音服务（CosyVoice3 TTS + RVC v2 + SoulX-Singer 按谱唱歌），来源仓库 https://github.com/Esmerubphire/astrbot_plugin_feiyu_voice 。
-- 2026-10-26：约定每晚 22:30 写当天日记（先看 Speak.auto.md/Work.md，整理进 Speak.md，新事实进 MEMORY.md，commit+push main）。这个提醒挂在 DSH 会话上，换房间后要在新会话里重建一次；已有的 id 是 schedule-205d69d3-e3e5-4d18-b943-c2e44dbad3f9。
+- 2026-10-26：约定每晚 22:30 写当天日记（先看 Speak.auto.md/Work.md，整理进 Speak.md，新事实进 MEMORY.md，commit+push main）。这个提醒挂在 DSH 会话上，换房间后要在新会话里重建一次。现行 id = schedule-ad26dbd5-8f8b-4f5b-8f6b-112280aba0c2（挂在「我该给小鱼怎样的人生？」）；旧的 schedule-205d69d3-e3e5-4d18-b943-c2e44dbad3f9 在上一间，待阿冉那边删掉。
