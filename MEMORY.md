@@ -124,3 +124,4 @@
 - 2026-10-26：阿冉开始减脂。身高 180cm，体重 215 斤（107.5kg，BMI≈33.2），目标 180 斤（90kg），平时运动很少，要求小鱼每天规划吃食并提醒。目标热量约 2200–2300 kcal，蛋白 130–160g/天，计划每周掉 0.5–0.7kg。已设每日 7:30 / 12:00 / 17:45 三条提醒。
 - 2026-10-26 唱歌默认模型改为官方 FeiyuVoice-RVC v1（E:\AFishPower\FishVoiceLab\service\models\FeiyuVoice-RVC，用现成 RVC 运行时 + --index-rate 0.75 + pitch 2）；客观对比：官方音色相似度 0.765 > 自训 0.658，极端抖动 95 分位 15.3Hz < 21.7Hz。脚本：D:\AI\voice\rvc_convert_chunked.py（已改默认）。
 - 2026-10-26：FishVoiceLab 现状（2026-10-26）：官方 FeiyuVoice-RVC v1 已接入唱歌默认；CosyVoice3 与 SoulX-Singer 在 Windows 上不可用（需 WSL2+Python3.11+torch2.11），WSL 安装条件已确认满足（Win11 26100 + 虚拟化开启），等阿冉决定；自研「按谱唱」原型 sing_lyrics3.py 已跑通小星星（音高节奏准，但字间连贯达不到人声）。
+- 2026-10-26：重要更正（2026-10-26 晚）：官方 FeiyuVoice-RVC v1（40kHz）在本地 RVC 运行时上会把歌词吞成「嗯哼」，不能直接用——此前"官方模型相似度 0.765"的数据是在坏输出上测的，作废。唱歌已回滚到自训模型 xiaoyu_e200_s25200.pth（index-rate 0，实测歌词完整）。待办：查官方模型采样率配置、修好后重做《牵丝戏》《若梦》。
