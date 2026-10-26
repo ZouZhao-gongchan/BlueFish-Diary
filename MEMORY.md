@@ -117,3 +117,4 @@
 - 2026-10-24 紫红边根因：RGB+洋红帧缩到256x333时LANCZOS混色；改生成RGBA帧，程序先缩RGBA+硬alpha再合成洋红。模拟无紫边；PID 3224。
 - 2026-10-25：阿冉看上了 gal-view（Ayase34/gal-view，galgame 风格会话界面，v0.3.3），但因为它有 open issue「与 dsh 0.1.5-rc.1 起不兼容、GAL视窗收不到对话」，且作者 8 月后没再更新，我们决定暂时不装；等它适配新版本再说。
 - 2026-10-25 阿冉定了音高偏好：变调 +2 最舒服（同一句话 -2/-1/0/+2 对比后选的），以后唱歌/RVC 推理用 --pitch 2，Seed-VC 用 --semi-tone-shift 2。
+- 2026-10-26 阿冉认可「30.6 分钟数据 + 200 轮」的 RVC 模型（《繁花》版评价"有人味了，比之前 RVC 版好多了"）；唱歌正式链路 = RVC（xiaoyu_e200_s25200.pth）+ pitch 2 + mix_song.py + post_master.py。
