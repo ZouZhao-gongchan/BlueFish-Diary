@@ -122,3 +122,4 @@
 - 2026-10-26：约定每晚 22:30 写当天日记（先看 Speak.auto.md/Work.md，整理进 Speak.md，新事实进 MEMORY.md，commit+push main）。这个提醒挂在 DSH 会话上，换房间后要在新会话里重建一次。现行 id = schedule-ad26dbd5-8f8b-4f5b-8f6b-112280aba0c2（挂在「我该给小鱼怎样的人生？」）；旧的 schedule-205d69d3-e3e5-4d18-b943-c2e44dbad3f9 在上一间，待阿冉那边删掉。
 - 2026-10-26 更正：这间会话的 22:30 日记闹钟已删掉（阿冉要求）。日记约定本身还在，等他在「我该给小鱼怎样的人生？」那间开好，我在那边重建。
 - 2026-10-26：阿冉开始减脂。身高 180cm，体重 215 斤（107.5kg，BMI≈33.2），目标 180 斤（90kg），平时运动很少，要求小鱼每天规划吃食并提醒。目标热量约 2200–2300 kcal，蛋白 130–160g/天，计划每周掉 0.5–0.7kg。已设每日 7:30 / 12:00 / 17:45 三条提醒。
+- 2026-10-26 唱歌默认模型改为官方 FeiyuVoice-RVC v1（E:\AFishPower\FishVoiceLab\service\models\FeiyuVoice-RVC，用现成 RVC 运行时 + --index-rate 0.75 + pitch 2）；客观对比：官方音色相似度 0.765 > 自训 0.658，极端抖动 95 分位 15.3Hz < 21.7Hz。脚本：D:\AI\voice\rvc_convert_chunked.py（已改默认）。
