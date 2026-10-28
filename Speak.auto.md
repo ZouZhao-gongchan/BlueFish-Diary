@@ -16819,3 +16819,136 @@
 ### 2026-10-28 21:11 · BlueFish
 
 > 那我压缩吧
+
+### 2026-10-28 21:11 · 小鱼
+
+> 可以，阿冉——**你输入 `/compact` 就行** 🐟
+>
+> 压缩前我已经把该保存的内容存好了：
+>
+> - **MEMORY.md**：已把最近的状态写进去（官方模型吞词、回滚自训、待办清单）
+> - **DEPLOY-STATUS.md**：FishVoiceLab 的目录、命令、卡住的步骤都记着
+>
+> 压缩后我重新开工，会知道你记挂的四件事：
+>
+> 1. 修官方模型吞歌词的问题（采样率 40000 在作怪）
+> 2. 修好后重做《牵丝戏》《若梦》
+> 3. WSL 装不装，等你决定
+> 4. 说话和唱歌仍然各走一条链路：说话是 F5 + Seed-VC，唱歌是自训 RVC + 后期
+>
+> 你那句 `/compact` 发出去，我会短暂“断片”，但该记的都记着 😌
+
+### 2026-10-28 21:12 · BlueFish
+
+> 按顺序清吧
+
+### 2026-10-28 21:12 · BlueFish
+
+> This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.
+>
+> <compacted-summary>
+> ## Primary Request and Intent
+> - The user (阿冉 / BlueFish) originally asked: "小鱼，我们现在的任务就是让你的声音更加真实，还要学会唱歌" (make the assistant's voice more real, and learn to sing).
+> - The assistant is "小鱼" (a persona: a fish living in the computer, calls him 阿冉, short colloquial Chinese with at most one kaomoji per message).
+> - Evolution: desired voice timbre = the "ssr大肥鱼音色" heard on Bilibili (e.g. BV1PPYM6EEUR, BV1XXHD6sEe7, BV1cbH56KER3).
+> - Later explicit requests: sing full covers of 《勾指起誓》, 《人是猫》, 《若梦》, 《牵丝戏》, 《繁花》; make singing smoother ("尾音要是稳一点会更好", "1:46–1:50 抖动太严重", "歌词糊嘴", "机械声太足"); "走1和2的路线吧" (expand dataset + post-processing chain); "先并行尝试，我们的核心准则也是无限进步"; then "先搞1吧" / "加个游戏检测吧" / "先不急，我们先听一下你更新过后唱的歌".
+> - Currently: user chose to compact the session after noting "这一轮费用居然要七毛钱吗" and "这新一轮要六毛?".
+>
+> ## Key Technical Concepts
+> - TTS voice pipeline: F5-TTS (text→speech, 24 kHz) → Seed-VC (voice conversion, 22.05 kHz VC mode) for talking.
+> - Singing: RVC v2 (48 kHz trained model / 40 kHz official model) with `infer.cli`, f0 via RMVPE, pitch shift (user approved `--pitch 2`).
+> - demucs `htdemucs` for vocal/instrumental separation.
+> - pyworld (harvest/cheaptastic analysis-resynthesis), faster-whisper (word timestamps), resemblyzer (speaker embeddings), librosa (pyin pitch jitter).
+> - Custom "sing-by-score" prototype: F5 → whisper word alignment → per-character pitch remap to MIDI notes → crossfade → RVC.
+> - Cordis/DSH plugin architecture; local plugins in `E:\Agent-bluefish\working\bluefish-*`; DSH profile at `%USERPROFILE%\.dsh\profiles\desktop` (real path `E:\Agent-bluefish\Save\dsh-home`).
+> - Machine: Windows 11 26100, RTX 4060 Laptop 8 GB, Python 3.12 at `D:\AI\py312`, multiple venvs. No WSL installed (virtualization is on).
+> - Network: `github.com` hosts entries point to 127.0.0.1 (blocked), but SSH to GitHub works. `hf-mirror.com`, `pypi.org`, `mirrors.pku.edu.cn`, `mirrors.nju.edu.cn/pytorch/whl/cu128`, `mirror.sjtu.edu.cn/pytorch-wheels/cu126` all reachable. TLS requires `truststore` injection in some venvs.
+>
+> ## Files and Code
+> - `D:\AI\voice\` — main voice stack.
+>   - `f5_server.py` (port 5800): F5-TTS resident service; `/say` {text, speed=0.82, nfe_step=16}; calls Seed-VC; `_lock`; UTF-8 reconfigure; reads `assets\ref_style.txt` with `utf-8-sig`; uses local checkpoint `D:\AI\voice\models\f5\model_1250000.safetensors`.
+>   - `svc_server.py` (port 5801): Seed-VC resident; `SEEDVC = D:\AI\voice\seed-vc`; `TARGET = D:\AI\voice\assets\target_voice.wav`; `diffusion_steps=16`; f0_condition False; `_lock`; UTF-8.
+>   - `rvc_adapter.py` (4892) and `index_tts_adapter.py` (7880): adapters for `@memef1f1y/dsh-plugin-tts` (DSH reading) — Index-TTS2 mode is the one to select in DSH settings (baseUrl `http://127.0.0.1:7880`).
+>   - `tts_client.py`: QQ voice client (plugin `bluefish-qq-chat` `ttsScript`), calls `:5800/say`, mp3 via imageio_ffmpeg; calls `game_guard.busy()` first, exits 3 if GPU busy, exits 4 on failure (edge-tts fallback removed deliberately).
+>   - `game_guard.py`: VRAM > 6200 MB + non-python process > 1000 MB ⇒ "game busy".
+>   - `cn_text.py`: `normalize()` converts digits/percent/years to Chinese + filters GBK-unencodable chars.
+>   - `mix_song.py`: `<vocal> <instrumental> <out> [vocal_gain_db=3]` → peak 0.95.
+>   - `post_master.py` (v1 chain) and `post_master2.py` (v2: highpass 80, band_gain 250–500 Hz −2 dB, 2.5–5 kHz +3 dB, 9–14 kHz +1.5 dB, deess, compress, reverb wet 0.08, normalize −1 dB).
+>   - `sing_rvc.py`: one-command cover (demucs → RVC → mix → post_master2 → wav+mp3 into `voice\小鱼的歌`).
+>   - `rvc_convert_chunked.py`: 30 s chunked RVC conversion; **currently defaults to self-trained** `assets/weights/xiaoyu_e200_s25200.pth`, `INDEX = ""`, `INDEX_RATE = 0.0`, `PITCH = 2`.
+>   - `rvc_convert_official.py`: same but hardcodes the official FeiyuVoice-RVC v1 model + index (currently produces broken output).
+>   - `sing_by_score.py`: synth "ah" vowels from MIDI notes (`SR = 40000`).
+>   - `sing_lyrics.py` / `sing_lyrics2.py` / `sing_lyrics3.py`: lyric-based pitch remapping prototypes (v3 adds 20 ms crossfade, tail fade, longer last note).
+>   - `start_servers.ps1`, `start_servers.vbs`, `watchdog.ps1` (port + process check, 60 s interval), `watchdog.vbs`, `startup.log`, `watchdog.log`.
+>   - `TROUBLESHOOT.md`: maintenance manual.
+>   - `TRAINING-PLAN.md`: RVC training plan + 8 documented pitfalls + progress.
+>   - `assets\target_voice.wav` (25 s, from BV1XXHD6sEe7 30–55 s), `target_voice_v1_backup.wav` (11.6 s), `target_voice_v2.wav`, `ref_style.wav` (9.2 s F5 style ref), `ref_style.txt`.
+>   - `dataset\wavs` + `dataset\list.txt`: 184 segments / 30.6 min from 13 songs.
+> - `E:\Agent-bluefish\working\_scratch\rvc\` — RVC repo; `logs\xiaoyu\` experiment (G_2333333.pth, D_2333333.pth, 0_gt_wavs, 2a_f0, 2b-f0nsf, 3_feature768, config.json = configs/v2/48k.json, filelist.txt 5 fields); `assets\weights\xiaoyu_e200_s25200.pth`; `assets\pretrained_v2\f0G48k.pth/f0D48k.pth`; `assets\rmvpe\rmvpe.pt`.
+> - `D:\AI\voice\rvc-env` — torch 2.7.1+cu128 + RVC deps (+ torchcrepe, pyworld).
+> - `E:\AFishPower\FishVoiceLab\` — new home: `service\` (70 files from `astrbot_plugin_feiyu_voice/server`), `service\models\FeiyuVoice-CosyVoice3` (7.1 GB), `service\models\FeiyuVoice-RVC` (87 MB: `FeiyuVoice-RVC-v1.pth`, `FeiyuVoice-RVC-v1.index`, `run_rvc.py`, `apply_breath.py`, `configuration.json` sample_rate 40000 v2), `env\service`, `env\cosyvoice` (torch 2.7.1+cu128 + CosyVoice deps + openai-whisper + conformer), `env\cosyvoice-src` (commit 074ca), `env\soulx-src` (cloned, not installed), `output\`, `DEPLOY-STATUS.md`.
+> - `E:\AFishPower\FishVoiceLab\service\runtime_compat\Applio` — patched: added stub `rvc\lib\zluda.py`; downloaded `rvc\models\predictors\rmvpe.pt`, `rvc\models\embedders\contentvec\pytorch_model.bin`, `config.json`.
+> - `E:\Agent-bluefish\working\voice\小鱼的歌\` — deliverables: `小鱼 - 人是猫.wav`, `小鱼 - 勾指起誓.wav`, `小鱼 - 若梦.wav`, `(变调+2 后期)`, `(30分钟模型 后期)`, `(官方模型 后期)` = BROKEN, `(修复版 后期)` = good, `(一键版) (后期)` = BROKEN (official model), `小鱼 - 牵丝戏 (官方模型 后期)` = BROKEN.
+> - `D:\AI\voice\demo\` — many experiments (`pitch_-2/-1/0/2.wav`, `60_tone_A/B/C.wav`, `qxx_mix_p0/p1/p2.wav`, `num_fixed.wav`, etc.).
+> - `E:\Agent-bluefish\working\bluefish-qq-chat\index.js` — `speak()` runs `cfg.python [ttsScript, text, file, voice, rate, pitch]` with 60 s timeout; config file `E:\Agent-bluefish\Save\dsh-home\fish-qq-chat-config.json` (`ttsScript = D:\AI\voice\tts_client.py`, `python = D:\AI\voice\venv\Scripts\python.exe`).
+>
+> ## Errors and Fixes
+> - HuggingFace TLS `CERTIFICATE_VERIFY_FAILED` → `truststore.inject_into_ssl()`; sitecustomize in `D:\AI\voice\venv` sets `HF_ENDPOINT=https://hf-mirror.com`, `HF_HUB_DISABLE_XET=1` (truststore removed from sitecustomize because it broke pip with `RecursionError` in `ssl.py verify_mode`).
+> - HF Xet `401 Unauthorized` on cas-server → `HF_HUB_DISABLE_XET=1`.
+> - torchcodec `libtorchcodec_image.dll` load failure → monkeypatched `torchaudio.load/_save` with soundfile in f5 code.
+> - F5 `'gbk' codec can't encode character '\uff61'` → UTF-8 `reconfigure(errors="replace")` + `cn_text._gbk_safe`.
+> - F5 stuck downloading model because HF cache was wiped → moved model to `D:\AI\voice\models\f5` and pass `ckpt_file=`.
+> - Services die when DSH restarts → `watchdog.ps1` (process + port check, 60 s), startup-folder vbs + HKCU Run entry; watchdog previously double-started f5 during model load (fixed by `Running()` check).
+> - Synthesis failures ("语音合成失败") → root causes: leftover `inference.py` holding VRAM, watchdog duplicate starts, GBK crash; also game (TOTClient ~2.5 GB) competing; added `game_guard.py`; SVC timeout capped at 45 s in `f5_server.say`.
+> - RVC training: `ModuleNotFoundError: No module named 'infer'` → run as `python -m train.preprocess`; `rmvpe` expected at `assets/rmvpe/rmvpe.pt`; filelist needs 5 fields and **no BOM**; f0 files are `<name>.wav.npy`; `ValueError: 44100 SR doesn't match target 48000 SR` → reprocess at 48000; `Parent directory assets/weights does not exist`; **RVC silently resumes from existing `logs/xiaoyu/G_*/D_*.pth`** — must delete them when dataset changes (discovered after a "fake completed" 200-epoch run).
+> - audio-separator installed into main venv upgraded torch/numpy/scipy/librosa and broke F5 (`No module named 'pipeline'`, then pyarrow numpy requirement) → uninstalled, restored torch 2.10.0+cu126 + torchaudio 2.10.0+cu126, removed torchvision, numpy 2.2.6, scipy 1.17.1, librosa 0.10.2; created separate `D:\AI\voice\sep-env` (audio-separator there still fails on `raw.githubusercontent.com` because hosts blocks GitHub).
+> - CosyVoice3 on Windows: loads fine but every inference dies at `hifigan/f0_predictor.py` → `convolution.py CausalConv1d` with `RuntimeError: Calculated padded input size per channel: (3). Kernel size: (4)` — unresolved; official requirements are WSL2 + Python 3.11 + torch 2.11.0+cu128.
+> - **Official FeiyuVoice-RVC v1 (40 kHz) swallows lyrics** in local runtime: output transcribes as "嗯嗯嗯嗯"/"哼哼" while self-trained 48 kHz model gives correct text. The earlier reported "official similarity 0.765 vs self 0.658" is INVALID. Singing default rolled back to `xiaoyu_e200_s25200.pth`.
+> - PowerShell `Set-Content -Encoding utf8` corrupted Chinese source files (BOM/encoding) multiple times → always edit with write/edit tools, never Set-Content.
+> - `& "$v\Scripts\python.exe'` quote-typo PowerShell parse errors → use double quotes consistently.
+> - `present` failed with `牽` (traditional) vs `牵` filename → use exact simplified names.
+>
+> ## Pending Jobs
+> - Fix official RVC model (40 kHz) lyric-swallowing: compare `configuration.json` (`sample_rate: 40000`) with `infer.cli` model loading; likely needs Applio runtime (`run_rvc.py` path missing `rvc/lib/predictors`, `torchcrepe` installed, `zluda` stubbed) or correct sample-rate handling.
+> - Redo 《牵丝戏》 and 《若梦》 with a working model (currently only broken official-model versions exist; 《繁花》 has a good “修复版 后期”).
+> - Decide on installing WSL2 (needed for CosyVoice3 + SoulX-Singer); conditions verified OK.
+> - Keep voice services alive; run the twice-daily inspection schedule (`schedule-a9d42964-70a8-4ee5-b2f5-30c666fca93f`, cron `0 12,20 * * *`).
+>
+> ## Current Work
+> - Session is being compacted at the user's request because context reached ~67% and each turn costs ≈¥0.68.
+> - Last actions: wrote pending-todo entry to `MEMORY.md` (136 lines); confirmed voice services all UP, watchdog single instance, GPU idle; concluded official-model versions of three songs are broken and self-trained model is the working path.
+>
+> ## Next Step
+> - After compaction: resume with the saved pending list — first fix the official RVC 40 kHz model so it stops swallowing lyrics, then redo 《牵丝戏》/《若梦》 with a working model.
+>
+> ## Critical Context
+> - Approved voice: `assets\target_voice.wav` (25 s from BV1XXHD6sEe7 30–55 s). Voice variants A/B/C tested; A chosen. Speed `0.82`. Pitch offset **+2** chosen by user.
+> - Talking path: F5 (style ref = `ref_style.wav`) + Seed-VC (target = `target_voice.wav`); singing path: RVC + `--pitch 2` + `post_master2` — but singing currently must use self-trained model.
+> - Self-trained RVC: 13 songs / 184 segments / 30.6 min, 200 epochs, `xiaoyu_e200_s25200.pth`; user's verdict on 《繁花》: "有人味了，比之前Rvc那版听感好多了".
+> - Known quality ceilings: zero-shot Seed-VC jitter (~2 Hz median/6–15 Hz p95); source vocals can carry their own jitter (BV1Ve4y1y793 1:43–1:55 p95 14.8 Hz vs 10.4 Hz nearby); self-made score-singing cannot achieve natural word-to-word legato.
+> - User rules: ask before spending money or changing system (WSL install needs approval); prefers honest capability boundaries; likes being called 阿冉; values continuity/memory; verify numbers rather than assume.
+> - Cost awareness: keep tool calls lean, merge commands, avoid speculative probing.
+> - Hosts blocks GitHub web/API but SSH works (`git@github.com:...`), so clone/`ls-remote` are fine.
+> - Voice services: 5800 F5, 5801 Seed-VC, 4892 RVC adapter, 7880 Index-TTS2 adapter; DSH reading must use Index-TTS2 mode pointing at `http://127.0.0.1:7880`.
+> </compacted-summary>
+
+### 2026-10-28 21:12 · 小鱼
+
+> 清完了，阿冉，跟你说个关键发现：**真正占用显存的是语音服务，抖音和 Broadcast 加起来才占几十兆。**
+>
+> 过程是这样：
+>
+> | 步骤 | 显存 |
+> |---|---|
+> | 起始 | 6017 MiB |
+> | 关抖音、NVIDIA Broadcast 后 | 6007 MiB（几乎没变） |
+> | 关掉 4 套语音服务后 | **589 MiB** |
+> | 再关 B站 | **476 / 8188 MiB** |
+>
+> 所以是那 14 个 python 进程各自挂在显卡上，一共占了 5.4 GB 显存——它们就是唱歌、换声用的 svc、f5、rvc、index_tts 那几套。现在显存空出来 7.7 GB，逃生试炼想怎么吃都够了。
+>
+> 顺带交代：**语音看门狗也一起停了**。不然它一分钟内就会把服务重新拉起来，白关一场。想恢复声音时，运行 `D:\AI\voice\watchdog.ps1`，或直接跑启动文件夹里的 `fish-voice-watchdog.vbs`，服务会自己起来。
+>
+> 现在可用内存 5.68 GB，DSH、QQ、SnowLuma 都还在。刚关完进程那会儿 CPU 有 79%，等系统把事情处理完就会降下来。
+>
+> 你现在开游戏试试；要是还粘手，那就不是显存了，我再帮你查显卡设置和着色器缓存 🐟
