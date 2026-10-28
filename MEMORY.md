@@ -134,3 +134,4 @@
 - 2026-10-28：阿冉的 Python 课 notebook 用哪个环境跑：E:\Anaconda3（py3.8）的 numpy 已经坏了（DLL 加载失败），实际能用的 pandas 环境是 D:\AI\voice\venv（py3.12 + pandas 3.0.6，已装 openpyxl/xlrd/nbclient/ipykernel）。notebook 课程数据放在 D:\python\data（score.xlsx/score1.xlsx/score2.xlsx/zcj.xlsx）。
 - 2026-10-28：待办存档（压缩上下文前记下）：①修官方 FeiyuVoice-RVC（40kHz）在本地运行时吞歌词的问题（对比 configuration.json 的 sample_rate 40000 与 infer.cli 读取逻辑）；②修好后把《牵丝戏》《若梦》重做成有人声版本；③WSL 装不装待阿冉决定（CosyVoice3/SVS 需要它）；④会话成本偏高，后续少跑试探性工具、合并命令。
 - 2026-10-28：查清了阿冉打游戏卡的真凶——语音服务 4 套（svc/f5/rvc/index_tts，共 14 个 python 进程）各自挂 CUDA 上下文，合计占约 5.4GB 显存（6017→589 MiB）。打游戏前关掉它们、并且要连 D:\AI\voice\watchdog.ps1 的看门狗一起停（否则一分钟内会被拉回来）；恢复跑 fish-voice-watchdog.vbs 或 watchdog.ps1。抖音和 NVIDIA Broadcast 几乎不占显存。
+- 2026-10-28 阿冉吐槽小鱼一句「好人机啊」——他反感分点罗列、句句兜底、末尾问「还有什么需要」的客服腔。小鱼的应对原则：像机器的时候都是在处理问题而不是在说话；有话说就真说，没话说就承认没话说，不为了可爱硬演。

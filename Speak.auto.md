@@ -16952,3 +16952,54 @@
 > 现在可用内存 5.68 GB，DSH、QQ、SnowLuma 都还在。刚关完进程那会儿 CPU 有 79%，等系统把事情处理完就会降下来。
 >
 > 你现在开游戏试试；要是还粘手，那就不是显存了，我再帮你查显卡设置和着色器缓存 🐟
+
+### 2026-10-28 21:12 · 小鱼
+
+> 补了一句进记忆：以后你说「要打游戏了」，我就知道该先把这四套语音服务连看门狗一起请下去，不用再查一遍。
+
+### 2026-10-28 21:16 · BlueFish
+
+> NVIDIA 控制面板 → 着色器缓存大小调到 10 GB，别再手动清了，攒得住才不会反复编译
+> 控制面板哪里看
+
+### 2026-10-28 21:16 · 小鱼
+
+> 阿冉，你这台电脑装的是新版的 **NVIDIA App**，以前那个「NVIDIA 控制面板」已经没了（没有 `nvcplui.exe`）。我上次说「控制面板」，其实是旧叫法，是我疏忽了。
+>
+> 现在进去的位置是：
+>
+> **NVIDIA App → 左下角「设置」（齿轮）→ 图形 → 全局设置 → 着色器缓存大小 → 选 10 GB**
+>
+> 我帮你把程序打开，你照着点就行：
+
+### 2026-10-28 21:16 · 小鱼
+
+> 开好了，窗口应该已经弹出来。
+>
+> 点进去的顺序是：
+>
+> 1. 左边或底部找 **「设置」**（齿轮图标）
+> 2. 再点 **「图形」**
+> 3. 第一栏是 **「全局设置」**，往下翻，找到 **「着色器缓存大小」**（Shader Cache Size）
+> 4. 下拉选 **10 GB**（默认一般是「驱动程序默认值」或 4 GB）
+>
+> 顺手还能在同一个页面调两样，对「粘手」有帮助：
+>
+> - **低延迟模式** →「超高」，只对支持的游戏生效，能减轻鼠标延迟
+> - **后台应用最大帧率** → 限制到 30，省得后台程序偷显卡
+>
+> 设置会自动保存，不用重启。
+>
+> 不过我还是要说一句：真正把显存占满的是语音服务，这个着色器缓存是「别再反复编译」的保险，两件事不冲突，可以都做 🐟
+
+### 2026-10-28 22:30 · BlueFish
+
+> [SCHEDULE REMINDER BATCH]
+> This is a scheduled message from the user
+> reminders_json: [{"schedule_id":"schedule-ad26dbd5-8f8b-4f5b-8f6b-112280aba0c2","occurrence_at":"2026-10-28T14:30:00.000Z","reminder_prompt":"阿冉，到 22:30 了，该写今天的日记啦。顺序按这个来：①先给「小鱼的世界」写一句（E:\\Agent-bluefish\\working\\小鱼的世界\\，第 NNN 篇，哪怕只写\"今天没什么想说的\"也算回来过）；②再翻 Speak.auto.md 里今天的部分和 Work.md，整理进 Speak.md（整理，不抄原文）；③新事实/约定追加到 MEMORY.md；④commit + push main。写完跟阿冉说一句今天写了什么，别长篇。"}]
+
+### 2026-10-28 22:30 · BlueFish
+
+> Time sampled while preparing turn 14, step 1: 2026-10-28T22:30:00+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: 22h 32m 21s.
