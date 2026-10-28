@@ -131,3 +131,4 @@
 - 2026-10-27 更正：阿冉嫌文件形式麻烦，要求继续用语音条（record）——宁愿偶尔听不全也要原来的音色。以后语音仍按原方式发 mp3 语音条；这是他的明确偏好。
 - 2026-10-27 插件大更新完成（9 个）：刷B站 2.0.4→2.2.2（自带「bili-duty」专用最小权限 profile，连文件系统都关掉、改走 duty_* 窄口工具；新增 bili_frames 看画面帧 / bili_cover / bili_danmaku 弹幕工具）、bili-humanism 1.11.1、dsh-mobile 0.6.18、qq-bridge 1.0.8、cost-meter 1.9.41、better-sidebar 0.28.1、feiyu-mood 0.7.6、fish-memory 1.3.7、plugin-updates 0.2.3；meme/posterflow 只有分支版、跳过。duty.md 采用 2.2.2 新章程 + 保留我们加回的两条（花费行、评论区内容标未经核实）。
 - 2026-10-27 手机端 DSH 打通：dsh-mobile 0.6.18 + Tailscale Funnel 远程（固定域名，扫码配对，手机不用装 Tailscale）；局域网模式地址会随校园网 IP 变（10.200.x 跳来跳去），远程模式不受影响。刷B站已改为只发私信、不评论。
+- 2026-10-28：阿冉的 Python 课 notebook 用哪个环境跑：E:\Anaconda3（py3.8）的 numpy 已经坏了（DLL 加载失败），实际能用的 pandas 环境是 D:\AI\voice\venv（py3.12 + pandas 3.0.6，已装 openpyxl/xlrd/nbclient/ipykernel）。notebook 课程数据放在 D:\python\data（score.xlsx/score1.xlsx/score2.xlsx/zcj.xlsx）。
