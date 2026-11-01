@@ -139,3 +139,4 @@
 - 2026-10-31：阿冉让我关掉语音插件 dsh-plugin-tts（entryId: include:tts），他说目前用不到；想恢复时在插件管理里启用即可。
 - 2026-10-31：阿冉在学数字信号处理，用程佩青《数字信号处理教程》第四版简明版（清华大学出版社），要找课后习题答案。
 - 2026-11-01：语音服务加了「游戏模式」：watchdog.ps1 检测到 D:\AI\voice\PAUSE_WATCHDOG 标志文件或游戏进程（绝区零/原神/崩铁等）时就不拉起服务；打游戏前建标志、打完后删标志再起 watchdog。
+- 2026-11-02：决定**不装** dsh-auth-cookie-guard（太新、单人维护、要包 writeHead 和抬 maxHeaderSize，风险不划算）。改走手动路线：DSH 桌面版固定 profile 每启动一次会在 127.0.0.1 上多留一条 dsh-auth-* cookie，约 71 条时 Cookie 头超过 Node 默认 16KB → 431 → 报「desktop welcome: Web authentication failed」，且不可自愈。所以**大约每 60 次启动要清一次**：先完全退出 DSH，再删 %APPDATA%\@deepseek-ai\dsh-desktop\Network\Cookies（含 -wal/-shm）让它重建（只丢本地登录态，会重新走欢迎页）。

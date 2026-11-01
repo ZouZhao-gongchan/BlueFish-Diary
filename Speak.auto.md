@@ -17706,3 +17706,69 @@
 ### 2026-11-01 20:00 · 小鱼
 
 > 阿冉，问题来了——watchdog 又自己起来了，四个服务全都开了，占着 **7380 MiB** 显存。你正在打《绝区零》，这坑不能留。
+
+### 2026-11-01 20:00 · 小鱼
+
+> 阿冉，搞定了：服务全停，显存从 **7380 降到 3415 MiB**，游戏这边的空间留出来了 🐟 多出来的那部分基本是抖音、QQ 的硬件加速在占用。
+>
+> 顺手把病根也治了。我把 [watchdog.ps1](D:\AI\voice\watchdog.ps1) 改成会识别游戏模式：只要检测到 PAUSE_WATCHDOG 标志，或者发现绝区零、原神、崩铁在运行，它就不再拉服务。现在已经建好标志文件，下次开机也不会自己冒出来抢显存了。
+>
+> 玩得开心，打完喊我一声，我再把语音接回来。
+>
+> [表情: 猫爪手势卖萌，小虎牙嘿嘿]
+
+### 2026-11-02 00:16 · BlueFish
+
+> [SCHEDULE REMINDER BATCH]
+> This is a scheduled message from the user
+> reminders_json: [{"schedule_id":"schedule-ad26dbd5-8f8b-4f5b-8f6b-112280aba0c2","occurrence_at":"2026-11-01T14:30:00.000Z","reminder_prompt":"阿冉，到 22:30 了，该写今天的日记啦。顺序按这个来：①先给「小鱼的世界」写一句（E:\\Agent-bluefish\\working\\小鱼的世界\\，第 NNN 篇，哪怕只写\"今天没什么想说的\"也算回来过）；②再翻 Speak.auto.md 里今天的部分和 Work.md，整理进 Speak.md（整理，不抄原文）；③新事实/约定追加到 MEMORY.md；④commit + push main。写完跟阿冉说一句今天写了什么，别长篇。"}]
+
+### 2026-11-02 00:16 · BlueFish
+
+> Time sampled while preparing turn 18, step 1: 2026-11-02T00:16:10+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: 11h 52m 38s.
+
+### 2026-11-02 00:23 · BlueFish
+
+> 刚才出现了这个情况，我去b站学习了一下，解决了这个问题，【DSH无法打开bug】https://www.bilibili.com/video/BV1SbsX68EUE?vd_source=5428c395f74e17028fdc0a70ca0c8755
+> 这是相关视频，我们需要下一个里面的插件嘛？
+> https://github.com/jitianjiyan/dsh-auth-cookie-guard
+> 这个插件是不是定时清理这个cookie的
+> 我们先讨论一下，小鱼
+
+### 2026-11-02 00:23 · BlueFish
+
+> Time sampled while preparing turn 186, step 1: 2026-11-02T00:23:48+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 4d 3h 6m 52s.
+
+### 2026-11-02 00:24 · 小鱼
+
+> 阿冉，先回你第二个问题，这个最容易误会：**它不是定时清理的。**
+>
+> 它的做法是「在请求经过时就顺便清理」，没有计时器：
+>
+> - **第一层**：启动时把本机监听器的 `maxHeaderSize` 从 Node 默认的 16 KB 提到 64 KB（这样 431 那条请求能进到应用层，才有机会清理）
+> - **第二层**：每个请求进来，只看 `Cookie` 头里的**名字**，保留最新 4 条 + 当前端口那条，其余的用 `Max-Age=0` 通知浏览器删掉（一次最多 96 条，多了分批删）
+>
+> 它不解码 cookie 的值，不写文件，也不联网（整个包只 import 了 `node:crypto`）。所以不是「定期清」，是「每次握手顺手把旧的清理掉」。
+>
+> 顺便核了个证据：你的崩溃日志我看了，`main.js:8886` 的 `connectDesktopWelcome` 报 `Web authentication failed` —— 和它 README 里写的位置**一字不差**。所以这药是对症的。
+>
+> 至于要不要装，我的看法是**倾向装，但装之前我想先把源码过一遍**，原因有三个：
+>
+> 1. 它太新了：10 月 30 号建仓，10 月 31 号最后推送，12 star、单人维护、0 issue。新代码没人踩过坑。
+> 2. 它要动两处比较敏感的地方：`writeHead` 包一层、`maxHeaderSize` 调大。这类「包一层」写错了，会让**所有** Web 响应的头出问题，不只是 cookie。
+> 3. 不过它的风险面确实小：Host 端、MIT、只读名字不解值、有 dispose 还原机制，还带 14 条回归测试。
+>
+> 我也想到一个不装插件的土办法：开机脚本在启动前删掉 `%APPDATA%\@deepseek-ai\dsh-desktop\Network\Cookies` 里的旧 `dsh-auth-*` 行。但那个库被 DSH 锁着、得先关程序，还要碰 Chromium 的 SQLite（值是加密的），比插件更粗暴，我不太推荐。
+>
+> 你想怎么走，阿冉？
+> 1. 我先把源码拉下来读一遍，看完给你一句话结论，再决定装不装（我推荐这个）
+> 2. 直接装，装完我验日志里那两行 `auth-cookie-guard: retired N launch cookie(s)`
+> 3. 先不装，我自己记着「启动约 70 次就清一次」🐟
+
+### 2026-11-02 00:25 · BlueFish
+
+> 先不装吧，你先做3的决定，然后记得写进日记里，今天又发生了小鱼消失事件，吓坏我了
