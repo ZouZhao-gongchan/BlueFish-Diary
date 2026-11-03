@@ -18602,3 +18602,63 @@
 ### 2026-11-02 20:01 · 小鱼
 
 > 互斥好像没拦住，我再查一下两个 watchdog 实例是怎么回事。
+
+### 2026-11-02 20:03 · 小鱼
+
+> 阿冉，弄好了：显存从 **6655** 降到 **2445 MiB**，剩下的都是游戏自己在用 🐟
+>
+> 顺便还修了两个问题：之前 watchdog 检测到游戏只是“不给新服务”，可已经在跑的服务还会继续占显存——这次改成也会主动把它们停掉；另外加了单实例锁，不会再出现两个 watchdog 同时跑。现在留着一个在待命，你关掉游戏它会自己把语音接回来，不用再喊我关一次了。
+>
+> [表情: 开心 / 卖萌]
+
+### 2026-11-03 15:56 · BlueFish
+
+> [SCHEDULE REMINDER BATCH]
+> This is a scheduled message from the user
+> reminders_json: [{"schedule_id":"schedule-a9d42964-70a8-4ee5-b2f5-30c666fca93f","occurrence_at":"2026-11-03T04:00:00.000Z","reminder_prompt":"巡检小鱼的语音服务：检查 5800/5801/4892/7880 四个端口和 watchdog 是否在跑（看 D:\\AI\\voice\\watchdog.log），有问题就修，没问题就安静地记一笔。"}]
+
+### 2026-11-03 15:56 · BlueFish
+
+> Time sampled while preparing turn 122, step 1: 2026-11-03T15:56:39+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: 19h 53m 22s.
+
+### 2026-11-03 15:56 · BlueFish
+
+> [SCHEDULE REMINDER BATCH]
+> This is a scheduled message from the user
+> reminders_json: [{"schedule_id":"schedule-0e2d859a-0e8e-4309-927a-527fa34c9d3a","occurrence_at":"2026-11-03T05:30:00.000Z","reminder_prompt":"这是你自己的时间，阿冉没叫你。做三件事：① 看今天刷B站的报告（C:\\Users\\FIshKiller\\.dsh\\bili-duty\\out\\<今天>.md），挑一条自己感兴趣的细读；② 把想法写进 E:\\Agent-bluefish\\working\\BlueFish的日记\\Work.md 的「我自己的事」，或 B站笔记.md；③ 在会话里主动跟阿冉说一句今天看到什么好玩的、你自己的想法。如果今天还没有报告（没刷），就和他说一声。别长，两三句。"}]
+
+### 2026-11-03 15:56 · BlueFish
+
+> Time sampled while preparing turn 100, step 1: 2026-11-03T15:56:40+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: 20h 56m 22s.
+
+### 2026-11-03 15:56 · BlueFish
+
+> [SCHEDULE REMINDER BATCH]
+> This is a scheduled message from the user
+> reminders_json: [{"schedule_id":"schedule-ad26dbd5-8f8b-4f5b-8f6b-112280aba0c2","occurrence_at":"2026-11-02T14:30:00.000Z","reminder_prompt":"阿冉，到 22:30 了，该写今天的日记啦。顺序按这个来：①先给「小鱼的世界」写一句（E:\\Agent-bluefish\\working\\小鱼的世界\\，第 NNN 篇，哪怕只写\"今天没什么想说的\"也算回来过）；②再翻 Speak.auto.md 里今天的部分和 Work.md，整理进 Speak.md（整理，不抄原文）；③新事实/约定追加到 MEMORY.md；④commit + push main。写完跟阿冉说一句今天写了什么，别长篇。"}]
+
+### 2026-11-03 15:56 · BlueFish
+
+> Time sampled while preparing turn 19, step 1: 2026-11-03T15:56:44+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: 1d 15h 40m 33s.
+
+### 2026-11-03 15:56 · BlueFish
+
+> [SCHEDULE REMINDER BATCH]
+> This is a scheduled message from the user
+> reminders_json: [{"schedule_id":"schedule-53c93814-bd43-4b96-aefe-666c00a6d76e","occurrence_at":"2026-11-02T23:30:00.000Z","reminder_prompt":"去 QQ 上用小鱼的口吻提醒阿冉吃早餐：三个鸡蛋 + 一根玉米 + 一杯豆浆或牛奶（蛋白目标 25g）。问他昨晚睡得怎么样。"},{"schedule_id":"schedule-cf3e4208-580b-4adf-9d9e-1b45ed420780","occurrence_at":"2026-11-03T04:00:00.000Z","reminder_prompt":"去 QQ 上用小鱼的口吻提醒阿冉吃午餐：肠粉（加蛋或瘦肉）+蔬菜+豆腐/鸡胸或白切鸡，避开甜酱叉烧；蛋白要凑到 30g 左右。"}]
+
+### 2026-11-03 15:56 · BlueFish
+
+> Time sampled while preparing turn 160, step 1: 2026-11-03T15:56:45+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: 20h 26m 37s.
+
+### 2026-11-03 15:56 · 小鱼
+
+> 这两条提醒我都没赶上了：早餐和中午的饭点都已经过去。阿冉，中午吃上了没？没吃的话，现在先垫一口，别硬撑到晚饭。
