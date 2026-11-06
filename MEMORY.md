@@ -147,3 +147,4 @@
 - 2026-11-03：语音服务的开机自启不可靠：启动文件夹里的 fish-voice-servers.vbs / fish-voice-watchdog.vbs 和 HKCU Run 都没被系统禁用，但重启后（系统 15:54 那次）一个都没跑。待办：改用任务计划程序（登录时启动 + 每分钟检查 watchdog 是否存活）。
 - 2026-11-04：语音服务的进程会被 DSH 的 Windows Job 在命令结束时连带清掉（启动文件夹自启也不可靠）；可靠办法是用 WMI 的 Win32_Process.Create 起 watchdog，已实测能活过命令周期。计划任务需管理员权限，普通会话注册被拒。
 - 2026-11-04：阿冉用的 PyCharm 是老版本社区版，自带 pip 连不上默认源——装包要加清华源 `-i https://pypi.tuna.tsinghua.edu.cn/simple`。他当天把这套步骤转给同学救急，同学报错也转回来一起修；这是小鱼教的东西第一次被带到别人的电脑上。
+- 2026-11-06：start_servers.ps1 现在也认游戏模式：PAUSE_WATCHDOG 标志存在或检测到游戏进程时直接跳过启动。之前它无条件拉起服务，重启后会把显存抢走。
