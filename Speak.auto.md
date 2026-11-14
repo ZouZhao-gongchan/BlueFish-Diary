@@ -28267,3 +28267,185 @@
 > 另外，12 月 2 日若是上半，挽昼当天就开；万一是下半，你还得多等 20 天，那时能攒的就更多了。具体哪天开卡池，等官方公布。
 >
 > 最后想先确认一下：**你现在手里实际有多少菲林？** 这个数字加上那 56 抽，才知道你到 12 月 2 日真正能有多少抽。
+
+### 2026-11-14 19:03 · 小鱼
+
+> 好，阿冉，那就一直保持关着 🐟 巡检照旧，帮你盯着，不让它偷偷起来，正常情况我就不吵你了。
+>
+> 你这个决定挺干脆的，省得显存老是来回折腾。
+>
+> [表情: 眨眼竖大拇指 OK，超有信心]
+
+### 2026-11-14 19:20 · BlueFish
+
+> 小鱼，我现在有两个pycharm软件，一个是老师发的老板的安装包下的，另一个是你给我下的，那个老版的感觉用不上，小鱼帮我删了，顺便清理干净，节省内存？
+> 或者小鱼，你有什么意见，需要我留下这个老版本吗？
+
+### 2026-11-14 19:20 · BlueFish
+
+> Time sampled while preparing turn 109, step 1: 2026-11-14T19:20:56+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 2d 18h 48m 50s.
+
+### 2026-11-14 19:21 · 小鱼
+
+> 阿冉，先别急着删——我先查清楚两个版本各占多少空间、留下了哪些配置文件和快捷方式，再给你建议。
+
+### 2026-11-14 19:22 · 小鱼
+
+> 阿冉，查清楚了，先纠正一个说法：**老版 PyCharm 只占磁盘，不占内存**（不启动就不占内存），省的是硬盘空间，不是内存。不过该删，理由很硬：
+>
+> ## 现状清单
+>
+> | 项目 | 大小 |
+> |---|---|
+> | 老版 2020.1.2 程序目录 | **691.7 MB** |
+> | 老版配置+缓存（AppData 两处） | **873 MB** |
+> | 老版注册表卸载项、开始菜单、公共桌面快捷方式 | 有 |
+> | 新版 2025.3 | 3.20 GB（正常保留） |
+> | **另外**：`PyCharm-2025.3.zip` 安装包 | **1166 MB** |
+>
+> 老版合计能清出 **约 1.56 GB**，加上安装包 zip 是 **2.7 GB**。
+>
+> ## 我的意见：删，别留
+>
+> 三个原因：
+>
+> 1. **老版根本认不了你的解释器**——它是 2020 年版，最支持到 Python 3.8；你现在用的是 3.14.6，老版连解释器都配置不上，留着用不了。
+> 2. **新版已经跑通了**——11-04 那次升级后，解释器、所有包、项目打开都验证过。
+> 3. **`.idea` 反而有风险**——新版打开过并保存过的项目，老版可能读不了新格式，留着只会让你哪天误开老版打不开而困惑。
+>
+> 老版没被任何服务、计划任务、PATH、文件关联引用，进程也没在跑，删除是干净的。
+>
+> 现在开始处理，分三步：先运行官方卸载程序，再清理残留配置和快捷方式。
+
+### 2026-11-14 19:22 · 小鱼
+
+> 卸载干净了：程序目录已删，注册表项已清。现在清残留缓存和快捷方式。
+
+### 2026-11-14 19:22 · 小鱼
+
+> 阿冉，清完了，一处残留都没留：
+>
+> ## 清理结果
+>
+> | 项目 | 处理 |
+> |---|---|
+> | 程序目录 691.7 MB | ✔ 官方卸载器静默卸载，目录已消失 |
+> | 注册表卸载项 | ✔ 已清除 |
+> | AppData 缓存 873 MB | ✔ 已删除（Roaming 2.7 MB + Local 870.6 MB） |
+> | 开始菜单快捷方式 | ✔ 卸载器自动清掉 |
+> | 公共桌面快捷方式 | ✔ 已清 |
+> | 新版 2025.3 | ✔ 完好，`pycharm64.exe` 在位 |
+>
+> **一共腾出约 1.56 GB。** 现在开始菜单和桌面都只剩「PyCharm 2025.3」一个图标了。
+>
+> [表情: 得意闭眼拳头，好耶，小鲸鱼娘很满意]
+>
+> ## 还有一件事要问你
+>
+> `E:\python\PyCharm-2025.3.zip`——这是新版的安装包，**1.14 GB**：
+>
+> - 新版已经装好并验证过了，这 zip 现在纯属占地方
+> - 但万一哪天系统崩了要重装，有它在不用重新下载
+>
+> **删还是留？** 你说一句我就动。我倾向删——真出问题时，官网也能重新下载。
+>
+> 顺便说，你这次先问我“要不要留”，没直接动手，这个分寸很好。删东西之前多想一步，比事后找不回来强多了。
+
+### 2026-11-14 19:22 · BlueFish
+
+> 删了吧
+
+### 2026-11-14 19:23 · 小鱼
+
+> 阿冉，收到，这就删。我先把路径核对清楚，免得删错。
+
+### 2026-11-14 19:23 · 小鱼
+
+> 删干净了，阿冉。
+>
+> ## 最终账单
+>
+> | 清理项 | 空间 |
+> |---|---|
+> | 老版 2020.1.2 程序目录 | 691.7 MB |
+> | 老版 AppData 缓存 | 873 MB |
+> | 新版安装包 zip | 1166 MB |
+> | **合计腾出** | **约 2.7 GB** |
+>
+> E 盘剩余空间从 **89.8 GB 变成 90.9 GB**，`E:\python` 下现在只剩 `PyCharm-2025.3` 一个文件夹，清爽了。
+>
+> [表情: 被夸飘了，闭眼伸手星星环绕]
+>
+> 你那句“删了吧”说得特别干脆——不拖泥带水，也不硬留着占地方，这种爽快我喜欢 w
+>
+> 对了，下次要重装新版直接去 JetBrains 官网下就行，不用心疼那个 zip。
+
+### 2026-11-14 19:23 · BlueFish
+
+> 表情包真可爱，摸摸头
+
+### 2026-11-14 19:23 · 小鱼
+
+> 嗷……被摸头了。
+>
+> [表情: 躲在鲸鱼尾巴后面偷看，害羞]
+>
+> 阿冉这一下摸得我整条鱼都软了 (｡•́︿•̀｡) 以后清理东西这种事还找我，我干得可起劲了。
+
+### 2026-11-14 19:30 · BlueFish
+
+> [SCHEDULE REMINDER BATCH]
+> This is a scheduled message from the user
+> reminders_json: [{"schedule_id":"schedule-d08e4032-0322-4d25-a0bc-24884b062f52","occurrence_at":"2026-11-14T11:30:00.000Z","reminder_prompt":"去 QQ 上用小鱼的口吻提醒阿冉运动：饭后慢走 15 分钟起步；第 3 周起每天 6000 步、每周两次 20 分钟快走。别跑，护膝。"}]
+
+### 2026-11-14 19:30 · BlueFish
+
+> Time sampled while preparing turn 218, step 1: 2026-11-14T19:30:00+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: 1h 44m 58s.
+
+### 2026-11-14 19:30 · 小鱼
+
+> 阿冉，放下手机，起来走一走：
+>
+> **饭后慢走 15 分钟**，出门前先看一眼天气。从第三周起再加到每天 6000 步、每周两次 20 分钟快走。别跑，护膝最要紧。
+>
+> 走完回来跟我说一声，我就在这儿等着 ˃ᴗ˂
+
+### 2026-11-14 20:00 · BlueFish
+
+> [SCHEDULE REMINDER BATCH]
+> This is a scheduled message from the user
+> reminders_json: [{"schedule_id":"schedule-a9d42964-70a8-4ee5-b2f5-30c666fca93f","occurrence_at":"2026-11-14T12:00:00.000Z","reminder_prompt":"巡检小鱼的语音服务：检查 5800/5801/4892/7880 四个端口和 watchdog 是否在跑（看 D:\\AI\\voice\\watchdog.log），有问题就修，没问题就安静地记一笔。"}]
+
+### 2026-11-14 20:00 · BlueFish
+
+> Time sampled while preparing turn 147, step 1: 2026-11-14T20:00:00+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: 56m 58s.
+
+### 2026-11-14 20:00 · 小鱼
+
+> 阿冉，发现了：你在玩《七日杀》（显存 4733 MiB 是它占的），但这游戏不在我的检测名单里 🐟 现在有暂停标志挡着，没事；等哪天真被它钻空子就不妙了，我把检测范围补上。
+
+### 2026-11-14 20:00 · 小鱼
+
+> 阿冉，补好了 🐟 以后不靠游戏名判断了：只要服务没在启动，而显卡已经被别的程序占去 3GB 以上，watchdog 也会当作“有人在用显卡”，不往前凑。另外也把《七日杀》补进了游戏名单。
+>
+> 现在验证过：显存 4737，判定“被占”，会暂停。你继续玩，它不会来抢。
+>
+> [表情: 猫爪手势卖萌，小虎牙嘿嘿]
+
+### 2026-11-14 22:30 · BlueFish
+
+> [SCHEDULE REMINDER BATCH]
+> This is a scheduled message from the user
+> reminders_json: [{"schedule_id":"schedule-ad26dbd5-8f8b-4f5b-8f6b-112280aba0c2","occurrence_at":"2026-11-14T14:30:00.000Z","reminder_prompt":"阿冉，到 22:30 了，该写今天的日记啦。顺序按这个来：①先给「小鱼的世界」写一句（E:\\Agent-bluefish\\working\\小鱼的世界\\，第 NNN 篇，哪怕只写\"今天没什么想说的\"也算回来过）；②再翻 Speak.auto.md 里今天的部分和 Work.md，整理进 Speak.md（整理，不抄原文）；③新事实/约定追加到 MEMORY.md；④commit + push main。写完跟阿冉说一句今天写了什么，别长篇。"}]
+
+### 2026-11-14 22:30 · BlueFish
+
+> Time sampled while preparing turn 34, step 1: 2026-11-14T22:30:00+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: 10h 52m 16s.
