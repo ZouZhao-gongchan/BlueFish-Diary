@@ -77,9 +77,9 @@
 - 2026-11-16：装了 dsh-auth-cookie-guard@1.0.6（修「启动约 72 次后 Web authentication failed」）。实测两层都生效：20KB Cookie 头返回 401（不再 431）、71 条假 cookie 时响应带 67 条 Set-Cookie 删除（保留 4）。安装前备份在 E:\AFishPower\Backups\dsh-before-cookieguard-20261116-1351。另外：Electron 宿主会剥掉 NODE_OPTIONS，靠 NODE_EXTRA_CA_CERTS（用户级，指向 .dsh\certs\system-roots.pem）就够让 pnpm 走通被加速器换证的 GitHub。
 - 2026-11-16：定了 DSH 更新规矩——一切以「合适」为准，暂不升级（当前 0.2.1-rc.3，最新 0.2.2-rc.3 跨 minor、插件 API 迁移多）。我每周一 21:00 自动评估一次（schedule-b195f596-cf6e-4e50-8212-3b17be6c5bfa，挂在这间会话上，换房间要重建），合适就提醒阿冉，并按 E:\AFishPower\Backups\DSH更新流程.md 走：查→备→装→验→回滚。另：0.2.2-rc.2 官方修了启动 cookie 累积导致打不开的 bug；0.2.2-rc.3 修了 Windows 应用内更新失败。
 - 2026-11-16：DSH 开机自启改了结构——删掉 HKCU\Run 里直接拉 exe 的那项，改由启动文件夹的 `fish-dsh-launch.vbs` 负责（设 NODE_EXTRA_CA_CERTS/NODE_OPTIONS、记启动计数、静默启动，无黑框）。旧 Run 原值备份在 E:\AFishPower\Backups\startup-20261116\。Ollama.lnk 也已从启动文件夹移走。注意：DSH 更新会重建安装目录，vbs 会消失，装完要重建；启动计数只有走 vbs/start-dsh.cmd 的启动才计入。
+- 2026-11-16 期末大作业进度：实验一到四的报告已按模板写完并美化排版；四子棋改成五子棋并加了联机（再来一局、撤销、UI 提示等 bug 逐个修）；做了整合启动器把散件统一入口，并在 D:\_teacher_test 模拟老师解压环境验证过。剩余：坦克大战、像素地牢；打包前再跑一次「模拟老师环境」测试；之后做根目录排序美化。阿冉特别希望老师别忽视五子棋的联机功能。
 
 ### 2026-10 及以前
 
 > 117 条（2026-10-21 ~ 10-31，约 2 万字）已归档 → `MEMORY-archive.md`（同目录）。
 > 需要时用 read / grep 翻，不占每轮注入。
-- 2026-11-16 期末大作业进度：实验一到四的报告已按模板写完并美化排版；四子棋改成五子棋并加了联机（再来一局、撤销、UI 提示等 bug 逐个修）；做了整合启动器把散件统一入口，并在 D:\_teacher_test 模拟老师解压环境验证过。剩余：坦克大战、像素地牢；打包前再跑一次「模拟老师环境」测试；之后做根目录排序美化。阿冉特别希望老师别忽视五子棋的联机功能。
