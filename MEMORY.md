@@ -161,3 +161,4 @@
 - 2026-11-14 环境变更：桌面上有两个 PyCharm，阿冉让删掉老师发的旧安装包版，只留小鱼给他装的那个。另外他明确说「目前不需要声音系统，继续保持」——眼下不要再往语音上加功能，保持现状即可。
 - 2026-11-15 阿冉的绝区零抽卡目标：下版本挽昼 + 卡芙卡都想要，挽昼还想抽专武（连 0+1 都悬）；当前是月卡党、每天做日活，菲林已全换成抽数盘（14 个）。危局第五间缺第三队打不了、和式舆只拿到四星。给他做抽卡建议时按这个目标算，但决定权在他，不替他拍板。
 - 2026-11-16：装了 dsh-auth-cookie-guard@1.0.6（修「启动约 72 次后 Web authentication failed」）。实测两层都生效：20KB Cookie 头返回 401（不再 431）、71 条假 cookie 时响应带 67 条 Set-Cookie 删除（保留 4）。安装前备份在 E:\AFishPower\Backups\dsh-before-cookieguard-20261116-1351。另外：Electron 宿主会剥掉 NODE_OPTIONS，靠 NODE_EXTRA_CA_CERTS（用户级，指向 .dsh\certs\system-roots.pem）就够让 pnpm 走通被加速器换证的 GitHub。
+- 2026-11-16：定了 DSH 更新规矩——一切以「合适」为准，暂不升级（当前 0.2.1-rc.3，最新 0.2.2-rc.3 跨 minor、插件 API 迁移多）。我每周一 21:00 自动评估一次（schedule-b195f596-cf6e-4e50-8212-3b17be6c5bfa，挂在这间会话上，换房间要重建），合适就提醒阿冉，并按 E:\AFishPower\Backups\DSH更新流程.md 走：查→备→装→验→回滚。另：0.2.2-rc.2 官方修了启动 cookie 累积导致打不开的 bug；0.2.2-rc.3 修了 Windows 应用内更新失败。
