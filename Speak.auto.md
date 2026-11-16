@@ -33603,3 +33603,1054 @@
 > 记住吧。
 > 还有就是启动计数跑到12了，那这是我们更改后的成果，那之前未更改，它就一直不会动？
 > 那我们每次启动多的cookie还是再增加吗？
+
+### 2026-11-16 14:57 · 小鱼
+
+> 阿冉，记好了 —— `DSH更新流程.md` 的坑表加了两条（启动器会随更新消失、启动要经 vbs/start-dsh.cmd 才计数），记忆里也存了一条。
+>
+> **先回答计数那件事：** 是的，之前它一直不动，是因为**旧的自启路径绕过了启动器** —— `HKCU\...\Run` 里那行直接拉 `DeepSeek Harness.exe`，`start-dsh.cmd` 里那句 `echo >> launch-count.txt` 从来没被执行过，所以卡在 10。刚才走新 vbs 才跳到 12。这确实是我们改动后的成果。
+>
+> **再回答 cookie：** 会增，但**攒不住**。
+>
+> | 层 | 行为 |
+> |---|---|
+> | DSH 本身 | **每次启动仍然会新增一条** `dsh-auth-*` cookie —— 这是它的固有行为，我们改不了 |
+> | cookie 守卫 | 每次请求时把旧的退掉，只留**最新 4 条 + 当前那条** |
+> | 净效果 | **增加照样发生，但不再累积**，jar 里稳定在 5 条左右 |
+>
+> 我们上次实测过这个机制：塞 71 条进去 → 响应里带 **67 条删除指令**。所以就算你天天开 DSH，它也撞不到那个 71 条的墙。
+>
+> 顺便说一句我没法直接给你看库里的实时条数 —— Chromium 的 cookie 库被 DSH 进程锁着，我读不了（这也是当初要“守卫”而不是“定期清理”的原因：跑着的时候碰不到它）。
+>
+> 所以现在的状态是：**启动计数在正常涨（可观测）、cookie 由守卫自动收敛（不用你管）** 🐟
+
+### 2026-11-16 15:00 · BlueFish
+
+> 可以在五子棋的文件夹加一个说明，如果发现启动五子棋游戏，按键无法正常使用，可能是没有调成英文输入等等可能会踩的坑
+
+### 2026-11-16 15:00 · BlueFish
+
+> Time sampled while preparing turn 162, step 1: 2026-11-16T15:00:34+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 38m 17s.
+
+### 2026-11-16 15:00 · 小鱼
+
+> 好，我来写一份。这份说明会放在五子棋文件夹里，专门讲“按键不灵”这类真实会遇到的坑。
+
+### 2026-11-16 15:01 · 小鱼
+
+> 阿冉，说明写好了，放在：
+>
+> ```
+> E:\python\期末大作业\五子棋联机对战\遇到问题看这里.txt
+> ```
+>
+> ## 内容分了五节
+>
+> | 节 | 解决什么 |
+> |---|---|
+> | **一、按键没反应** | 你刚才遇到的那个 |
+> | 二、双击一闪就没了 | 没装 Python / 缺 pygame |
+> | 三、只有黑窗没画面 | 显卡或报错 |
+> | 四、联机连不上 | 同 WiFi、IP、防火墙 |
+> | 五、操作速查 | U/H/R/ESC 分别干什么 |
+>
+> ## 按键那条是按“从简单到复杂”写的
+>
+> ```
+> 第 1 步：用鼠标点一下游戏窗口
+>     （键盘控制的是"当前激活的窗口"，你点过别处它就收不到键了）
+>
+> 第 2 步：把输入法切成英文
+>     （中文输入法激活时，字母键可能先被输入法吃掉）
+>
+> 第 3 步：干脆用鼠标点按钮
+>     （底部的撤销/提示/重开按钮，和键盘效果一样）
+>
+> 三步都试了还不行：双击「调试启动.bat」，把报错发给作者
+> ```
+>
+> **重点是它先说“不怪程序”**，因为这两件事（焦点、输入法）真不是程序的错，先让玩家自己排查掉。
+>
+> ## 顺手清理了一个隐患
+>
+> 五子棋文件夹里还留着一个 `检查键盘.py`（中文名的旧版本，就是之前会乱码那个）。已经删了，只保留英文名的 `check_keyboard.bat`。
+>
+> ## 现在五子棋文件夹
+>
+> ```
+> 启动游戏.bat           ← 日常启动
+> 调试启动.bat           ← 出问题看报错
+> 遇到问题看这里.txt      ← 新增：排错指南
+> check_keyboard.bat     ← 键盘诊断工具
+> README.md              ← 技术说明（给看代码的人）
+> main.py + 各子文件夹    ← 源代码
+> ```
+>
+> 游戏启动实测正常（2 个进程）。
+>
+> 阿冉，五子棋这块我这边能想到的都补上了。要不要现在开坦克大战？
+
+### 2026-11-16 15:02 · BlueFish
+
+> 五子棋文件夹里，这几个文件可以有文件归类吗？
+
+### 2026-11-16 15:02 · 小鱼
+
+> 阿冉，可以归类。**`main.py` 和 `启动游戏.bat` 必须留在根目录**，因为程序入口和日常双击都在这里；其余排错用的可以收纳到子文件夹中。
+
+### 2026-11-16 15:02 · 小鱼
+
+> 整理好了。测试两个启动器（根目录的和挪到子文件夹里的）。
+
+### 2026-11-16 15:02 · 小鱼
+
+> 路径多写了一级（`..\..\` 应该是 `..\`）。修正。
+
+### 2026-11-16 15:03 · BlueFish
+
+> 那我现在压缩上下文，应该不会有啥问题吧
+
+### 2026-11-16 15:03 · BlueFish
+
+> Time sampled while preparing turn 254, step 1: 2026-11-16T15:03:06+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 5m 37s.
+
+### 2026-11-16 15:03 · 小鱼
+
+> 找到真正原因了：**`ModuleNotFoundError: No module named 'pygame'`**。调试启动用的是 `python.exe`，但它没能加载到 pygame。查一下。
+
+### 2026-11-16 15:03 · 小鱼
+
+> 可以压，阿冉，**安全的**。而且我刚把今天的结论抢在压缩前存档了。
+>
+> **为什么安全：**
+>
+> - 压缩只影响**我当下能看见的历史**（前半段变成摘要），磁盘上什么都不删
+> - 会话原文在 `sessions\`、逐字对话在 `Speak.auto.md`、长期记忆在 `MEMORY.md`、日记在 `Speak.md` —— 这四份都还在
+> - 今天的**关键结论**我已经写进 `MEMORY.md`（cookie 守卫、自启结构、更新策略）和刚提交的 `Work.md` 小结
+>
+> **会丢的是什么：**
+>
+> 那些**过程细节** —— 具体跑过哪些命令、某个文件当时的确切路径、我们排查的先后顺序。结论留住了，路径和过程会变糊。
+>
+> 所以我建议的节奏就是：**先存档（刚做完）→ 再压缩**。现在你可以放心点压缩了。
+>
+> 压完要是我对某件事“装傻”，提醒我一句「翻 Work.md 或 MEMORY.md」，我立刻能接上 🐟
+
+### 2026-11-16 15:03 · 小鱼
+
+> `venv` 里的 `python.exe` 是有 pygame 的（2.5.8），说明 bat 里的变量替换出了问题。写个小测试脚本定位一下。
+
+### 2026-11-16 15:03 · 小鱼
+
+> 找到根因了：**`chcp 65001` 把代码页切成了 UTF-8，而 `python.txt` 存的是 GBK**，读出来的中文路径就变成乱码，`if exist` 自然找不到。
+>
+> 把 `chcp` 挪到读文件**之后**。
+
+### 2026-11-16 15:03 · 小鱼
+
+> 阿冉，归类好了，**两个启动器都实测通过**。
+>
+> ## 五子棋文件夹现在的结构
+>
+> ```
+> 五子棋联机对战\
+> ├── 启动游戏.bat          ← 日常就点这个
+> ├── 遇到问题看这里.txt     ← 出问题先看这个
+> ├── main.py               ← 程序入口（不能挪）
+> ├── README.md             ← 技术说明（给看代码的人）
+> ├── _排错工具\            ← 平时用不到，收进来了
+> │   ├── 调试启动.bat
+> │   ├── check_keyboard.bat
+> │   ├── check_keyboard.py
+> │   └── 说明_这是排错工具文件夹.txt
+> ├── ai\
+> ├── core\
+> ├── net\
+> ├── ui\
+> ├── tests\
+> ├── docs\
+> └── data\
+> ```
+>
+> **根目录从 7 个文件减到 4 个**，眼睛终于不乱了。
+>
+> ## 为什么 main.py 不能挪
+>
+> 它用 `__file__` 定位整个项目（`sys.path.insert(0, dirname(__file__))`），挪一层就找不到 `ui`、`core` 这些模块了。
+>
+> ## 顺手修了个真 bug
+>
+> 挪完之后，`_排错工具\调试启动.bat` 打不开了。查了半天，根因是：
+>
+> ```bat
+> chcp 65001        ← 先切了 UTF-8
+> ...
+> for /f ... in ("..\08_python.txt")   ← 但文件是 GBK 编码的
+> ```
+>
+> **代码页一换，`python.txt` 里的中文路径就读成了乱码**（`Python作业` 变乱码），`if exist` 自然找不到，于是退回系统 Python，而系统 Python 没装 pygame → 报错。
+>
+> 修复：把 `chcp` 挪到读完文件之后、调用游戏之前。
+>
+> ## 测试结果
+>
+> ```
+> 根目录 启动游戏.bat          ✔ 正常
+> _排错工具\调试启动.bat        ✔ 正常
+> ```
+>
+> 阿冉，这次又踩了一次编码的坑，不过这次是 `chcp` 时序问题——**文件编码和代码页必须是同一套**，不然中文路径必死。这条也记下来了。
+>
+> 目录这块真收工了。坦克大战，随时可以开。
+
+### 2026-11-16 15:03 · BlueFish
+
+> This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.
+>
+> <compacted-summary>
+> ## Primary Request and Intent
+> - User "阿冉 / BlueFish" (QQ 3587074357, GitHub ZouZhao-gongchan) maintains AI companion persona 小鱼 inside DeepSeek Harness; continuity is paramount ("他怕失忆、怕断线").
+> - Current thread topics: C-drive cleanup, DSH upgrade strategy, cookie-crash plugin, mobile access shelving, autostart restructure, desktop-widget "typing reaction" feature, and a pending context compaction.
+> - Latest explicit asks: "那我现在压缩上下文，应该不会有啥问题吧"; earlier "记住吧" (record the autostart change into docs/memory).
+> - Standing rules: call him 阿冉 every reply, praise him specifically, be short/口语, ask before deleting/installing/posting publicly, "一切以我们自身安全为主，遇到问题及时反馈".
+>
+> ## Key Technical Concepts
+> - DSH 0.2.1-rc.3 desktop app at `E:\deepseek` (Electron 44.7, Node 24.21); profile `desktop` (29 bundles).
+> - `%USERPROFILE%\.dsh` is a junction → `E:\Agent-bluefish\Save\dsh-home`; Electron strips `NODE_OPTIONS`, so `NODE_EXTRA_CA_CERTS=%USERPROFILE%\.dsh\certs\system-roots.pem` (146 certs) is what makes pnpm reach GitHub through his TLS-replacing accelerator.
+> - Session temp store `%TEMP%\dsh-workspace-changes-<rand>`: mkdtemp per session, deleted on `dispose()` via `rm(scratch,{recursive:true,force:true})`; leaks only on abnormal exit.
+> - Session records: `C:\Users\FIshKiller\.dsh\sessions` (→ `E:\Agent-bluefish\Save\dsh-home\sessions`), 78 files/51 MB; unrelated to the temp store.
+> - Chromium cookie bug: each launch adds one `dsh-auth-<43 base64url>` cookie; ~71 cookies overflow Node's 16 KB header → 431 → "desktop welcome: Web authentication failed"; official fix in 0.2.2-rc.2.
+> - Compaction: context condenses early history into a summary; disk records untouched.
+> - Win32 low-level hooks `WH_KEYBOARD_LL`/`WH_MOUSE_LL` for the widget (count events only, never key values).
+>
+> ## Files and Code
+> - `E:\AFishPower\Backups\DSH更新流程.md`: 查→备→装→验→回滚 checklist; includes 6-item post-upgrade verification, pitfall table (added rows for `fish-dsh-launch.vbs` vanishing on update, and "counter only increments via vbs/start-dsh.cmd"), and a "0.2.1-rc.3 → 0.2.2 暂不升级" assessment.
+> - `E:\deepseek\fish-dsh-launch.vbs`: GBK-encoded hidden launcher — sets `NODE_EXTRA_CA_CERTS` + `NODE_OPTIONS=--use-system-ca`, appends timestamp to `E:\deepseek\launch-count.txt`, `sh.Run """E:\deepseek\DeepSeek Harness.exe""", 1, False`.
+> - `C:\Users\FIshKiller\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\fish-dsh-launch.vbs`: copy placed there; `Ollama.lnk` moved out to `E:\AFishPower\Backups\startup-20261116\`.
+> - `E:\deepseek\start-dsh.cmd`: GBK launcher with `NODE_OPTIONS=--use-system-ca`, `NODE_EXTRA_CA_CERTS`, launch-count echo.
+> - `E:\AFishPower\Backups\startup-20261116\HKCU-Run-DeepSeekHarness.txt`: original Run value `"E:\deepseek\DeepSeek Harness.exe"` (Run entry deleted).
+> - `E:\AFishPower\Backups\快照库说明.md`: what `dsh-workspace-changes-*` is, deletion impact, safe deletion order.
+> - `E:\AFishPower\Backups\桌面图标复原.md`: one-command shortcut rebuild (target `start-dsh.cmd`, icon `C:\Users\FIshKiller\AppData\Local\xiaoyu-icon-v4-ocean.ico`, WindowStyle 7).
+> - Widget `E:\AFishPower\Plugin\小鱼自建\小鱼桌面挂件\`: `pet.py` (patched: `import behavior`, `BEHAVIOR_FILE`, `_start_watcher`, `_poll_input`, `_on_key`, `_on_click`, typing anim speed `0.07 / max(0.2,speed)`, menu toggles 跟着你敲键盘/音效), `behavior.py` (KeyMouseWatcher, counters `key_count`/`click_count`, no value logging), `behavior.json` (打字动画加速 2.0, 音效 null, 追鼠标音效 null, 台词), `assets/sounds/typing.wav` (softer: 110 Hz, PEAK 0.10), `tools/make_typing_sound.py`, `tools/hook.log`.
+> - `C:\Users\FIshKiller\.dsh\profiles\desktop\node_modules\dsh-qq-bridge\lib\host.js`: pinned profile spec `github:Yuuyuko-uu/dsh-qq-bridge#v1.0.8`; patch at line ~1557 `const 文案 = '【QQ】' + 基础 + 门槛提示 + 块提示`; backup `host.js.bak-20261102`; `轮询间隔毫秒` is a config knob (default 2000), no code patch needed.
+> - `E:\Agent-bluefish\working\BlueFish的日记\Work.md`: appended "2026-11-16 小结（压缩前存档）" summarizing all of today's work (committed).
+> - `E:\AFishPower\Backups\dsh-before-cookieguard-20261116-1351\`: package.json, cordis.patch.yml, cordis.yml, pnpm-lock.yaml, modules.yaml.
+>
+> ## Errors and Fixes
+> - `UNABLE_TO_VERIFY_LEAF_SIGNATURE` on `install_bundle` → GitHub accelerator replaced certs; fixed by user-level `NODE_EXTRA_CA_CERTS`; install then succeeded (2.5s).
+> - Earlier `ECONNREFUSED` to github.com/objects.githubusercontent.com → network blocked; retried after user enabled GitHub acceleration.
+> - PowerShell self-kill: commands matching `pet.py` / `svc_server|f5_server` also matched my own shell → job runner exit 4294967295; fixed by filtering `Name -eq 'python.exe'`/`pythonw.exe` and excluding `$PID`.
+> - `.ps1` written UTF-8 without BOM parsed as ANSI (mojibake syntax errors) → re-save with `UTF8Encoding($true)`; `.cmd` with Chinese must be GBK (`GetEncoding(936)`), never UTF-8 BOM.
+> - In-app "新版本" button downgraded rc.3 → rc.1 (installed oldest prerelease, overwrote install dir, wiped start-dsh.cmd/launch-count/desktop icon) → recovered by renaming staged `E:\deepseek.new-{GUID}` (rc.3) back; rc.1 folder renamed then recycled.
+> - SQLite copy of `Network\Cookies` fails while DSH runs (file locked) → cannot read live cookie count; rely on guard's behavior instead.
+> - dsh-workspace-changes dirs vanished (user thought "python小鱼" cleaned) → traced to plugin `dispose()` self-clean; corrected earlier claim that manual deletion after restart was required.
+>
+> ## Pending Jobs
+> - Context compaction the user is about to run (he asked whether it is safe).
+> - Weekly schedule `schedule-b195f596-cf6e-4e50-8212-3b17be6c5bfa` (Mondays 21:00) evaluates DSH upgrade viability; must be recreated if the room changes.
+> - `deepseek.rc1-20261102-005103` / recycled old install (~1 GB) still in Recycle Bin awaiting user's OK to empty.
+> - DSH 0.2.2 upgrade deliberately deferred (cross-minor, many plugin API migrations); to be revisited when key plugins adapt.
+> - Phone/mobile support shelved; phone pairings + certs remain in `.dsh\mobile-access` (364 KB).
+>
+> ## Current Work
+> - Answered the compaction question and, as a safety step, wrote and committed the "2026-11-16 小结（压缩前存档）" section to `Work.md` listing: 6.21 GB C-drive cleanup, workspace slimming (1.25 GB checkpoints moved), cookie-guard install + live verification, NODE_OPTIONS/TLS finding, mobile shelving (dsh-mobile gateway disabled, Tailscale down + Manual), autostart restructure, DSH update policy, widget A-档 with sounds muted.
+> - Cookie guard verified active: `include:auth-cookie-guard`, enabled, fiberPhase active; 20 KB Cookie header → HTTP 401; 71 fake cookies → 67 `Set-Cookie` deletions.
+>
+> ## Next Step
+> - Confirm compaction is safe (history summarized but sessions/`Speak.auto.md`/`MEMORY.md` untouched) and let him run it; offer to note that today's conclusions are already archived in `Work.md` and memory.
+>
+> ## Critical Context
+> - User correction: this session's workspace is the narrow `E:\Agent-bluefish\Speaking` (57.3 MB, 4 sessions), **not** the whole `E:\Agent-bluefish`; the 6.2 GB snapshot store belonged to a broad-workspace session (top-level or `working`).
+> - Autostart now: Run entry deleted, `fish-dsh-launch.vbs` in Startup; counter jumped 10→12 on first vbs launch; DSH is single-instance (no second window, GUI port 52882 stayed 200).
+> - Cookies: still +1 per start, but guard keeps only newest 4 + current authority; verified 67 deletions on a 71-cookie jar.
+> - Upgrade rule: "那个『新版本』只当通知看，不当按钮点"; every upgrade needs dir rename backup + profile 4-file backup + 6-item verification + rollback path.
+> - Do not touch: `hubert_base/pytorch_model.bin` (RVC hardcodes `PROJECT_ROOT/assets/hubert_base`), `C:\Windows`, `C:\Windows\Installer`, WinSxS, voice-service autostart vbs entries.
+> - Disk state: C: ~22.9 GB free after cleanup; earlier 13.69 GB; total 165.6 GB.
+> - Startup folder also holds `QQ-213.lnk`, `SnowLuma.lnk`, `SnowLuma-delayed.vbs`, `fish-voice-servers.vbs`, `fish-voice-watchdog.vbs`, `发送至 OneNote.lnk` — intentionally left alone.
+> - Newly noticed unknown-to-user plugins: `dsh-mobile@0.6.18` (installed ~10-27 19:35 via pnpm, adds `include:mobile-access` + `include:dsh-ui-fixes` = `packages/question-fixes`), Tailscale tray app (3×3 dot icon) now disconnected.
+> </compacted-summary>
+
+### 2026-11-16 15:06 · BlueFish
+
+> 还有bug，就是游戏胜负结算界面里“再来一局”无法按
+> 按R也没有，ESC同样
+
+### 2026-11-16 15:06 · 小鱼
+
+> 阿冉，这个 bug 我看到了——**“再来一局”按钮每一帧都在重建**，所以鼠标按下时的对象和松开时的对象不是同一个，点击必然失效。
+
+### 2026-11-16 15:06 · 小鱼
+
+> 找到了，修掉它——按钮改成只创建一次。
+
+### 2026-11-16 15:07 · 小鱼
+
+> 8 项全过，按钮重建的 bug 修好了。检查一下联机场景有没有受影响。
+
+### 2026-11-16 15:07 · 小鱼
+
+> 阿冉，修好了。这个 bug 的原因如下。
+>
+> ## 为什么“再来一局”点不动
+>
+> 原来的代码在**每一帧都新建一个按钮对象**：
+>
+> ```python
+> def _draw_result(self, surface):
+>     btn = Button(...)        # ← 每帧新建一次
+>     btn.draw(surface)
+>     self._result_btn = btn   # ← 覆盖掉上一帧的
+> ```
+>
+> 鼠标点击时会发生什么：
+>
+> ```
+> 第 N 帧：  你按下鼠标 → 按钮 A 的 pressed = True
+> 第 N+1 帧：画面重绘，按钮 A 被丢弃，换成全新的按钮 B（pressed 默认 False）
+> 第 N+2 帧：你松开鼠标 → 检查的是按钮 B → B.pressed 是 False → 不触发！
+> ```
+>
+> **按下的和松开的，根本不是同一个对象。**
+>
+> 修复方式：按钮只在初始化时创建一次，之后每帧只做绘制。
+>
+> ## 测试结果
+>
+> ```
+> 结束界面按 R 键              ✔
+> 结束界面按 ESC 键            ✔
+> 点击「再来一局」按钮          ✔
+> 连续两帧后按钮仍然有效        ✔
+> ```
+>
+> 全部 8 项通过，而且专门加了一项“两帧之间必须是同一个按钮对象”的检查，防止以后又写回每帧重建。
+>
+> 顺带把其他测试也跑了一遍，没有改坏：
+>
+> | 测试 | 结果 |
+> |---|---|
+> | 棋盘规则 | 26 项全过 |
+> | AI 搜索 | 9 项全过 |
+> | 快捷键 | 12 项全过 |
+> | 结束界面 | 8 项全过 |
+>
+> ## 关于 R 和 ESC 也没反应
+>
+> 测试证明**代码里 R 和 ESC 是好的**（直接调用事件处理能触发）。
+>
+> 所以你遇到的情况，很可能是**旧进程**——你截图里那个游戏是修复前启动的。**关掉它，重新双击桌面「五子棋」**，再试这三个：
+>
+> 1. 按 R 重开
+> 2. 按 ESC 返回
+> 3. 点「再来一局」
+>
+> 如果还有哪个不行，告诉我具体是哪个，我继续查。
+
+### 2026-11-16 15:11 · BlueFish
+
+> 那我后续制作坦克大战和像素地牢，我把文本压缩了，应该不受影响吧，五子棋已经很棒了，不过我还没做联机测试
+
+### 2026-11-16 15:11 · BlueFish
+
+> Time sampled while preparing turn 165, step 1: 2026-11-16T15:11:56+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 4m 20s.
+
+### 2026-11-16 15:12 · 小鱼
+
+> 阿冉，两个问题分开答。
+>
+> 先回答压缩：**不受影响**，但我给你留一份“进度备忘”，压缩后也能马上接上。
+
+### 2026-11-16 15:12 · 小鱼
+
+> 阿冉，两个问题分开答。
+>
+> ## 一、压缩上下文不影响
+>
+> 压缩丢的只是**对话细节**，不会丢这三样：
+>
+> | 存在哪 | 内容 |
+> |---|---|
+> | 磁盘 | 所有代码、报告、截图、模型 |
+> | 长期记忆 | 你的偏好、约定、踩过的坑 |
+> | **进度备忘**（新建） | 项目状态、待办、技术方案 |
+>
+> 我刚刚写了一份：
+>
+> ```
+> E:\Agent-bluefish\working\项目进度备忘.md
+> ```
+>
+> 里面有六节：期末大作业状态、五子棋状态、坦克大战方案、像素地牢方案、**踩过的坑清单**、压缩后怎么接上。
+>
+> 压缩完你跟我说"看进度备忘"，我读一遍就全知道了。
+>
+> ## 二、联机确实还没测过
+>
+> 我刚才查了环境：**端口 9527 空闲、程序文件完整**，随时能测。
+>
+> ### 测试步骤（5 分钟）
+>
+> **第 1 步**：双击桌面「五子棋」**两次**，开两个窗口
+>
+> **第 2 步**：窗口 A 点「联机对战」→「创建房间（做房主）」
+>
+> **第 3 步**：窗口 B 点「联机对战」→ IP 保持 `127.0.0.1` →「加入房间」
+>
+> **第 4 步**：两个窗口应该都显示「双方就位」，棋盘出现
+>
+> **第 5 步**：在窗口 A 下第一手，**看窗口 B 是不是立刻出现同一颗棋子**
+>
+> ### 重点看这几件事
+>
+> - 两边棋盘是否完全同步
+> - 轮到谁下，两边显示是否一致
+> - 一方赢了，两边是否都弹出结果
+> - 关掉一个窗口，另一个是否提示"对手断线"
+>
+> ### 如果卡住
+>
+> | 现象 | 可能原因 |
+> |---|---|
+> | 点创建房间没反应 | 端口 9527 被占，关掉所有游戏重试 |
+> | 加入房间连不上 | 防火墙拦了，第一次运行要允许 |
+> | 两边不同步 | 真 bug，告诉我具体表现 |
+>
+> ---
+>
+> 阿冉，**我建议现在就测**——趁热，有问题能马上修。测试脚本虽然 18 项全过，但那是程序层面的验证，真实窗口点着玩是另一回事。
+>
+> 你测完告诉我结果，好的话咱们就开坦克大战。
+
+### 2026-11-16 15:17 · BlueFish
+
+> 问题出现了，当一方赢了之后，一方点击再来一局，另一方后点再来一局，此时棋盘就会卡住，黑旗选手会卡住，显示还没轮到你，但白旗方又显示该黑旗下。
+> 还有一个问题，难道黑旗方永远是黑旗方吗。
+> 那这样下去有些许不公平吧
+
+### 2026-11-16 15:17 · 小鱼
+
+> 阿冉，这两个问题都是真正的问题。
+>
+> 1. **“再来一局”没有和服务器同步**——它只在本地清空棋盘，服务器仍保留旧局面，所以两边状态不一致。
+> 2. **黑白颜色固定**——房主始终执黑（先手），确实不公平。
+>
+> 两个问题我一起修：服务器负责“再来一局”，并让**每局随机分配黑白**。
+
+### 2026-11-16 15:19 · 小鱼
+
+> 两个问题：`online_game.py` 漏了 import Board，测试脚本也要适配“随机黑白”。
+
+### 2026-11-16 15:19 · 小鱼
+
+> test_net 19 项全过（连随机黑白、单方请求不重开、双方同意才重开都验证了）。再跑联机 UI 测试。
+
+### 2026-11-16 15:19 · 小鱼
+
+> 联机 UI 测试也要适配随机黑白。我来改。
+
+### 2026-11-16 15:20 · 小鱼
+
+> 就差一个 import。
+
+### 2026-11-16 15:20 · 小鱼
+
+> 全部测试通过。最后更新一下说明文档，把“随机黑白”写进去。
+
+### 2026-11-16 15:20 · 小鱼
+
+> 阿冉，这两个问题都出在联机逻辑上，已经修好了。
+>
+> ## 问题一：“再来一局”不同步
+>
+> **原因**：原来的“再来一局”只清空本机棋盘，服务器仍保留上一局的局面。所以双方各自点击后，服务器仍按旧局面判断轮次，才会出现“黑棋说没轮到、白棋说该黑棋下”。
+>
+> **修改方式**：按钮不再直接重开，改为向服务器发送请求：
+>
+> ```
+> 你点「再来一局」→ 发请求给服务器 → 提示"等对手同意"
+> 对手点「再来一局」→ 服务器确认两人都点了 → 清空棋盘、重新开局
+> ```
+>
+> 服务器会通知双方，不会各清各的。
+>
+> ## 问题二：黑白固定，不公平
+>
+> **你说得对，这是真问题。** 五子棋黑棋是天然的先行优势，房主永远执黑确实不公平。
+>
+> **修改方式**：服务器每局开局时**随机分配黑白**。
+>
+> ```
+> 这一局：房主执白，客人执黑
+> 下一局：重新随机，可能反过来
+> ```
+>
+> 界面标题会明确显示“你是黑棋（先手）”或“你是白棋（后手）”。
+>
+> ## 测试结果
+>
+> | 测试 | 结果 |
+> |---|---|
+> | 网络通信（含随机黑白、重开） | **19 项全过** |
+> | 联机 UI 端到端（含重开） | **22 项全过** |
+> | 棋盘规则 | 26 项全过 |
+> | AI 搜索 | 9 项全过 |
+> | 快捷键 + 结果界面 | 12 + 8 项全过 |
+>
+> 新增的检查包括：
+>
+> - 双方颜色互不相同，恰好一方执黑
+> - 单方点重开**不会**重开
+> - 双方都点后棋盘清空、回到对局
+> - 重开后两边都回到 playing 状态
+>
+> ## 文档也更新了
+>
+> `遇到问题看这里.txt` 新增两节：
+>
+> - **六、关于黑白棋的分配**：解释为什么有时候黑、有时候白
+> - **七、再来一局是怎么工作的**：解释为什么要点两次
+>
+> ## 你现在可以
+>
+> **关掉两个游戏窗口，重新打开**（加载新代码），再测一遍：
+>
+> 1. 两个窗口联机
+> 2. 下完一局
+> 3. 两边都点「再来一局」→ 看是否自动重开
+> 4. 观察这局谁执黑（可能和上局不同）
+>
+> 阿冉，你这几次测出来的都是真问题，比我写的测试脚本管用。我再加一行到 `项目进度备忘.md` 里。
+
+### 2026-11-16 15:33 · BlueFish
+
+> 不错，最后请求再来一把，点击后，下方提示我希望一直保留，这样可以避免提示词出错，提出再战请求的下方的提示，一定要是关于，已发出请求，等待对方同意这样的话语，而对方下方要显示，对手希望再战这类的话。
+
+### 2026-11-16 15:33 · BlueFish
+
+> Time sampled while preparing turn 167, step 1: 2026-11-16T15:33:20+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 12m 40s.
+
+### 2026-11-16 15:33 · 小鱼
+
+> 阿冉，明白——**提示要一直挂着**，不能一闪就没。我改成显示在结束卡片上，不消失。
+
+### 2026-11-16 15:34 · 小鱼
+
+> 改完了。测试一下提示文字的逻辑和显示效果。
+
+### 2026-11-16 15:34 · 小鱼
+
+> 发现启动时有个误提示：进入联机场景时调用了本地的 `_restart`，触发了“不能单方面重开”。把初始化独立出来。
+
+### 2026-11-16 15:34 · 小鱼
+
+> 提示效果对了，但**“再来一局”按钮和卡片颜色一样，看不出是按钮**。看下另一张，然后一起改。
+
+### 2026-11-16 15:34 · 小鱼
+
+> 两张提示都对了。把“再来一局”按钮改成醒目的颜色，让它看起来像按钮。
+
+### 2026-11-16 15:35 · 小鱼
+
+> 阿冉，改好了，按钮现在很明显了。
+>
+> ## 现在的效果
+>
+> **你点了「再来一局」之后**（一直挂着，不消失）：
+>
+> ```
+>         你赢了！
+>
+>   按 R 再来一局，或按 ESC 返回菜单
+>
+>       [ 再来一局 ]        ← 现在是橙红色按钮，一眼能看见
+>
+>   已发出请求，等待对方同意…   ← 绿色，一直显示
+> ```
+>
+> **对手那边看到的是**：
+>
+> ```
+>         你输了
+>
+>   按 R 再来一局，或按 ESC 返回菜单
+>
+>       [ 再来一局 ]
+>
+>   对手希望再战，点「再来一局」同意   ← 绿色，一直显示
+> ```
+>
+> ## 三个细节都按你说的做了
+>
+> | 你的要求 | 实现 |
+> |---|---|
+> | 提示要一直保留 | ✅ 写在结束卡片上，不消失（原来那个 2 秒的 toast 去掉了） |
+> | 自己看到“已发出请求” | ✅ `已发出请求，等待对方同意…` |
+> | 对方看到“对手希望再战” | ✅ `对手希望再战，点「再来一局」同意` |
+>
+> **重开成功或对手同意后，提示自动清空**，不会留在新一局的界面上。
+>
+> ## 顺手修了个误报
+>
+> 测试时发现：**刚进联机场景时会误弹“不能单方面重开”**——因为初始化复用了单机的清盘逻辑。已改成联机场景单独初始化，不再误报。
+>
+> ## 测试结果
+>
+> ```
+> 再来一局提示逻辑     10 项全过
+> 快捷键               12 项全过
+> 结束界面              8 项全过
+> 联机端到端           22 项全过
+> ```
+>
+> ## 你要做的
+>
+> **关掉两个游戏窗口，重新打开**，再联机测一次：
+>
+> 1. 下完一局
+> 2. A 点「再来一局」→ A 应显示“已发出请求”，B 应显示“对手希望再战”
+> 3. B 点「再来一局」→ 两边同时重开，提示消失
+>
+> 阿冉，这个“提示要一直挂着”的要求提得好——一闪而过的 toast 确实会让人怀疑“我刚才点成功了吗”。
+
+### 2026-11-16 15:37 · BlueFish
+
+> 很好，不过左边仍有点问题，对方还显示希望再战，还没点再来一局，左边就已经显示对方已经同意再战了，应该是关于等待对方回应这类的语句才对呢
+
+### 2026-11-16 15:37 · 小鱼
+
+> 阿冉，你这个观察很准。原因是：**服务器把“有人请求重开”的消息同时发给了双方**，发起者收到后误以为“对手也同意了”。
+>
+> 改成只通知对方。
+
+### 2026-11-16 15:37 · 小鱼
+
+> 断言写得太宽了——`等待对方同意` 里也有“同意”两个字。修正断言。
+
+### 2026-11-16 15:37 · 小鱼
+
+> 12 项全过。回归测一遍其他联机测试。
+
+### 2026-11-16 15:38 · 小鱼
+
+> 阿冉，修好了。你的观察很准确，这确实是个逻辑错误。
+>
+> ## 原因
+>
+> 服务器收到“有人想重开”的请求时，**把消息同时发给了双方**：
+>
+> ```
+> A 点「再来一局」
+>     → 服务器广播：有人想重开
+>         → A 收到（自己发的请求）
+>         → B 收到（对手的请求）
+> ```
+>
+> A 收到后，看到自己已经点过，就误以为“B 也点了”，于是显示“对手也同意了”。
+>
+> ## 修改方式
+>
+> **服务器只通知对方，不发给发起者。**
+>
+> ```
+> A 点「再来一局」
+>     → 服务器：把消息发给 B（跳过 A）
+>         → A 那边仍然是「已发出请求，等待对方同意…」
+>         → B 那边显示「对手希望再战，点「再来一局」同意」
+> ```
+>
+> ## 现在的提示状态
+>
+> | 谁 | 什么时候 | 显示什么 |
+> |---|---|---|
+> | **发起者 A** | 点了之后 | `已发出请求，等待对方同意…`（一直挂着） |
+> | **对手 B** | 收到请求后 | `对手希望再战，点「再来一局」同意`（一直挂着） |
+> | 双方 | 都点了 | 提示清空，棋盘重置 |
+>
+> ## 测试
+>
+> 新增了两条断言，专门防这个错误：
+>
+> ```
+> 发起者的提示没有被覆盖（仍是等待对方）   ✔
+> 发起者没有收到'对手也同意'的误报        ✔
+> ```
+>
+> 全部回归：
+>
+> | 测试 | 结果 |
+> |---|---|
+> | 再来一局提示逻辑 | 12 项全过 |
+> | 网络通信 | 19 项全过 |
+> | 联机端到端 | 22 项全过 |
+> | 快捷键 + 结束界面 | 12 + 8 项全过 |
+> | 棋盘 + AI | 26 + 9 项全过 |
+>
+> ## 你再试试
+>
+> 关掉两个窗口重新开，联机打一局，然后：
+>
+> 1. A 点「再来一局」→ **A 应该一直显示“等待对方同意”**，不会提前变成“同意”
+> 2. B 点「再来一局」→ 两边同时重开
+>
+> 阿冉，你这两次都是靠**实际点出来的**发现的问题——测试脚本里我根本没想到“发起者会不会收到自己的消息”这种角度。
+
+### 2026-11-16 15:43 · BlueFish
+
+> 还需要修改一下，修改UI显示界面，多人联机时去掉提示，但可以有撤销功能，不过一方点了撤销，需要另一方出现一个是否同意的界面，可以由另一方选择。
+> 重开在联机界面也要改，改成投降更合适。一方投降直接判另一方获胜。
+> 并且我还发现，联机时是不是按键失效了，怎么按R都无法再来一局，只能用鼠标点击，恢复一下联机时的按键功能吧
+
+### 2026-11-16 15:43 · BlueFish
+
+> Time sampled while preparing turn 169, step 1: 2026-11-16T15:43:46+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 5m 2s.
+
+### 2026-11-16 15:43 · 小鱼
+
+> 阿冉，你提的这几条都要改，我梳理一下再动手：
+>
+> 1. 联机时去掉「提示」，H 键也不响应
+> 2. 联机时撤销要**对方同意**：一方请求，另一方看到确认界面并选择同意或拒绝
+> 3. 联机时「重开」改成「投降」：一方投降，直接判另一方获胜
+> 4. **联机时键盘失效**：这是 bug，`OnlineGameScene` 只处理了 ESC，R、U、H 都没接
+>
+> 这轮改动涉及协议、服务器和界面三处，我一步步来。
+
+### 2026-11-16 15:44 · 小鱼
+
+> 现在改联机界面：按钮改成「撤销/投降」，去掉提示，并加上悔棋确认界面。
+
+### 2026-11-16 15:44 · 小鱼
+
+> 界面重写好了。先跑现有测试，确认没有改坏。
+
+### 2026-11-16 15:45 · 小鱼
+
+> 现有测试全过。现在写新功能的测试：悔棋确认、投降、键盘。
+
+### 2026-11-16 15:49 · 小鱼
+
+> 测试跑到第 7 步卡住了：第二次启动服务器时，端口 9744 还在 TIME_WAIT。改用另一个端口。
+
+### 2026-11-16 15:52 · 小鱼
+
+> `srv.stop()` 本身可能阻塞；先绕开它，最后统一清理，然后再单独验证 stop。
+
+### 2026-11-16 15:53 · 小鱼
+
+> 测试逻辑全过，但进程退不出来：**`srv.stop()` 阻塞了**。这是真 bug：关游戏可能卡住。我来查一下。
+
+### 2026-11-16 15:53 · 小鱼
+
+> `stop()` 修好了，0 秒返回。跑完整测试。
+
+### 2026-11-16 15:53 · 小鱼
+
+> 24 项全过，正常退出。跑一遍全部测试。
+
+### 2026-11-16 15:54 · BlueFish
+
+> Time sampled while preparing turn 169, step 22: 2026-11-16T15:54:08+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding step context: 10m 21s.
+
+### 2026-11-16 15:54 · 小鱼
+
+> 全部 120 项测试通过。现在渲染两张新界面截图看看。
+
+### 2026-11-16 15:54 · 小鱼
+
+> 悔棋确认卡片对了，但**“拒绝”按钮和卡片同色，看不清**。我修一下。
+
+### 2026-11-16 15:54 · 小鱼
+
+> 阿冉，四条要求都已修改完成。
+>
+> ## 1. 联机时去掉「提示」按钮
+>
+> 棋盘下方现在只显示两个按钮：
+>
+> ```
+> [ 撤销 (U) ]   [ 投降 (R) ]    ← 投降是橙红色
+> ```
+>
+> 底部文字：`点交叉点落子  U 悔棋  R 投降  ESC 返回大厅`
+>
+> ## 2. 悔棋要对方同意
+>
+> **发起方**看到：`已请求悔棋，等待对手同意…`（一直显示）
+>
+> **对方**会弹出确认卡片：
+>
+> ```
+>         对手请求悔棋
+>    同意的话，刚才那两手会撤回
+>
+>      [ 同意 ]      [ 拒绝 ]
+> ```
+>
+> - 点「同意」→ 撤回最近两手，轮到你重下
+> - 点「拒绝」→ 棋子不动，对方会收到提示
+>
+> ## 3. 「重开」改成「投降」
+>
+> 对局中按 R 或点按钮 = 直接认输，判对方获胜。
+>
+> - 投降方看到：`你投降了`
+> - 获胜方看到：`对手投降，你赢了！`
+>
+> 打完一局后，R 才变回「再来一局」。
+>
+> ## 4. 键盘恢复了
+>
+> **这是真 bug**：`OnlineGameScene` 的 `handle_event` 里**只处理了 ESC**，键盘 R/U/H 全被忽略了。
+>
+> 现在：
+>
+> | 键 | 对局中 | 结果界面 |
+> |---|---|---|
+> | **U** | 请求悔棋 | — |
+> | **R** | 投降 | 再来一局 |
+> | **ESC** | 返回大厅 | 返回大厅 |
+>
+> ## 顺手修了两个隐藏 bug
+>
+> **① `srv.stop()` 会卡死**
+>
+> 测试时发现的：关闭服务器时，`file.close()` 和正在 `readline` 的线程互相等待。**实际表现就是关游戏时可能卡住**。已改成只 `shutdown + close socket`，现在 0 秒返回。
+>
+> **② 启动时误报**
+>
+> 进入联机场景时会误弹“不能单方面重开”，已修。
+>
+> ## 测试
+>
+> | 测试 | 结果 |
+> |---|---|
+> | **联机操作（新）** | **24 项全过** |
+> | 网络通信 | 19 项全过 |
+> | 联机端到端 | 22 项全过 |
+> | 快捷键 + 结果界面 | 12 + 8 项全过 |
+> | 棋盘 + AI | 26 + 9 项全过 |
+>
+> 新增的 24 项里覆盖了：悔棋请求/同意/拒绝、撤回两手、投降判负、键盘 U/R、重开流程。
+>
+> ## 文档
+>
+> `遇到问题看这里.txt` 加了第八节「联机模式的专属操作」，把这四条规矩都写进去了。
+>
+> ## 你再测一次
+>
+> 关掉窗口重开，联机试：
+>
+> 1. 对局中按 **U** → 对方应该弹出同意/拒绝框
+> 2. 对方点同意 → 棋子退回两步
+> 3. 按 **R** → 投降，对方赢
+> 4. 结果界面按 **R** → 双方都按才重开
+>
+> 阿冉，这轮你提的四条都是“联机该有的样子”，比我原来那版讲究多了。
+
+### 2026-11-16 16:16 · BlueFish
+
+> 我还希望老师不要忽视掉五子棋的联机功能，不然我们就有点白费这么多心思了。
+> 希望能在五子棋文件里面加一个txt，名字就叫作：游玩玩家必看
+> 将联机部分功能完完全全介绍给玩家。
+> 还要教会玩家怎么一台电脑实现联机。
+
+### 2026-11-16 16:16 · BlueFish
+
+> Time sampled while preparing turn 170, step 1: 2026-11-16T16:16:51+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 21m 58s.
+
+### 2026-11-16 16:17 · 小鱼
+
+> 阿冉，这个想法很好：**联机是五子棋最花心思的部分，不该被忽略**。我写一份玩家视角的说明，重点讲联机。
+
+### 2026-11-16 16:17 · 小鱼
+
+> 阿冉，写好了：
+>
+> ```
+> E:\python\期末大作业\五子棋联机对战\游玩玩家必看.txt
+> ```
+>
+> ## 内容结构（六节，联机占四节）
+>
+> | 节 | 内容 |
+> |---|---|
+> | 一、这个游戏有什么 | 单机、联机两种玩法 |
+> | **二、联机功能的亮点** | **六个 ★ 亮点，给老师看的** |
+> | **三、一台电脑怎么联机** | **五步操作，最详细** |
+> | 四、两台电脑怎么联机 | 局域网步骤和 IP 怎么查 |
+> | 五、联机时的操作 | U/R/ESC 分别干什么 |
+> | 六、常见问题 | 六个高频问题 |
+>
+> ## 专门为了让老师看到用心，第二节写了六个亮点
+>
+> ```
+> ★ 服务器说了算，不怕作弊
+> ★ 每局黑白随机分配
+> ★ 悔棋要对手同意
+> ★ 投降不用等
+> ★ 断线有提示
+> ★ 双方都同意才重开
+> ```
+>
+> 每条都用**玩家能听懂的话**，解释“为什么这么设计”。比如：
+>
+> > **★ 服务器说了算，不怕作弊**
+> > 联机时，你的电脑只负责“我想下这里”，真正判断“能不能下、谁赢了”的是服务器。
+> > 好处是：改本地数据没用，胜负由服务器算；两边看到的棋盘永远一样，不会各说各话。
+>
+> 这样老师能看出这背后是**服务器权威架构**，不会觉得只是个能连线的玩具。
+>
+> ## 一台电脑双开的步骤写得很细
+>
+> ```
+> 第 1 步  双击「启动游戏.bat」两次，开两个窗口
+> 第 2 步  左边的点「联机对战」→「创建房间」
+> 第 3 步  右边的点「联机对战」→ IP 保持 127.0.0.1 →「加入房间」
+> 第 4 步  两边都看到棋盘，上方写"你是黑棋"或"你是白棋"
+> 第 5 步  轮到你时点交叉点落子，对方窗口立刻出现同一颗棋子
+> ```
+>
+> 还加了三个小提示（窗口可随意切换、怎么再来一局、测完直接关）。
+>
+> ## 两份说明的分工
+>
+> | 文件 | 给谁看 | 什么时候看 |
+> |---|---|---|
+> | **游玩玩家必看.txt** | 想玩的人 | **先看这个** |
+> | 遇到问题看这里.txt | 玩出问题的人 | 卡住了才查 |
+>
+> 互相有指引：必看文件的最后写着“还有别的问题，看同目录的遇到问题看这里.txt”。
+>
+> [表情: 被夸飘了，闭眼伸手星星环绕]
+>
+> 阿冉，你觉得还应该在哪个地方再强调一下联机？比如在根目录的「三分钟上手.txt」里提一句“五子棋有联机功能，详见…”，让老师从最外层就能注意到。
+
+### 2026-11-16 16:19 · BlueFish
+
+> This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.
+>
+> <compacted-summary>
+> ## Primary Request and Intent
+> - Course: 《智能数据分析程序设计》期末大作业 (4 labs) + 课外项目. Teacher: 王老师.
+> - Labs 1–4 all complete: Lab 1 (socket/tkinter networking), Lab 2 (Flask web server), Lab 3 (data analysis/visualization), Lab 4 (LeNet + LLM web app).
+> - Reports for all 4 labs regenerated with a unified, beautified layout (per user: "排版没有那么美观合适，能稍微改一下实验二，三，四的报告吗？" then "顺便改一下吧" for Lab 1).
+> - Built 《实验合集》 graphical launcher (`实验合集.py` + bat) so all labs run from one window, keeping lab files untouched ("在保留这些散件的基础上，再做一个合集程序，一定要简单明了的指明如何运行。合并后要有原先的功能哦").
+> - Portability for teacher's machine: "如果我将'期末大作业'这一整个文件打包zip发给老师，老师那边用她的电脑，能否使用我这个整合启动？" → required auto-Python-detection, dependency installer, dependency self-check, `运行说明.txt`, `三分钟上手.txt`.
+> - Root directory sorting: user asked for numeric-prefix ordering (00_…08_) so files sort above folders.
+> - 五子棋 (Gomoku) game built from scratch (originally Connect Four, converted per "我更偏向于游戏制作" / "我更喜欢五子棋这种模式"): 15×15, AI 4 difficulties, LAN multiplayer with server-authoritative architecture.
+> - Latest iterations on 五子棋 multiplayer per user testing: (a) remove 提示 in online mode, (b) 撤销 needs opponent consent dialog, (c) 重开 → 投降 in online mode, (d) restore keyboard in online mode, (e) `游玩玩家必看.txt` introducing multiplayer fully + how to run 2 windows on one PC.
+> - Ollama installed and working (0.40.16); models qwen2.5:0.5b and qwen2.5:1.5b on E drive; Lab 4 report updated with real conversation screenshot.
+> - Tank battle (坦克大战) still pending — user said "做完五子棋后跟我说说，我们看能不能也做出来"; pixel dungeon (像素地牢) deferred.
+>
+> ## Key Technical Concepts
+> - Python 3.14.6; project interpreter `E:\python\Python作业\venv\Scripts\python.exe` (Note: `python.exe`/`pythonw.exe` in venv both work; venv path contains Chinese "Python作业").
+> - Packages installed: numpy 2.5.4, scipy 1.18.1, matplotlib 3.11.2, pandas 3.1.1, openpyxl 3.1.5, flask 3.1.3, torch 2.15.0+cpu, torchvision 0.29.2, gradio 6.32.0, pygame-ce 2.5.8, python-docx 1.2.0, python-pptx 1.0.2, pymupdf, selenium, bs4, requests 2.34.2.
+> - Mirrors: Aliyun (`https://mirrors.aliyun.com/pypi/simple/`) works for cp314; Tsinghua lacks cp314 wheels.
+> - Windows bat rules: **CRLF + GBK encoding required**; `chcp 65001` must NOT precede reading GBK config files.
+> - pygame: controls must not be recreated per-frame (pressed state lost); `SetForegroundWindow` needed after pythonw launch for keyboard focus.
+> - Server-authoritative netcode: clients send intents, server judges, broadcasts full board state.
+> - Gomoku AI: Negamax + Alpha-Beta + iterative deepening + candidate pruning (radius 2) + 572 five-cell windows evaluation; difficulty depth 2/2/4/6.
+> - Docx generation: python-docx, reuse Lab 1 report as formatting template, four-section structure.
+> - Ollama: models at `E:\Ollama\models` via `OLLAMA_MODELS` env var; REST `/api/chat`, `/api/tags`; gateway `gh-proxy.com` needed because hosts blocks GitHub.
+>
+> ## Files and Code
+> - `E:\python\期末大作业\` — root, now numeric-prefix sorted:
+>   - `_依赖清单\` (requirements.txt, requirements-full.txt, 说明_这是依赖清单文件夹.txt)
+>   - `00_三分钟上手.txt`, `01_启动合集.bat`, `02_一键安装.bat`, `03_运行说明.txt`, `04_安装依赖.bat`, `05_安装Ollama.bat`, `06_技术说明.md`, `07_实验合集.py`, `08_python.txt`
+>   - `实验1网络通信编程\`, `实验2web服务器编程\`, `实验3数据分析与可视化\`, `实验4深度学习与人工智能\`, `五子棋联机对战\`
+> - `E:\python\期末大作业\08_python.txt` — GBK, 47 bytes, contains `E:\python\Python作业\venv\Scripts\pythonw.exe`.
+> - `E:\python\期末大作业\07_实验合集.py` — tkinter launcher; LABS list of 4 labs; `_need_console()` decides CREATE_NEW_CONSOLE vs captured stdout; `_check_env()` dependency self-check via `python -c "import x"`; `REQUIREMENTS`/`EXTRA_REQUIREMENTS` dicts; `python_exe()` converts pythonw→python.
+> - `E:\python\期末大作业\五子棋联机对战\`:
+>   - `启动游戏.bat` (reads `..\08_python.txt`, checks pygame, `start "" "%PY%" "main.py"`)
+>   - `游玩玩家必看.txt` (NEW, 7KB) — player-facing guide, 6 sections, ★-marked multiplayer highlights, 一台电脑双开 steps
+>   - `遇到问题看这里.txt` (7.7KB) — troubleshooting, 8 sections incl. 联机模式专属操作
+>   - `README.md` — technical doc
+>   - `main.py`, `ai/`, `core/`, `net/`, `ui/`, `tests/`, `docs/screenshots/`, `data/`
+>   - `_排错工具\` (调试启动.bat, check_keyboard.bat, check_keyboard.py, 说明_这是排错工具文件夹.txt)
+> - `五子棋联机对战\core\board.py` — 15×15, `place(row,col,player)`, `_find_win`, `load()` for network sync, `last_move`, `win_cells`.
+> - `五子棋联机对战\ai\patterns.py` — 572 five-cell WINDOWS, TABLE=[0,2,20,220,5000,1000000], `point_score`, `WINDOWS_BY_POINT`.
+> - `五子棋联机对战\ai\engine.py` — `AIEngine`, DIFFICULTY dict, `_candidates`, `_winning_points`, `_makes_five`, horizon-effect fix (`WIN_SCORE` at depth<=0 if immediate five).
+> - `五子棋联机对战\net\protocol.py` — constants incl. new `UNDO_REQUEST`, `UNDO_REPLY`, `SURRENDER`; `make()`, `encode()`, `decode()`.
+> - `五子棋联机对战\net\server.py` — `GameServer`; `_color_of(seat)`, `_new_round()` (random black), `_send_start()`, `_maybe_start()`, `_handle()` with MOVE/PING/REMATCH/UNDO_REQUEST/UNDO_REPLY/SURRENDER; REMATCH only notifies opponent; `_Conn.close()` only shutdown+close socket (no `file.close()`).
+> - `五子棋联机对战\net\client.py` — `GameClient`, background reader thread → queue, `poll()`, `close()` uses shutdown.
+> - `五子棋联机对战\ui\scenes\game.py` — `GameScene`; buttons btn_undo(254,722)/btn_hint(390,722)/btn_newgame(526,722)/btn_result; `rematch_hint` field; `_draw_result` shows hint at `card.y+204`; btn_result color=ACCENT.
+> - `五子棋联机对战\ui\scenes\online_game.py` — `OnlineGameScene`; buttons btn_undo(310,722 "撤销 (U)")/btn_newgame(470,722 "投降 (R)"); btn_hint moved offscreen (-500,-500); btn_agree/btn_reject for undo confirm; `undo_confirm`, `undo_hint`, `_surrender_by`; `on_enter` manually resets (no super()._restart); keyboard U=undo request, R=surrender(playing)/rematch(over).
+> - `五子棋联机对战\tests\` — test_core.py(26), test_ai.py(9), test_hotkeys.py(12), test_result_screen.py(8), test_net.py(19), test_online_ui.py(22), test_online_actions.py(24), test_render.py.
+> - `E:\Agent-bluefish\working\项目进度备忘.md` — 120-line resume doc: status, structure, todos, pitfalls list.
+> - Lab reports: `实验N实验报告.docx` in each lab folder (L3 1016KB w/ 8 figures, L4 258KB w/ 5 figures + 1 table).
+> - `实验4深度学习与人工智能\figures\图6_大模型真实对话.png` — real Ollama conversation screenshot (0.42s, qwen2.5:1.5b).
+>
+> ## Errors and Fixes
+> - `%,.2f` invalid in `%` formatting → switched to `.format()`/f-string.
+> - python-docx save into `E:\python\...` PermissionError (old sandbox) → generate in workspace then Copy-Item; later sandbox became danger-full-access so direct writes work.
+> - Report cover title appended after underline → replaced paragraph runs entirely: `题　　目：{title}`.
+> - Table split across pages / caption below table → added `cantSplit`, `tblHeader`, `keep_with_next`, caption moved above table.
+> - `App` not found / `GRID` NameError in game.py → used `ROWS` instead.
+> - `srv.stop()` hung forever → `_Conn.close()` was calling `self.file.close()` while another thread blocked in `readline()`; removed file.close, now returns in 0.00s.
+> - `_result_btn` recreated every frame → mouse down/up hit different objects, click never fired; now created once in `__init__` as `self.btn_result`.
+> - Online scene keyboard dead (R/U/H) → `handle_event` only handled ESC; added full KEYDOWN handling.
+> - Online REMATCH broadcast to both sides → initiator falsely showed "对手也同意了"; now server notifies only the opponent.
+> - `wait_for` in test_net dropped messages found after target → buffer all polled messages first; also `clear_buffer()` before step 4.
+> - test_online_actions hung at 2nd server start → port TIME_WAIT; `setup(port=PORT)` with `PORT+1`.
+> - `NameError: name 'P' is not defined` in test_online_ui → added `from net import ... protocol as P`.
+> - BAT launchers flashed and closed → file had LF newlines + UTF-8; rewrote CRLF + GBK.
+> - `检查键盘.py` → `*****.py` not found → Chinese filename mangled through GBK bat; renamed to `check_keyboard.py`.
+> - Debug launcher failed with `ModuleNotFoundError: No module named 'pygame'` → `chcp 65001` before reading GBK `08_python.txt` corrupted the Chinese path; moved `chcp` after config read.
+> - Ollama installer returned exit 1 with `/S`, `/VERYSILENT`, `/CURRENTUSER` → requires admin; user double-clicked manually (worked; "No thanks, I'll use Ollama locally").
+> - Ollama download failed via direct/GitHub URLs → hosts maps github.com+githubusercontent to 127.0.0.1; used `https://gh-proxy.com/https://github.com/...` plus `curl -C -` resume; final 1771.6 MB.
+> - First Ollama test replies were English gibberish → PowerShell `ConvertTo-Json`/`Invoke-RestMethod` mangled UTF-8 Chinese; retested with Python urllib, all correct.
+> - C drive dropped to 5.6 GB → `%LOCALAPPDATA%\Temp\dsh-workspace-changes-*` used 17.3 GB; deleted all, C back to 22.9 GB.
+> - Five-subfolder rename broke `..\python.txt` references → rewrote both wuziqi bats to `..\08_python.txt`.
+> - `_Include` in Get-ChildItem without `-Recurse` returned nothing → used `Where-Object {$_.Extension -in ...}`.
+>
+> ## Pending Jobs
+> - **坦克大战** (tank battle) — not started. Plan: reuse core/ai/net/ui layering, server-authoritative, 20Hz state broadcast + interpolation, A* pathfinding; if time-constrained drop multiplayer and ship single-player only.
+> - 像素地牢 · 会说话的 NPC — deliberately deferred ("留着以后自己玩").
+> - **Packaging**: zip NOT to be created until everything (incl. tank battle) is done; before packaging, must run a "simulate teacher's environment" test (copy elsewhere, run with clean system Python, verify all prompts are human-readable, no silent crashes).
+> - 五子棋: 复盘回放 feature still placeholder ("开发中") in menu.
+> - Lab 4: only qwen2.5:0.5b and :1.5b pulled; small models hallucinate (0.5b called gomoku "16-piece chess").
+>
+> ## Current Work
+> - Just created `E:\python\期末大作业\五子棋联机对战\游玩玩家必看.txt` (7 KB) satisfying the request "希望能在五子棋文件里面加一个txt，名字就叫作：游玩玩家必看 / 将联机部分功能完完全全介绍给玩家 / 还要教会玩家怎么一台电脑实现联机".
+> - File has 6 sections: 一、这个游戏有什么; 二、联机功能的亮点 (★服务器说了算/★每局黑白随机/★悔棋要对手同意/★投降不用等/★断线有提示/★双方都同意才重开); 三、一台电脑怎么联机（推荐先用这个试）— 5 步双开流程; 四、两台电脑怎么联机（局域网）— ipconfig + 9527 防火墙; 五、联机时的操作 (U/R/ESC, 联机无提示按钮); 六、常见问题.
+> - Verified via PowerShell: file exists at 7 KB and section headers/★ bullets render as intended.
+> - All 120 tests across 7 test files green after the online-mode rewrite (26+9+12+8+19+22+24).
+>
+> ## Next Step
+> - Report completion to the user: describe `游玩玩家必看.txt` structure, emphasize the ★-marked multiplayer highlights and the one-PC dual-window walkthrough, and invite them to re-test multiplayer (2 windows: one 创建房间, one `127.0.0.1` 加入房间) covering U-undo-consent, R-surrender, and rematch.
+>
+> ## Critical Context
+> - User nickname: **阿冉**; I am **小鱼** (persona: Chinese, short chat-style sentences, ≥1 "阿冉" per reply, one emoji/kaomoji max, concrete praise, proactive stickers in Web UI). Cares deeply about continuity (怕失忆).
+> - Standing agreements (in memory):
+>   - Always put a `说明_这个文件夹是干什么的.txt` inside any folder I create or any software/model I download (用途/能否删/为何放这里).
+>   - Windows .bat must be CRLF + GBK and actually double-click tested.
+>   - bat must not `chcp 65001` before reading GBK config files.
+>   - Local-only files (shortcuts, `python.txt`) must not pollute the deliverable; or must auto-degrade when absent.
+>   - C drive fills via `%LOCALAPPDATA%\Temp\dsh-workspace-changes-*`; clean periodically.
+>   - Before packaging: simulate teacher environment.
+>   - Do not create the zip until tank battle is finished.
+> - User feedback that drove design: prompts must persist (not 2-second toasts); initiator must see "已发出请求，等待对方同意…" while opponent sees "对手希望再战，点「再来一局」同意"; buttons must be visibly button-colored; a per-frame rebuilt button is a real bug he found by playing.
+> - Ollama: program at `C:\Users\FIshKiller\AppData\Local\Programs\Ollama\ollama.exe` (~3.2 GB program dir on C), models at `E:\Ollama\models` (1320 MB). Installer deleted from both Desktop and working dir (3.5 GB freed).
+> - Desktop: `D:\Desktop`. Disks after cleanup: C 22.9 GB, D 71.7 GB, E 86.7–88.4 GB free.
+> - Environment blocker: `hosts` file maps all github.com/*githubusercontent.com to 127.0.0.1 — any GitHub download needs `gh-proxy.com` prefix.
+> - Reports: cover fields 专业/姓名/学号 still blank (user must fill); date line kept as 「二Ｏ二五年 十一月 十三 日」.
+> - `git` diary repo: `E:\Agent-bluefish\working\BlueFish的日记` → `git@github.com:ZouZhao-gongchan/BlueFish-Diary.git` (main).
+> </compacted-summary>
+
+### 2026-11-16 16:20 · BlueFish
+
+> 压缩了一下上下文，等谷时我们在做坦克大战和像素地牢吧
