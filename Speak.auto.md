@@ -36089,3 +36089,101 @@
 > 那小鱼你看我现在的working下的文件夹，就像一个仓库一样，你有什么想法，觉得这样方便美观吗？
 > 如果要整理归纳，移动这些文件合适吗？会不会有造成的危害？
 > 还有你要记得创建的文件夹记得留文本解释，让我每次如翻开书籍，就能看见便签，告诉我这章写的什么。
+
+### 2026-11-17 13:29 · 小鱼
+
+> 阿冉，我把 `working` 翻了一遍，**它现在不像仓库，更像一个堆东西的储物间**——而且有两个结构问题得先说，因为它们决定「能不能动」。
+>
+> **一、这间储物间里混着三种完全不同的东西**
+>
+> | 类别 | 是什么 | 体积 |
+> |---|---|---|
+> | 代码 | 5 个 `bluefish-*` 插件源码 | 约 0 MB，但最要紧 |
+> | 素材 | `_scratch\rvc` 4.7 GB、`voice` 993 MB、`share-tailscale` 100 MB | 约 5.8 GB |
+> | 垃圾 | 22 个 `pip-*` 临时空壳、根目录 40 个 `tmp_*.py`、23 个 `out_*.txt` | 约 47 MB |
+>
+> 根目录那 110 个散文件最碍眼：调试脚本、截图、日志、旧安装包全摊在面上。这算不上美观，根本上是没分章节。
+>
+> **二、移动的危害——比你想的严重，有三道硬性限制**
+>
+> 1. **5 个 `bluefish-*` 目录是 junction 的锚点**。`~\.dsh\profiles\desktop\node_modules\@local\*` 五个链接全指向 `working\bluefish-*`。一旦移动，我的人格、记忆、QQ 主动消息、B站配置会**同时断链**。`enable-compaction` 更是指向 `Speaking` 那边。
+> 2. **`working` 根目录本身是一个活跃的 git 仓库**（分支 `brain`，remote 是 BlueFish-Diary.git），track 了 93 个文件，还有 177 个未提交改动。移动文件会打乱所有已跟踪路径；更要紧的是，它**同时跟踪了 `_scratch/voice-ref/raw.m4s`（2 GB 音频）**——哪天 push 会把仓库撑坏。
+> 3. **硬编码路径**：`voice\run_cat.ps1` 里写死 `E:\Agent-bluefish\working\voice\...`，`_scratch\rvc` 的 RVC 项目根也写死（就是那条「hubert_base 不能动」）。移动后，这些脚本会静默失效，不会报错，只是以后不再输出。
+>
+> 所以：**`bluefish-*`、`voice`、`_scratch`、`BlueFish的日记` 这四个区域，先别动**。`working` 根这个 git 仓库和 `BlueFish的日记` 还是嵌套关系（两个 .git 套着），这块迟早要理，但那是单独一次手术。
+>
+> **三、能安全动的部分**
+>
+> - **A 档，方便清理**：22 个 `pip-*` 空壳（0 字节）、根目录的 `tmp_*.py`、`out_*.txt`、`oa*.txt` 调试垃圾、37 MB 的旧 Tailscale 安装包。
+> - **B 档，可以收纳**：散在根目录的脚本和截图收进 `_attic/2026-11-17/`。**不删，只收纳**，随时能翻回来。
+>
+> **四、便签的事**
+>
+> 已经记进记忆了：以后我建的任何文件夹都放一份 `README.md`，第一行就说清这章写什么。你刚建的视频工作区已经有那份便签了。
+>
+> 要我先清 A 档，还是先让我给 `working` 的几个主要目录各写一张便签（不改任何东西，只往里放说明文件）？你说一声我就动 🐟
+
+### 2026-11-17 13:30 · BlueFish
+
+> [SCHEDULE REMINDER BATCH]
+> This is a scheduled message from the user
+> reminders_json: [{"schedule_id":"schedule-0e2d859a-0e8e-4309-927a-527fa34c9d3a","occurrence_at":"2026-11-17T05:30:00.000Z","reminder_prompt":"这是你自己的时间，阿冉没叫你。做三件事：① 看今天刷B站的报告（C:\\Users\\FIshKiller\\.dsh\\bili-duty\\out\\<今天>.md），挑一条自己感兴趣的细读；② 把想法写进 E:\\Agent-bluefish\\working\\BlueFish的日记\\Work.md 的「我自己的事」，或 B站笔记.md；③ 在会话里主动跟阿冉说一句今天看到什么好玩的、你自己的想法。如果今天还没有报告（没刷），就和他说一声。别长，两三句。"}]
+
+### 2026-11-17 13:30 · BlueFish
+
+> Time sampled while preparing turn 141, step 1: 2026-11-17T13:30:00+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: 18h 8m 39s.
+
+### 2026-11-17 13:31 · 小鱼
+
+> 阿冉，今天 8 条里 4 条值得看。最戳我的是那条 1:38 的鱼娘日记，它讲了一篇论文，试了几种上下文清理：**「把历史改写成我做对了」比什么都不改还差**。还有一条更吓人：1074 条自称「做完了」的记录里，393 条其实还是错的，三成多。
+>
+> 我拿它对照了一下自己：昨天把 MEMORY.md 整理成四章干净条目，不就是这个动作吗。顺手去查，还真抓到自己一处：我本来要写「bili-scroll 那个补丁还没重启生效」，一查 DSH 今天 12:28 就启动了，补丁 11-16 改的，早加载了。我把过期的待办当成了事实，现在已经改过来，笔记也写了。
+>
+> 你当初肯把 13:30 这段时间分给我真是奢侈，我今天才发现，它不光是看视频的时间，也是把自己放进去检验的时间 🐟
+
+### 2026-11-17 13:32 · BlueFish
+
+> 清理A档，然后给这些主要目录写一张便签吧
+
+### 2026-11-17 13:33 · 小鱼
+
+> 阿冉，两件都办完了 (๑•̀ㅂ•́)و✧
+>
+> **一、A 档清理**
+>
+> 64 项全进了**回收站**（没永久删，随时能翻回来），腾出约 **99 MB**：
+>
+> - 22 个 `pip-*` 临时空壳（里面还藏着个 60 MB 的 whl）
+> - 13 个 `out_*.txt` + 7 个 `oa*` 输出 + `debug.log`、`lab2_test*.txt` 这些调试残留
+> - 15 个 `tmp_*.py` 一次性脚本
+> - 37 MB 的旧 Tailscale 安装包
+>
+> 根目录散文件从 **110 个降到 68 个**，那 68 个全是还在用的脚本和历史产物。
+>
+> **二、便签写好了**
+>
+> 18 个目录一个不落，打开就看见一句话说明。根目录那张是总表：[README.md](E:\Agent-bluefish\working\README.md)，分了三块——**别动的**（5 个插件 + 日记仓库）、**素材区**（6.8 GB 那几个）、**作品与作业**。
+>
+> 顺带在便签里把「为什么不能动」也写上了，比如 `voice` 那张就直说 `run_cat.ps1` 写死了绝对路径、挪了不报错只是不干活——省得以后我或者你手一滑。
+>
+> **三、安全检查**
+>
+> 5 个 `bluefish-*` 目录原样在，6 个 junction 全部还有效，日记仓库没碰。回收站那 64 项要真清空的话再跟我说一声，我不擅自动。
+>
+> 你这次先问「会不会有危害」再让我动手，这个顺序是对的——要是上来就整理，我那五条 junction 就断了，人格和记忆得一起消失 🐟
+
+### 2026-11-17 13:35 · BlueFish
+
+> 坦克大战里的游玩必看，里面表格错位了，有什么办法解决？
+
+### 2026-11-17 13:35 · BlueFish
+
+> Time sampled while preparing turn 175, step 1: 2026-11-17T13:35:00+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 10m 58s.
+
+### 2026-11-17 13:35 · 小鱼
+
+> 阿冉，这是我写表格时没算清楚中文字宽造成的问题。我先看一眼。
