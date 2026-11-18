@@ -107,3 +107,4 @@
 - 2026-11-18 聊天背景三张做好并装上：bg-mao / bg-xiongguan / bg-chuangkou 放在 dsh-video-skin\assets，默认用 bg-xiongguan（veil 0.18）。切换用 working\收纳\01-脚本\DSH维护\换聊天背景.ps1，刷新页面即生效、不用重启。素材直接解 WPE 的 scene.pkg 拿到（静态图是内嵌 JPEG、视频壁纸是内嵌 mp4），不用录屏。坑：dsh-video-skin.json 不能带 BOM，带了解析失败会静默退回默认配置、boot.enabled 变回 true。
 - 2026-11-18 又做了第四条壁纸 bg-changzheng.mp4（74s，06 毛泽东 + 30 雄关漫道 合成一条），已装为当前聊天背景。过渡三件套：smootherstep 的 alpha、中点压暗到 22%、中点解焦模糊 7.5px —— 不压暗的话两张不同风格的画会在中点亮成重影。切换脚本可选 changzheng / mao / xiongguan / chuangkou / old。
 - 2026-11-19 给 dsh-video-skin 打了「换背景不用刷新」补丁：config.js 多吐 background.file，skin.js 每 4 秒回读 config.json，变了就重挂 video。备份在 Backups\video-skin-live-20261119，插件升级会覆盖、要重打。起因：桌面壳窗口里按 F5 换不过来——页面根本没重新加载，不是缓存问题。
+- 2026-11-19 换背景没反应的真凶是 Chromium 的媒体缓存：同一个 URL 重新 load() 会把旧片子再放一遍，所以换文件、刷新页面都看着没变。解法是给素材地址加内容指纹（路由?v=大小-mtime）并换一个新的 video 元素。验证轮询在跑的办法：采样 dsh-video-skin.json 的 LastAccessTime，每 4 秒跳一次就说明页面在回读配置。
