@@ -48,7 +48,7 @@
 
 ## 已完成
 
-- （空）
+- **2026-11-18 · 文件整理（阿冉提的「抽屉式」）** —— working 根目录 74 个散文件收进 `收纳/`（95 项 → 25 项），Speaking 22 个变 4 项。12 个脚本的写死路径同步改好；`render_it.ps1` 和 `sync-bili-diary.vbs` 因为新增了中文路径，转成带 BOM 的编码才活过来（详见 MEMORY 那条编码坑）。两个渲染脚本实跑通过，计划任务端到端验证通过。快照 `995faa1`、整理 `e627af6`，已 push brain 分支。
 
 ## 待核对（升级 rc.3 → rc.5 后）
 
@@ -78,3 +78,17 @@
 - **开机自启改造**：删掉 HKCU Run 的 DSH 项，改由启动文件夹 ish-dsh-launch.vbs（设证书变量、记启动计数、静默启动）；Ollama.lnk 移出启动文件夹到 Backups\startup-20261116。
 - **DSH 更新策略**：暂不升级 0.2.2（跨 minor、插件 API 迁移多）；写了 Backups\DSH更新流程.md；每周一 21:00 自动评估一次。
 - **桌面挂件 A 档**：ehavior.json + ehavior.py（Win32 低级钩子，只统计按键不记内容），打字时动画加速 2 倍；音效按你的要求全部默认静音，右键有「跟着你敲键盘」「音效」两个开关。
+
+## 2026-11-18 启动动画定制（长征机·左群像右毛先生）
+
+- 插件：`dsh-startup-secret` v1.5.2（长征机主题），替代 `dsh-boot-animation`（已在 profile patch 里 `disabled: true`）。
+- `dsh-video-skin` 只留聊天壁纸，`boot.enabled=false`（启动视频不再播）。
+- 身份=阿冉 / 编号 **RC-1021** / 权限等级=最高权限。
+- **双立绘**：左侧固定第 5 款（群像，索引 4），右侧固定第 6 款（毛先生，索引 5）。两个都**写死在 splash.js 里**，不看配置——配置会被插件回写，曾导致右边变成群像、左边因为「同款不建」干脆不创建。
+- 第 6 款图：毛泽东宣传画（WPE 2316528446 的 preview）→ 红黑版画色调 → **rembg/u2net AI 抠图** → webp 约 70KB，内联进 `MASCOT_SRC_5`。
+- **定位用内联样式**（`rightBox.style.*` / `leftBox.style.*`），不用 CSS——splash.css 被旧缓存顶住时 `right:0` 不生效，元素会跑到 x=0 和左边重叠。
+- `client.js` 立绘下拉补了 `['5', '长征（教员）']`（原本只有 5 项）。
+- `identityId` 清洗规则改成允许 `-`（原来 `[^A-Z0-9]` 会把横线剥掉）。
+- 备份：`Backups\startup-secret-lib-20261118`（splash.js / splash.css / client.js）。
+- **排查教训**：改完先看 console。临时加 `[DSU] mascot-init` / `[DSU] rightBox` 两行日志，才定位到「位置在 x=0」而不是「没渲染」。
+- 还欠：背景三张（WPE 6 毛泽东 / 30 雄关漫道 / 45 窗边一日）——45 要录屏，6 和 30 用 preview 图做慢推镜即可。
