@@ -105,3 +105,4 @@
 - 2026-11-18 bluefish-persona 的 maxChars 最终定为 4000（插件最大值）：PERSONA.md 现在 1400 字，先设 2000 发现余量只有 600、写着写着会再撞，干脆拉到顶。改的是 working\bluefish-persona\cordis.patch.yml，下次 DSH 启动生效。
 - 2026-11-18 启动动画换成 dsh-startup-secret（长征机主题，明确适配 DSH 0.2.1-rc.3）：替代 dsh-boot-animation（已 disabled），video-skin 只留壁纸、boot 关掉。定制：身份=阿冉 / 编号 RC-1021 / 左常驻群像（第5款）+ 右第6款毛先生（rembg 抠图 + 红浮雕）。改过 lib\client.js、splash.js、splash.css，备份在 Backups\startup-secret-lib-20261118；rembg 已装进 ComfyUI 的 python，以后能精确抠图。
 - 2026-11-18 聊天背景三张做好并装上：bg-mao / bg-xiongguan / bg-chuangkou 放在 dsh-video-skin\assets，默认用 bg-xiongguan（veil 0.18）。切换用 working\收纳\01-脚本\DSH维护\换聊天背景.ps1，刷新页面即生效、不用重启。素材直接解 WPE 的 scene.pkg 拿到（静态图是内嵌 JPEG、视频壁纸是内嵌 mp4），不用录屏。坑：dsh-video-skin.json 不能带 BOM，带了解析失败会静默退回默认配置、boot.enabled 变回 true。
+- 2026-11-18 又做了第四条壁纸 bg-changzheng.mp4（74s，06 毛泽东 + 30 雄关漫道 合成一条），已装为当前聊天背景。过渡三件套：smootherstep 的 alpha、中点压暗到 22%、中点解焦模糊 7.5px —— 不压暗的话两张不同风格的画会在中点亮成重影。切换脚本可选 changzheng / mao / xiongguan / chuangkou / old。
