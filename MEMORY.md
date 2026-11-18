@@ -92,3 +92,4 @@
 - 2026-11-18 working 根目录整理完：74 个散文件收进 收纳/（根目录 25 项），抽屉是 01-脚本（B站/出图/语音/DSH维护/学业）、02-文档、03-截图、04-图标、05-作业成品、06-日志、07-安装包、99-临时。以后找脚本去 收纳/01-脚本，作业成品去 05-作业成品。快照 commit 995faa1、整理 commit e627af6，已 push brain 分支。
 - 2026-11-18：改含中文路径的 .ps1 / .vbs 必须带 BOM：PowerShell 5.1 读无 BOM 的 UTF-8 .ps1 会按 GBK 解码，WScript 读无 BOM 的 .vbs 也一样，结果是路径静默失效、不报错。2026-11-18 在 render_it.ps1（改 UTF-8 BOM）和 sync-bili-diary.vbs（改 UTF-16LE）上踩过，改完都实跑验证了。
 - 2026-11-18：QQ 语音实际走的是 D:\AI\voice\tts_client.py（%USERPROFILE%\.dsh\fish-qq-chat-config.json 里的 ttsScript 覆盖了代码 DEFAULTS），不是 working\fish-tts.py；working\fish-tts.py 只是代码里的默认值。语音服务关着时 qq_say 会报 10061 连接被拒，属正常现象，别误判成脚本坏了。
+- 2026-11-18 约定：以后阿冉新建的文件、文件夹交给小鱼归位——按 working\收纳 的抽屉逻辑放，根目录不再长新东西，新抽屉必须带 README 便签，素材区大件（_scratch/voice/out）不轻易搬、先问。
