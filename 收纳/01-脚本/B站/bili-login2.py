@@ -12,7 +12,7 @@ from urllib.parse import parse_qs, urlparse
 import qrcode
 import requests
 
-QR = Path(r"E:\Agent-bluefish\working\bili-qr.png")
+QR = Path(r"E:\Agent-bluefish\working\收纳\99-临时\bili-qr.png")
 CRED = Path(r"E:\Agent-bluefish\bili-credential.json")
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
 

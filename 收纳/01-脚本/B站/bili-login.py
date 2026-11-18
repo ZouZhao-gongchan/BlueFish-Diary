@@ -14,7 +14,7 @@ from pathlib import Path
 from bilibili_api import login_v2
 from bilibili_api.login_v2 import QrCodeLoginEvents
 
-QR = Path(r"E:\Agent-bluefish\working\bili-qr.png")
+QR = Path(r"E:\Agent-bluefish\working\收纳\99-临时\bili-qr.png")
 CRED = Path(r"E:\Agent-bluefish\bili-credential.json")
 
 

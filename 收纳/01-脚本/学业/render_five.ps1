@@ -1,7 +1,7 @@
 ﻿Add-Type -AssemblyName System.Runtime.WindowsRuntime
 $ErrorActionPreference = "Stop"
 
-$pdfPath = "E:\Agent-bluefish\working\five_preview.pdf"
+$pdfPath = "E:\Agent-bluefish\working\收纳\05-作业成品\five_preview.pdf"
 $outDir  = "E:\Agent-bluefish\working\fivepages"
 New-Item -ItemType Directory -Force -Path $outDir | Out-Null
 

@@ -13,7 +13,7 @@ import urllib.request
 
 ONEBOT = "http://127.0.0.1:3000"
 QQ = 3587074357
-DEST = r"E:\Agent-bluefish\working\小鱼表情包"
+DEST = r"E:\Agent-bluefish\小鱼图库\小鱼表情包"
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "Chrome/120 Safari/537.36")
 

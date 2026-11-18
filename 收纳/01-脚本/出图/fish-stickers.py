@@ -5,7 +5,7 @@ import os
 
 from PIL import Image, ImageDraw, ImageFont
 
-OUT = r"E:\Agent-bluefish\working\小鱼表情包"
+OUT = r"E:\Agent-bluefish\小鱼图库\小鱼表情包"
 os.makedirs(OUT, exist_ok=True)
 S = 4               # 超采样倍数
 BASE = 200          # 逻辑坐标

@@ -46,7 +46,7 @@ const DEFAULTS = {
   voice: 'zh-CN-XiaoyiNeural',
   voiceRate: '-8%',
   voicePitch: '+8Hz',
-  ttsScript: 'E:\\Agent-bluefish\\working\\fish-tts.py',
+  ttsScript: 'E:\\Agent-bluefish\\working\\收纳\\01-脚本\\语音\\fish-tts.py',
   python: 'python',
   moodFile: join(DSH_HOME, 'feiyu-mood', 'state.json'),
   personaFile: 'E:\\Agent-bluefish\\working\\BlueFish的日记\\PERSONA.md',

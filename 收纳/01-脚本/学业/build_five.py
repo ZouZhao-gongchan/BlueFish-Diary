@@ -21,7 +21,7 @@ GREEN = "2E6B34"
 GREEN_FILL = "EAF4EA"
 GRAY = "595959"
 
-WRITE = r"E:\Agent-bluefish\working\信息论编码五题详解.docx"
+WRITE = r"E:\Agent-bluefish\working\收纳\05-作业成品\信息论编码五题详解.docx"
 
 
 def set_fonts(run, ascii_name, ea_name, size=None, bold=None, italic=None, color=None):

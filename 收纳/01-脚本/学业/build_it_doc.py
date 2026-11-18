@@ -20,7 +20,7 @@ GREEN_FILL = "E8F3E8"
 GREEN = "2E6B34"
 GRAY = "595959"
 
-WRITE = r"E:\Agent-bluefish\working\信息论期中十题详解.docx"
+WRITE = r"E:\Agent-bluefish\working\收纳\05-作业成品\信息论期中十题详解.docx"
 
 
 def set_fonts(run, ascii_name, ea_name, size=None, bold=None, color=None):

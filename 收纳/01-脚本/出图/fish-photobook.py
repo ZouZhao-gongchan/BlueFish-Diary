@@ -4,7 +4,7 @@ import os
 
 from PIL import Image, ImageDraw, ImageFont
 
-SRC = r"E:\Agent-bluefish\working\小鱼表情包"
+SRC = r"E:\Agent-bluefish\小鱼图库\小鱼表情包"
 OUT = os.path.join(SRC, "小鱼写真集.png")
 CELL = 240
 GAP = 20
