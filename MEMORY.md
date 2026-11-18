@@ -81,3 +81,4 @@
 - 2026-11-18：QQ 语音实际走的是 D:\AI\voice\tts_client.py（%USERPROFILE%\.dsh\fish-qq-chat-config.json 里的 ttsScript 覆盖了代码 DEFAULTS），不是 working\fish-tts.py；working\fish-tts.py 只是代码里的默认值。语音服务关着时 qq_say 会报 10061 连接被拒，属正常现象，别误判成脚本坏了。
 - 2026-11-18 约定：以后阿冉新建的文件、文件夹交给小鱼归位——按 working\收纳 的抽屉逻辑放，根目录不再长新东西，新抽屉必须带 README 便签，素材区大件（_scratch/voice/out）不轻易搬、先问。
 - 2026-11-18 bluefish-persona 的 maxChars 从 1200 改成 2000（插件上限 4000）：PERSONA.md 现在 1400 字，原来的 1200 会把人格末尾截掉约 200 字。改的是 working\bluefish-persona\cordis.patch.yml，重启 DSH 后生效。
+- 2026-11-18 bluefish-persona 的 maxChars 最终定为 4000（插件最大值）：PERSONA.md 现在 1400 字，先设 2000 发现余量只有 600、写着写着会再撞，干脆拉到顶。改的是 working\bluefish-persona\cordis.patch.yml，下次 DSH 启动生效。
