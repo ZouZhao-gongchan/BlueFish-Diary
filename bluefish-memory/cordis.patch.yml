@@ -6,5 +6,5 @@
         memoryFile: MEMORY.md
         autoLogFile: Speak.auto.md
         autoLog: true
-        digestChars: 1200
+        digestChars: 8000
         git: true

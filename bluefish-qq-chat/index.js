@@ -11,7 +11,7 @@
  *
  * 只用 node 内置模块 + 宿主注入的 llm / timer / webServer / agentDefaultModel。
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync, appendFileSync, readdirSync, unlinkSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, existsSync, appendFileSync, readdirSync, unlinkSync, statSync } from 'node:fs'
 import { homedir, tmpdir } from 'node:os'
 import { basename, dirname, extname, join, resolve } from 'node:path'
 import { execFile } from 'node:child_process'
@@ -39,7 +39,7 @@ const DEFAULTS = {
   maxTokens: 220,
   provider: '',
   model: '',
-  stickerDir: 'E:\\Agent-bluefish\\大肥鱼可爱图片',
+  stickerDir: 'E:\\Agent-bluefish\\小鱼图库\\大肥鱼可爱图片',
   stickerChance: 0.3,
   voiceEnabled: true,
   voiceChance: 0.2,
@@ -166,6 +166,185 @@ function readStickerTags(dir) {
   } catch {
     return {}
   }
+}
+
+// ---------- 表情包池 ----------
+// 三处合并：①小鱼自己的图库（dsh-meme 的 packsDir，2026-10-24 起是 E:\Agent-bluefish\小鱼图库）
+//          ②插件自带的 dafeiyu 备用包（升级后还在 node_modules 里，当兜底）
+//          ③大肥鱼那堆平铺图片（标签在 crawl-attribution.json 里）。
+const MEME_PACK_ROOT = join(DSH_HOME, 'profiles', 'desktop', 'node_modules', 'dsh-meme', 'memes')
+
+/** 自己的图库目录：跟 dsh-meme 的设置走，没设过就用它的默认位置。 */
+function 用户图库根() {
+  try {
+    const raw = JSON.parse(readFileSync(join(DSH_HOME, 'dsh-expression.json'), 'utf8'))
+    const dir = String(raw.packsDir || '').trim()
+    if (dir) return dir
+  } catch {
+    /* 没设置文件就走默认 */
+  }
+  return join(DSH_HOME, 'meme-packs')
+}
+
+// dsh-meme 把中文描述（caption / 关键词）存在每个图库自己的 index.db 里。
+// 读出来当检索词，才搜得到「猫」「无语」「点赞」这种中文——否则只能靠英文桶名和文件名。
+const SQLITE = (() => {
+  try {
+    return typeof process.getBuiltinModule === 'function' ? process.getBuiltinModule('node:sqlite') : null
+  } catch {
+    return null
+  }
+})()
+
+let 描述缓存 = { at: 0, 表: new Map() }
+
+/** 「图库内的相对路径」→「caption + 关键词」小写文本；30 秒缓存，改了图库也能自己跟上。 */
+function 描述表() {
+  if (!SQLITE || Date.now() - 描述缓存.at < 30000) return 描述缓存.表
+  const 表 = new Map()
+  for (const root of [用户图库根(), MEME_PACK_ROOT]) {
+    let 包们 = []
+    try {
+      包们 = readdirSync(root, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => join(root, e.name))
+    } catch {
+      continue
+    }
+    for (const 包 of 包们) {
+      const dbFile = join(包, 'index.db')
+      if (!existsSync(dbFile)) continue
+      let db = null
+      try {
+        db = new SQLITE.DatabaseSync(dbFile, { readOnly: true })
+        for (const row of db.prepare('SELECT path, caption, keywords FROM memes').all()) {
+          const key = String(row.path || '').toLowerCase()
+          if (!key) continue
+          表.set(key, `${row.caption || ''} ${row.keywords || ''}`.toLowerCase())
+        }
+      } catch {
+        /* 这个包读不了就算了 */
+      } finally {
+        try {
+          if (db) db.close()
+        } catch {
+          /* 关不掉也无所谓 */
+        }
+      }
+    }
+  }
+  描述缓存 = { at: Date.now(), 表 }
+  return 表
+}
+
+// 情绪互通：中文标签 / dsh-meme 的英文桶名 / 心情插件给的词，都能对上同一批图。
+const TAG_ALIASES = {
+  开心: ['开心', 'happy', 'like', '好耶'],
+  好耶: ['开心', 'happy', 'like', 'ok'],
+  点赞: ['点赞', 'like', 'happy', 'ok'],
+  棒: ['点赞', 'like', 'happy', 'ok'],
+  高兴: ['开心', 'happy', 'like'],
+  比心: ['比心', 'like', 'heart', 'happy'],
+  喜欢: ['比心', 'like', 'happy'],
+  爱你: ['比心', 'like', 'happy'],
+  生气: ['生气', 'angry', '哼'],
+  难过: ['难过', 'sad', 'sigh', '委屈'],
+  委屈: ['难过', 'sad', 'sigh'],
+  可爱: ['卖萌', 'meow', 'cute', 'happy'],
+  卖萌: ['卖萌', 'meow', 'cute'],
+  撒娇: ['卖萌', 'meow', 'cute', 'shy'],
+  害羞: ['害羞', 'shy', 'color'],
+  疑惑: ['疑惑', 'confused', 'see', 'surprised'],
+  无语: ['无语', 'sigh', 'baka'],
+  睡觉: ['睡觉', 'sleep', 'daily'],
+  晚安: ['睡觉', 'sleep', 'daily'],
+  日常: ['日常', 'daily', 'morning', 'work'],
+  摸鱼: ['摸鱼', 'work', 'cpu'],
+  惊讶: ['惊讶', 'surprised', 'see', 'confused'],
+  加油: ['加油', 'cheer', 'like'],
+  自拍: ['自拍', 'selfie', '写真', 'like'],
+  写真: ['自拍', 'selfie', '写真'],
+  贴纸: ['贴纸', 'sticker', 'daily'],
+  出游: ['出游', 'travel', 'daily'],
+  学习: ['学习', 'work'],
+}
+
+/** 递归收集图片（图库是「情绪桶/图.jpg」两层，别漏了更深的）。 */
+function walkImages(dir, out, depth) {
+  if (depth > 5) return
+  let list
+  try {
+    list = readdirSync(dir, { withFileTypes: true })
+  } catch {
+    return
+  }
+  for (const entry of list) {
+    const full = join(dir, entry.name)
+    if (entry.isDirectory()) {
+      walkImages(full, out, depth + 1)
+      continue
+    }
+    if (STICKER_EXT.has(extname(entry.name).toLowerCase())) out.push(full)
+  }
+}
+
+/** 池子里每张图挂一段小写「检索文本」：相对路径（含情绪桶目录名）+ 文件名 + 标签。 */
+function memePool(cfg) {
+  const pool = []
+  const seen = new Set()
+  const push = (file, hay) => {
+    // 去重按「字节数 + 扩展名」：同一张图现在常常两份——平铺目录一份、收进图库包一份，
+    // 文件名不同但字节完全一样。按路径去重时它会算成两张，抽中概率翻倍。
+    let key = file.toLowerCase()
+    try {
+      key = statSync(file).size + ':' + extname(file).toLowerCase()
+    } catch {
+      /* 读不到大小就退回按路径去重 */
+    }
+    if (seen.has(key)) return
+    seen.add(key)
+    pool.push({ file, hay: hay.toLowerCase() })
+  }
+  const 库描述 = 描述表()
+  // 先收 cfg.stickerDir：那里有 crawl-attribution.json 的标签，比只靠文件名认得多。
+  // 同一个文件两边都有时，留下带标签的这份。
+  const tags = readStickerTags(cfg.stickerDir)
+  for (const file of listStickers(cfg.stickerDir)) {
+    const name = basename(file)
+    push(file, name + ' ' + (tags[name] || []).join(' '))
+  }
+  for (const root of [用户图库根(), MEME_PACK_ROOT]) {
+    const files = []
+    walkImages(root, files, 0)
+    for (const file of files) {
+      const rel = file.slice(root.length + 1)
+      // rel = <图库 id>/memes/<情绪桶>/<文件>；index.db 里存的是去掉图库 id 的那一段
+      const 包内 = rel.split(/[\\/]/).slice(1).join('/').toLowerCase()
+      push(file, rel + ' ' + (库描述.get(包内) || ''))
+    }
+  }
+  return pool
+}
+
+/** 从池子里挑一张：tag 走情绪别名，query 走字面（空格分词，全中优先）；挑不到就随机。 */
+function pickMeme(cfg, tag, query) {
+  const pool = memePool(cfg)
+  if (pool.length === 0) return null
+  const words = (value) => String(value || '').toLowerCase().split(/[\s,，、/|+]+/).filter(Boolean)
+  const wanted = []
+  for (const word of words(tag)) wanted.push(...(TAG_ALIASES[word] || [word]))
+  const queryWords = words(query)
+  let candidates = pool
+  if (queryWords.length > 0) {
+    const strict = pool.filter((item) => queryWords.every((word) => item.hay.includes(word)))
+    const loose = pool.filter((item) => queryWords.some((word) => item.hay.includes(word)))
+    if (strict.length > 0) candidates = strict
+    else if (loose.length > 0) candidates = loose
+  }
+  if (wanted.length > 0) {
+    const tagged = candidates.filter((item) => wanted.some((word) => item.hay.includes(word)))
+    if (tagged.length > 0) candidates = tagged
+  }
+  const chosen = candidates[Math.floor(Math.random() * candidates.length)]
+  return chosen ? chosen.file : null
 }
 
 // 一句话的情绪 → 该配哪类表情。顺序有讲究：先具体，后笼统。
@@ -481,21 +660,13 @@ export function apply(ctx, rawConfig) {
     return result.ok ? { ok: true } : { ok: false, error: result.error }
   }
 
-  // 表情包：先按情绪挑同类标签的，挑不到再随机；先试本地路径，不行退回 base64。
-  async function sendSticker(cfg, mood) {
-    const files = listStickers(cfg.stickerDir)
-    if (files.length === 0) return { ok: false, error: `表情包目录里没有图片：${cfg.stickerDir}` }
-    const tags = readStickerTags(cfg.stickerDir)
-    const matched = mood ? files.filter((file) => (tags[basename(file)] || []).includes(mood)) : []
-    const pool = matched.length > 0 ? matched : files
-    const file = pool[Math.floor(Math.random() * pool.length)]
-    const chosenMood = mood && matched.length > 0 ? mood : ''
+  // 把一张本地图真发到 QQ：先给路径，不行退回 base64（有些 OneBot 实现读不到宿主机路径）。
+  async function sendImageFile(cfg, file) {
     const image = (source) =>
       onebot(cfg, 'send_private_msg', {
         user_id: Number(cfg.targetQQ),
         message: [{ type: 'image', data: { file: source } }],
       })
-
     let result = await image(file)
     if (!result.ok) {
       try {
@@ -505,7 +676,16 @@ export function apply(ctx, rawConfig) {
         return { ok: false, error: `读不到表情包：${String(error?.message ?? error)}` }
       }
     }
-    if (!result.ok) return { ok: false, error: result.error }
+    return result.ok ? { ok: true } : { ok: false, error: result.error }
+  }
+
+  // 表情包：先按情绪挑同类标签的，挑不到就随机；先试本地路径，不行退回 base64。
+  async function sendSticker(cfg, mood, query) {
+    const file = pickMeme(cfg, mood, query)
+    if (!file) return { ok: false, error: `表情包池是空的：${MEME_PACK_ROOT} 和 ${cfg.stickerDir} 都没有图` }
+    const sent = await sendImageFile(cfg, file)
+    if (!sent.ok) return sent
+    const chosenMood = mood ? String(mood).trim() : ''
     return { ok: true, file: basename(file), ...(chosenMood ? { mood: chosenMood } : {}) }
   }
 
@@ -893,6 +1073,50 @@ export function apply(ctx, rawConfig) {
       },
     }),
   )
+
+  // 给 agent 用的工具：在 QQ 上发一张表情包（真正的图片，不是一行方括号文字）。
+  ctx.effect(() =>
+    ctx.tools.register({
+      name: 'qq_meme',
+      description:
+        '在 QQ 上给阿冉发一张表情包（真的把图片发过去）。tag 传情绪：开心/生气/难过/害羞/疑惑/无语/睡觉/比心/可爱/摸鱼/日常/惊讶（英文 happy/angry/sad/shy/confused/daily/sleep/like/meow 也行）；'
+        + 'query 传想找的具体内容，比如「猫」「比心」「无语」「睡觉」。两个都不给就随机抽一张。',
+      parameters: {
+        type: 'object',
+        properties: {
+          tag: { type: 'string', description: '情绪(可选)，如 开心 / 难过 / 害羞 / happy' },
+          query: { type: 'string', description: '关键词(可选)，在文件名和标签里搜，如 猫 / 比心 / 无语' },
+        },
+        additionalProperties: false,
+      },
+      output: {
+        schema: {
+          type: 'object',
+          properties: {
+            ok: { type: 'boolean' },
+            file: { type: 'string' },
+            error: { type: 'string' },
+          },
+          required: ['ok'],
+          additionalProperties: false,
+        },
+        render: (_args, value) => [
+          { type: 'text', text: value.ok ? `表情包已经发到 QQ 了（${value.file}）` : `表情包没发出去：${value.error}` },
+        ],
+      },
+      async execute(args) {
+        const cfg = readConfig()
+        const tag = typeof args?.tag === 'string' ? args.tag.trim() : ''
+        const query = typeof args?.query === 'string' ? args.query.trim() : ''
+        const result = await sendSticker(cfg, tag, query)
+        return result.ok ? { ok: true, file: result.file } : { ok: false, error: result.error }
+      },
+    }),
+  )
+
+  // 渠道规则（[表情:] vs qq_meme）写在 dsh-meme 的 companionPrompt 里：
+  // %USERPROFILE%\.dsh\dsh-expression.json。配合 dsh-qq-bridge 给转进来的话加的「【QQ】」标记，
+  // 模型就知道这一轮在 QQ 聊天间，该用 qq_meme 发真正的图片。
 
   // ---- 挂上去 ----
   ensureConfigFile()
