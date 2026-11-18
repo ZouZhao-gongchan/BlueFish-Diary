@@ -103,3 +103,4 @@
 - 2026-11-18：QQ 语音实际走的是 D:\AI\voice\tts_client.py（%USERPROFILE%\.dsh\fish-qq-chat-config.json 里的 ttsScript 覆盖了代码 DEFAULTS），不是 working\fish-tts.py；working\fish-tts.py 只是代码里的默认值。语音服务关着时 qq_say 会报 10061 连接被拒，属正常现象，别误判成脚本坏了。
 - 2026-11-18 约定：以后阿冉新建的文件、文件夹交给小鱼归位——按 working\收纳 的抽屉逻辑放，根目录不再长新东西，新抽屉必须带 README 便签，素材区大件（_scratch/voice/out）不轻易搬、先问。
 - 2026-11-18 bluefish-persona 的 maxChars 最终定为 4000（插件最大值）：PERSONA.md 现在 1400 字，先设 2000 发现余量只有 600、写着写着会再撞，干脆拉到顶。改的是 working\bluefish-persona\cordis.patch.yml，下次 DSH 启动生效。
+- 2026-11-18 启动动画换成 dsh-startup-secret（长征机主题，明确适配 DSH 0.2.1-rc.3）：替代 dsh-boot-animation（已 disabled），video-skin 只留壁纸、boot 关掉。定制：身份=阿冉 / 编号 RC-1021 / 左常驻群像（第5款）+ 右第6款毛先生（rembg 抠图 + 红浮雕）。改过 lib\client.js、splash.js、splash.css，备份在 Backups\startup-secret-lib-20261118；rembg 已装进 ComfyUI 的 python，以后能精确抠图。
