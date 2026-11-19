@@ -172,3 +172,13 @@
   **只在 `dsh.profile.bundles` 里留名字**——它会从安装目录解析到 0.2.1-rc.3（`dsh-base`/`dsh-web-app` 就是这么来的，profile 里根本没有它们的副本）。
   备份：`Backups\agent-team-20261119\`（package.json.before / after-install / pnpm-lock.before / cordis.patch.before）。
   兜底：`收纳\01-脚本\DSH维护\DSH起不来就点我.cmd`（纯 ASCII），桌面也放了一份——起不来双击它，会把两个文件还原再拉起 DSH。
+### 2026-11-19 深夜 · 背景掉了，是我自己的 bug
+
+- 现象：重启后聊天背景整块消失，界面变成不透明深色；启动画面那边毛先生也没了。
+- 证据链：
+  1. 服务端正常：`/dsh-video-skin/config.json` 200、`background.mp4` 200 且长度 10,644,248 = `bg-woshi.mp4`。
+  2. 页面里运行时脚本注入完整（54,891 字符），`node --check` 通过。
+  3. **但页面没在轮询**：连采 14 秒 `dsh-video-skin.json` 的 LastAccessTime，一动不动（正常应每 4 秒跳一次）。
+- 根因：我 11-19 凌晨写的换片实现有毒 —— 新 `<video>` 一 `error` 就调 `teardownBackdrop()`，把整个背景拆掉；而换片正好发生在轮换脚本改配置那一刻（文件可能正在被写）。拆完之后轮询也跟着停（`backdrop === null` 直接 return），所以**永远不会自己恢复**。
+- 修法：从插件原始 `skin.js`（`Backups\video-skin-live-20261119\skin.js.bak`）重新打补丁，改成**新元素 `loadeddata` 成功才顶替旧元素，失败只记一笔、保住旧画面**。脚本：`收纳\01-脚本\DSH维护\reapply_video_skin_patch.py`；成品另存 `skin.js.patched`。
+- 教训（第二次自己弄坏自己的东西）：装饰性代码的失败必须**降级**，不能牵连主体；「换片失败」的默认行为应该是"继续放旧的"，不是"把背景拆了"。
