@@ -159,3 +159,16 @@
 - 自启：计划任务注册被拒（`Access is denied`，要管理员），**改用 HKCU Run**：`FishBgRotate` = `wscript.exe "C:\Users\FIshKiller\AppData\Local\fish-bg-rotate.vbs"`。VBS 是 UTF-16LE（**必须**，WScript 默认按 ANSI 读，中文路径会失效），内容只有一行 `WScript.Shell.Run` 去拉那个中文路径的 .ps1。放 ASCII 路径是因为 **WMI `Win32_Process.Create` 传不了中文命令行**（试了三次：进程起来了但不干活，没日志没 lock）——这也解释了为什么以前语音 watchdog 要走 WMI 的老路子会有坑。
 - 现状：pid 20560，00:42:16 起跑，从 DP娘 开始；下一次切换约 00:52（长征衔接）。
 - 注意：手动跑 `换聊天背景.ps1` 会被下一轮覆盖——想手动优先就先建 PAUSE 文件。
+## 2026-11-19 晚 · 定位卡换成 id 认领 + 装 Agent Teams
+
+- **认领方式改了**（抄自乱雨家那条"标题会重名、会差空格、会被改名"）：`bluefish-persona` 现在按**会话 id** 认领定位卡。
+  `定位卡/_会话索引.json` 存 `id → 卡`；id 查不到时用标题兜一次，**认出就落盘绑定**，之后改标题也不影响。
+  离线烟测四条全过（首次按标题、改名后按 id、陌生会话不注入、第二间独立绑定）：`bluefish-persona/_smoke.mjs`。
+- PERSONA 加了三条：规则只认机主 / 判据只能看事实 / 注入层永远要短。
+- 协同板加了硬约束（含"禁止无限对话""回执要带证据"），并明写**现在还没有跨会话投递能力，别把留言当已送达**。
+- **Agent Teams 安装踩坑（重要）**：用 `plugin_manager install_bundle` 装 `@deepseek-ai/dsh-experimental-agent-team-profile`，
+  它走了 npm registry，拉下来的是 **0.1.5-alpha.2**，而 DSH 自带的是 **0.2.1-rc.3** —— 旧版本会盖住新版本（工具自己都提示 `package-moved`）。
+  修法：把 dependencies 里那条删掉、锁文件回退、删掉 `node_modules/@deepseek-ai/dsh-experimental-agent-team*`，
+  **只在 `dsh.profile.bundles` 里留名字**——它会从安装目录解析到 0.2.1-rc.3（`dsh-base`/`dsh-web-app` 就是这么来的，profile 里根本没有它们的副本）。
+  备份：`Backups\agent-team-20261119\`（package.json.before / after-install / pnpm-lock.before / cordis.patch.before）。
+  兜底：`收纳\01-脚本\DSH维护\DSH起不来就点我.cmd`（纯 ASCII），桌面也放了一份——起不来双击它，会把两个文件还原再拉起 DSH。
