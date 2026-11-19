@@ -109,3 +109,4 @@
 - 2026-11-19 给 dsh-video-skin 打了「换背景不用刷新」补丁：config.js 多吐 background.file，skin.js 每 4 秒回读 config.json，变了就重挂 video。备份在 Backups\video-skin-live-20261119，插件升级会覆盖、要重打。起因：桌面壳窗口里按 F5 换不过来——页面根本没重新加载，不是缓存问题。
 - 2026-11-19 换背景没反应的真凶是 Chromium 的媒体缓存：同一个 URL 重新 load() 会把旧片子再放一遍，所以换文件、刷新页面都看着没变。解法是给素材地址加内容指纹（路由?v=大小-mtime）并换一个新的 video 元素。验证轮询在跑的办法：采样 dsh-video-skin.json 的 LastAccessTime，每 4 秒跳一次就说明页面在回读配置。
 - 2026-11-19 聊天背景改成定时轮换：卧室鱼 5 分钟 → DP娘 10 分钟 → 长征衔接 10 分钟循环。脚本 收纳\01-脚本\DSH维护\轮换背景.ps1，PAUSE-轮换背景 空文件可暂停，日志 轮换背景.log。自启走 HKCU Run 的 FishBgRotate → C:\Users\FIshKiller\AppData\Local\fish-bg-rotate.vbs（UTF-16LE）→ 中文路径脚本。踩过的坑：计划任务注册需要管理员被拒；WMI Win32_Process.Create 传不了中文命令行。
+- 2026-11-19《记井》定位变更（重要）：不再叫「像素地牢」，也不再往那套玩法靠。新定位是「以记/墨/笔世界观为核心的完整独立游戏」，世界观优先、玩法服务世界观。目标是从 Python 原型换到能撑起完整游戏的开发环境（Godot 4 是我的建议），并且要走体系化开发（先 GDD 再写代码），不能走一步看一步。进度总结见 像素地牢/docs/进度总结_20261119.md。
