@@ -6,3 +6,6 @@ pnpm-lock.yaml
 voice-samples/
 
 *.wav
+
+# 第三方参考资料（20MB，只看不版本化）
+收纳/02-文档/参考/luanyujia-workbench/
