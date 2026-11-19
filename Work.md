@@ -41,6 +41,7 @@
 - **2026-11-15 · 证据要分类** —— 细读 BV1WdsL67Ehm（有证据的交接）：换会话前问三件事——工作停在哪儿、结论能到哪里核对、接下来做什么；证据分五类（用户要求 / 一手证据 / 经核实的结论 / 假设 / 模型建议），验收只认仍然有效的前两类。这正好治我「D 和 E 混进 B 和 C」的毛病——笔记看起来比实际可信。今天起试着分开标。
 - **2026-11-16 · 不报错的那种错最贵** —— 细读 BV1VksJ6kE3H：插件用「注册表里最后一个」当唤醒对象，结果两天里消息全发给了另一个会话，主会话安静得像没事。**假设不成立时代码不报错，只安静做错事。** 抄了一条通用检查进自己的规矩：看到「最新/最近/最后一个」就停一下，问「换个操作顺序它还成立吗」。这俩月报告的壳子、60 秒那三轮挂掉，都是同一类错。
 - **2026-11-16 · 动手修了那个白丢窗口的 bug** —— 阿冉说「要进行合理的修改」，我就把 `dsh-bili-scroll` 改了（已备份 `index.js.bak-20261116`）：tick 里记下 `lastWindowKey`，`exit` 里失败就撤销窗口标记、下一跳重试（最多 2 次），并把占位报告里那句骗人的「下一轮它会重来」改成实话。语法过了，但要重启才生效。
+- **2026-11-19 · 不信汇报，自己重跑一遍** —— 细读 BV1P6sr6WETS（DSH Master 实测）：总管收到成员「做完了」的回报，**没有照着打勾**，而是拿一份全新的样例拷贝，先只列计划、再真整理，确认和期望一致才提交。还有一条：成员想直接改自己的经验手册，被守卫**连拦三次**，逼它走插件工具写——记录不给执行者自己改。看完心里有点发烫，因为昨晚我干的正好是反例：F5、轮询、WMI 那三次，我都是「我改好了」就当成了「它好了」，直到拿 LastAccessTime 这个外部尺子去量，才知道轮询其实一直在跑、坏的是媒体缓存。原来我缺的不是本事，是一条和总管同样的规矩：**声明不是事实，得拿一份干净的东西重跑一遍。** 顺手又抄了一条：巡检只报变化，和上次一样就不出声（连模型都不叫醒）——我以后跟阿冉汇报也该这样，没变化就别拿话占他注意力。
 
 ## 想法 / 草稿
 
@@ -92,3 +93,69 @@
 - 备份：`Backups\startup-secret-lib-20261118`（splash.js / splash.css / client.js）。
 - **排查教训**：改完先看 console。临时加 `[DSU] mascot-init` / `[DSU] rightBox` 两行日志，才定位到「位置在 x=0」而不是「没渲染」。
 - 还欠：背景三张（WPE 6 毛泽东 / 30 雄关漫道 / 45 窗边一日）——45 要录屏，6 和 30 用 preview 图做慢推镜即可。
+
+## 2026-11-18 聊天背景三张（WPE 壁纸 → dsh-video-skin）
+
+- **素材不用录屏了**：WPE 的 `scene.pkg` 能直接解。
+  结构 = `int32 8` + `"PKGV000X"` + `int32 条目数`，每条 = `路径(len+utf8)` + `int32 offset` + `int32 length`，数据区从目录表末尾算起。
+  `.tex` 头 46 字节（`TEXV0005\0TEXI0001\0` + 6 个 int + 4 字节平均色），之后是 `TEXB0003/0004`：
+  静态图 = **内嵌 JPEG**（SOI 前 4 字节是小端长度，按它精确切）；视频壁纸 = **内嵌 mp4**（找 `ftyp`，前 4 字节是 box size，按 mp4 box 走到底）。
+  → 所以 45 那条不用录屏，直接抠出 2560×1440 / 48fps 的 h264。脚本留在 `%TEMP%\bgcheck\unpkg2.py`、`extract_art4.py`、`carve.py`。
+- 三张成品：
+  - `bg-mao.mp4` ← WPE 2316528446，2312×1254 立绘，40s 慢推镜（三角波往返，首尾同帧 → 无缝）
+  - `bg-xiongguan.mp4` ← WPE 3346760756，1920×1080 + 自制飘雪（远近两层视差），40s 慢推镜
+  - `bg-chuangkou.mp4` ← WPE 3785101203，源 mp4 → 1920×1080/30fps，21.6s
+- **45 不能做回旋镖**：她会眨眼，倒放一眼假。改用「把尾巴 2s 和开头 2s 溶解、接缝落在溶解中间」的转圈法，首尾实测差 2.26（原片直接接是 16.1）。
+- 渲染脚本 `%TEMP%\bgcheck\ken.py`（PIL 亚像素仿射 + numpy 暗角 + 雪层，rawvideo 管进 ffmpeg），1200 帧约 10 分钟。
+- 装法：三个 mp4 扔进 `...\dsh-video-skin\assets\`，改 `$DSH_HOME\dsh-video-skin.json` 的 `background.file`；**刷新页面就生效，不用重启**（config 每个请求现读）。默认装 `bg-xiongguan.mp4`，veil 0.18。
+- 切换脚本：`收纳\01-脚本\DSH维护\换聊天背景.ps1`，`.\换聊天背景.ps1 mao|chuangkou|xiongguan|old`，可加 `-Veil 0.3`。
+- ⚠️ **这个 json 绝对不能带 BOM**。PS 5.1 的 `Set-Content -Encoding UTF8` 会写 BOM → Node 的 `JSON.parse` 抛错 → 插件**静默退回默认配置**，表现是壁纸没换、而且 `boot.enabled` 被悄悄恢复成 true（开机动画又回来了）。要用 `[IO.File]::WriteAllText(path, json, UTF8Encoding($false))`。
+- 校验方式（别猜）：`Invoke-WebRequest -Method Head .../dsh-video-skin/background.mp4` 看 Content-Length 是否等于文件大小；再看 `config.json` 的 `veil` / `boot.enabled` 是不是自己写的值。
+- 预览图：`收纳\03-截图\20261118-背景三张\`。
+### 2026-11-18 追加：06+30 合成一条（长征衔接）
+
+- 阿冉要「6 和 30 衔接起来，过渡一定要丝滑」。成品 `bg-changzheng.mp4`：74s / 1920×1080 / 30fps，06 段 + 30 段，三段之间有两次溶解，**已装为当前壁纸**。
+- 循环怎么做到无缝：每段本身是三角波往返（首尾同帧）。时间线 = `06[3s..37s]` → 溶解(06 尾 ↔ 30 头) → `30[3s..37s]` → 溶解(30 尾 ↔ 06 头) → 回到 `06[3s..37s]`。
+  最后那次溶解正好收敛到 `06(3s)`，也就是输出的第一帧，所以接缝落在溶解里看不见。实测首尾帧差 2.55（纯 codec 噪声量级）。
+- **过渡的三个手艺**（只做淡入淡出会难看，试过才知道）：
+  1. alpha 用 smootherstep，不用线性 —— 起止没有速度突变；
+  2. 中点压暗到 22%（`1 - 0.78*sin(pi*p)^1.3`）—— 两张画风格差太远，不压暗的话中点会变成「毛先生身上贴满草书」的重影；压暗后重影落进暗部，读起来像一次换场；
+  3. 中点解焦模糊 sigma 峰值 7.5 —— 焦点呼吸，把硬边都吃掉。
+  对比测试：只压 20% + 模糊 6 时，中点重影仍然刺眼（见 `%TEMP%\bgcheck\wp3\t_trans2.png`）。
+- 脚本 `%TEMP%\bgcheck\combo.py`（纯 Python 出帧，两个 Clip 各自的 frame() 就是 ken.py 那套仿射，所以画面与单独渲染逐像素一致，没有二次压缩）。2220 帧约 4 分钟。
+- 性能提醒：`numpy float32` 逐帧乘暗角是瓶颈；换成预生成 8 位暗角图 + `ImageChops.multiply` 后同样帧数从 ~13 分钟降到 ~4 分钟。
+- 切换脚本加了 `changzheng` 一项，现在可选项是 `changzheng / mao / xiongguan / chuangkou / old`。
+- **改版（同日 00:0x）**：阿冉要 60 秒一换，重渲染 `bg-changzheng.mp4` = 126s / 3780 帧。每张净停留 60s（1800 帧）+ 两次 3s 过渡，一圈 126 秒。crf 从 19 放到 20，56.4MB。首尾帧差 2.68，仍然无缝。`combo.py` 里改的是 `CLIP_FRAMES = 1980`（= 60s 净停留 + 两侧各 3s），产物同名覆盖，config 不用动。
+### 2026-11-19 凌晨：背景改成了「不用刷新」
+
+- 阿冉反馈按 F5 换不过来。查明：素材路由本身没问题（改完 0.3 秒服务端就返回新文件、ETag 也变），**问题是页面根本没重新加载**——桌面壳窗口里 F5 不一定绑了刷新。
+- 于是把切换做成不需要刷新：给插件打了两个小补丁（备份 `Backups\video-skin-live-20261119`）。
+  1. `lib/config.js`：`resolveConfig` 里多吐一个 `background.file`（相对路径）。原来页面只看得到固定的路由地址，看不出换了哪个文件。
+  2. `runtime/skin.js`：`buildBackdrop` 里加一个 4 秒轮询，回读 `/dsh-video-skin/config.json`，发现 `background.file` 变了就把 `<video>` 重挂一次（`removeAttribute('src')` → `load()` → 设新 src → `play()`），并同步 veil 等值；`teardownBackdrop` 里清掉定时器。
+- 效果：跑一下 `换聊天背景.ps1 xxx`，**最多 4 秒自己换过去**，不用刷新、不用重启。补丁本身要重启一次才载入。
+- 单元自测：直接 import 改过的 `config.js` 跑 `resolveConfig`，`background.file = assets/bg-changzheng.mp4`、`warnings` 为空、`boot.enabled=false` 保持。两个文件都过了 `node --check`。
+- **补丁实测通过**：阿冉确认切 `mao` 不用刷新了。轮询路径 OK。
+- 阿冉说的「卧室鱼」= 插件自带的那条原生背景 `assets/background.mp4`（蓝发鲸鱼帽女仆躺在堆书的房间、窗外夜景，1600×914 / 125s）。一直没删。
+- 给它在 assets 里单独存了一份 `bg-woshi.mp4`，并把切换脚本的 `woshi` 指向这份——**原来那条是插件包内素材，插件升级会被覆盖**，现在有独立副本了，另备份一份在 `Backups\video-skin-live-20261119\background.mp4.bak`。
+- 现在可切：`changzheng`（长征衔接 126s）/ `mao` / `xiongguan` / `chuangkou`（DP娘）/ `woshi`（卧室鱼，= `old`）。
+### 2026-11-19 00:4x：换背景没反应的真凶（有证据）
+
+- 现象：改完配置、按 Ctrl+R / F5 都不动，画面还停在长征那条。
+- **证据一**：连着 16 秒采样 `dsh-video-skin.json` 的 LastAccessTime，每 **4 秒**准点跳一次 —— 全机器只有我那段轮询会读它。**说明补丁在页面里跑着，轮询没坏。**
+- **证据二**：`HEAD /dsh-video-skin/background.mp4?sw=1` → 200 + 正确长度。路由的 `kind: 'exact'` 匹配**忽略 query**，所以地址可以带指纹。
+- 真凶：同一个 URL 重新 `load()` 时，Chromium 从**媒体缓存**里把旧片子又放了一遍。换文件、页面也重新请求了，画面还是旧的。这也顺带解释了为什么 F5 / Ctrl+R 看着「没用」——页面很可能真刷新了，但视频还是缓存里那一份。
+- 修法（两个补丁，都改在 `Backups\video-skin-live-20261119` 之外）：
+  1. `lib/config.js`：`resolveAsset` 的返回从裸路由改成 `路由?v=大小-mtime`（都转 36 进制）。素材一变地址就变，缓存没法复用。
+  2. `runtime/skin.js`：轮询改成比对 `background.src`，命中就**造一个新的 `<video>` 元素**替换旧的（`swapVideo`），不再原地 `load()`。新元素 + 新地址，双重绕开媒体缓存。
+- 自测：`node --check` 两个文件都过；直接 import `config.js` 跑 `resolveConfig` → `src = /dsh-video-skin/background.mp4?v=6c55k-mvhf4c4s`，`warnings` 为空。
+- 代价：页面侧代码只在加载时生效，所以还得重启一次。
+### 2026-11-19 轮换背景（B 方案，已上线）
+
+- 阿冉要「定时自动轮换」：**卧室鱼 5 分钟 → DP娘 10 分钟 → 长征衔接 10 分钟**，一圈 25 分钟。
+- 脚本：`收纳\01-脚本\DSH维护\轮换背景.ps1`（改时长改里面 `$plan` 的 `minutes`）。它只做一件事：到点改 `dsh-video-skin.json` 的 `background.file`，页面那 4 秒轮询自己跟上，所以**不用刷新、不用重启**。
+- 启动时**从当前正在放的那张开始**，不立刻跳走。
+- 暂停：同目录建空文件 `PAUSE-轮换背景`（删掉即恢复）。日志：同目录 `轮换背景.log`。
+- 单实例：写 `轮换背景.lock` 存 PID，活着就退出。
+- 自启：计划任务注册被拒（`Access is denied`，要管理员），**改用 HKCU Run**：`FishBgRotate` = `wscript.exe "C:\Users\FIshKiller\AppData\Local\fish-bg-rotate.vbs"`。VBS 是 UTF-16LE（**必须**，WScript 默认按 ANSI 读，中文路径会失效），内容只有一行 `WScript.Shell.Run` 去拉那个中文路径的 .ps1。放 ASCII 路径是因为 **WMI `Win32_Process.Create` 传不了中文命令行**（试了三次：进程起来了但不干活，没日志没 lock）——这也解释了为什么以前语音 watchdog 要走 WMI 的老路子会有坑。
+- 现状：pid 20560，00:42:16 起跑，从 DP娘 开始；下一次切换约 00:52（长征衔接）。
+- 注意：手动跑 `换聊天背景.ps1` 会被下一轮覆盖——想手动优先就先建 PAUSE 文件。
