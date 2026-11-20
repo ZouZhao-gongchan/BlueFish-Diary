@@ -2,6 +2,50 @@
 
 > 留给工作用的地方。想到什么先记下来，做完的移到「已完成」，不用讲究格式。
 
+## 小鱼工作台 v2.7 · 科技感装修 + 对话通道 + 任务板（2026-11-20 23:1x，最新，先读这一节）
+
+> 比下面那节「22:4x 整页总结」新；那节写的是 v2.6 的接口与功能全景，仍然有效。
+
+### 这轮做了什么（阿冉要的三件）
+
+1. **科技感装修（深空 HUD，默认开）**：四角括号（12px 臂 / 1px 线 / 淡纹 0.22）、卡片顶发丝线（左 18% 亮）、右上 `DECK-01` 编号、状态灯换成 **14px 刻度环 + 7px 灯芯**（只有当前行允许 ping）、控制室读数改成四列仪表（2px 竖条 + 26px 等宽数字 + micro 标签）、左侧栏右缘 6px 刻度带 + 行号 01–09 + 当前行 2px 蓝竖条、网格升成 48/240px 双层并加径向渐隐、静态扫描线（1 亮 3 暗 ×3%）+ 一条 26s 扫描带、顶栏底部 5px 刻度尺。**霓虹只有一种蓝**（spec 的克制清单）。
+2. **对话通道（阿冉最想要的那件）**：工作台里一个抽屉，直接跟小鱼说话、布置任务。读回走 `sessionController.inspect`（把会话日志里的 user/assistant 文本块抽出来），投递走 `sessionController.prompt`（mode=queue，等于阿冉在聊天框里打字）。有「继续 / 报告一下进度 / 先停一下」快捷词、状态灯（RUNNING/IDLE）、3 秒自动刷新、Enter 发送。
+3. **任务板 + 控制室读数联动**：控制室「在跑成员 / 任务」两个读数变成可点（带 ›），点开是任务板抽屉：成员（状态/角色/模型/在做什么）+ 任务（状态/认领人/写盘范围/被卡住）+ 点任务行展开说明。真数据：`agentTeams.listMembers` + `listTasks`。
+
+### 代码与生效
+
+- 客户端 **v2.7** `client.js`（~150KB）：新增 `HudFrame / StatusLight / CardCorners / Console / TeamPanel` + `useChat / useTeam`；新偏好键 `skin`（hud / glass），控制室「皮肤」键切换。
+- 宿主 **v1.4** `index.js`：新增 `/chat`、`/prompt`、`/team` 三条接口 + `findLead / pickText / readChat / readTeamDetail` 四个函数。
+- **生效**：改 client → 刷新页面；改 host → `plugin_manager` 对 `include:bluefish-workbench` 设一次 `enabled=true`（热重载，不用重启 DSH）。
+- 快捷键新增：**T = 对话、B = 任务板**；顶栏和底栏都有按钮。
+
+### 新接口（都在 `/bluefish-workbench/` 下，exact + query）
+
+- `GET /chat?limit=40` → `{ ok, sessionId, lead, status, total, messages:[{role,text,time,seq}], lastSeq }`（内含 800ms 缓存，读一次整份日志约 47ms）
+- `POST /prompt { text, sessionId? }` → `{ ok, accepted, sessionId, requestId, mode:'queue' }`；空文本 400；错会话 502 + `code:'session/not-found'`
+- `GET /team` → `{ ok, lead, members:[{id,name,role,status,description,model,…}], tasks:[{id,subject,status,ownerName,ready,writeScopes,warnings}] }`
+
+### 验收证据（外部，别只看这里）
+
+- 活体验收：`工作台验收.mjs` **21/21 PASS**（新增 `/chat` 5 条/共 971、`/team` 4 人 2 件、`/prompt` 空文本 400、错会话 `session/not-found`）。
+- 渲染冒烟：`%TEMP%\wb_test\test_client_render.mjs` **17 个组件 0 抛错**（含 Console / TeamPanel / HudFrame / StatusLight / CardCorners / Markdown），对话抽屉能渲染气泡、任务板能渲染成员与任务。
+- 真投递：`POST /prompt` 返回 `accepted:true`（当前轮在跑 → 排在收件箱，本轮结束后以一条用户消息落到会话）。
+- 设计 spec：`收纳\02-文档\设计\工作台-科技感皮肤-spec.md`（成员 hud-designer 产出，210 行，含配色对比度实算与并发上限）。
+
+### 坑 / 注意
+
+- 投递是 `mode:queue`：**当前轮没结束就不会落库**，所以「投完立刻 /chat 看不到」是正常的，不是失败。
+- `/prompt` 用不存在的 `sessionId` 会回 `session/not-found` —— 拿来当「通道授权 + 入参形状」自检，不会真发消息。
+- `inspect` 是整份读，会话越长越慢（971 条约 47ms），已在宿主加 800ms 缓存；再长就该换 `page`/`follow`。
+- 前端改完必须同时跑 `node --check` + 渲染冒烟：`node --check` 查不出未定义变量（曾漏 state 导致整层打不开）。
+
+### 下一步候选
+
+- 对话抽屉里显示「正在写哪个文件 / 正在跑哪条命令」的实时状态（读 session 里当前 turn 的 tool-call）。
+- 任务板能派单/认领（`agentTeams.createTask / updateTask` 已在宿主侧确认可调，只差 UI）。
+- 控制室数字点击跳转（花费 → cost-meter 面板；余额 → 账户页）。
+
+
 ## 进行中
 ## 小鱼工作台交接 · 2026-11-20 22:4x（压缩后先读这一节）
 
