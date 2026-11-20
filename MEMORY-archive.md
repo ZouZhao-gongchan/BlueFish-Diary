@@ -175,3 +175,11 @@
 - 2026-11-18：QQ 语音实际走的是 D:\AI\voice\tts_client.py（%USERPROFILE%\.dsh\fish-qq-chat-config.json 里的 ttsScript 覆盖了代码 DEFAULTS），不是 working\fish-tts.py；working\fish-tts.py 只是代码里的默认值。语音服务关着时 qq_say 会报 10061 连接被拒，属正常现象，别误判成脚本坏了。
 - 2026-11-18 约定：以后阿冉新建的文件、文件夹交给小鱼归位——按 working\收纳 的抽屉逻辑放，根目录不再长新东西，新抽屉必须带 README 便签，素材区大件（_scratch/voice/out）不轻易搬、先问。
 - 2026-11-18 bluefish-persona 的 maxChars 最终定为 4000（插件最大值）：PERSONA.md 现在 1400 字，先设 2000 发现余量只有 600、写着写着会再撞，干脆拉到顶。改的是 working\bluefish-persona\cordis.patch.yml，下次 DSH 启动生效。
+- 2026-11-18 启动动画换成 `dsh-startup-secret`（长征机主题）：身份=阿冉 / 编号 RC-1021 / 左常驻群像 + 右毛先生；`dsh-boot-animation` 已 disabled，video-skin 只留壁纸。
+- 2026-11-18 聊天背景四张（毛先生 / 雄关漫道 / DP娘 / 卧室鱼）+ 长征衔接。素材直接解 WPE 的 `scene.pkg` 拿到——静态图是内嵌 JPEG，视频壁纸是内嵌 mp4，不用录屏。
+- 2026-11-19 定位卡立起来：`BlueFish的日记\定位卡\`，每个会话一张（身份/边界），另有协同板（编号 + 派单 + 回执）。
+- 2026-11-19 记忆重构：规矩搬进 PERSONA，11-11~11-18 时间线归档，MEMORY 从 9173 字压到 7000 以内。
+- 2026-11-19《记井》项目目录已从「像素地牢」改名为「记井」：E:\python\期末大作业\记井\，文档/代码标题/bat 引用全部同步改过，测试和启动都验过。
+- 2026-11-20 插件升级：fish-memory 1.6.0→1.6.3、cost-meter 1.9.41→1.9.80、bili-scroll 2.2.2→2.5.2。这三个要求最高才 >=0.2.1-rc.2，所以 DSH 保持 0.2.1-rc.3 不升；better-sidebar 0.30+ 和 dsh-mobile 0.8.x 要 0.2.2 线才动。备份 `Backups\plugin-upgrade-20261120\`。
+- 2026-11-20 bili-scroll 2.5.2：官方已内建 windowTries 失败重试，以前我们自己打的 lastWindowKey/saveCfg 本地补丁不用再打（新版代码里已无 lastWindowKey）。旧补丁备份同上。
+- 2026-11-21 记忆瘦身第二刀：MEMORY 从 5.3k 降到约 3.9k 字（去空白口径）。搬走的是：存档索引表格（改成一句话「grep 关键词」）、11-18 启动动画/背景素材来源、11-19 定位卡/记忆重构/记井改名、插件版本明细、bili-scroll 补丁史。定位卡同步压到约 560 字。
