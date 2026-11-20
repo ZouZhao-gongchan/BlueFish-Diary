@@ -56,6 +56,17 @@
 - **v3.4 滚动穿透**：在对话里滚到尽头，滚轮会继续带动后面的大界面（scroll chaining）。给 7 个滚动区加 `overscroll-behavior: contain`——对话列表 / 任务板 / 主内容 / 侧栏 / 终端 / 面板体 / 抽屉本身。内层滚到头就停，不再传出去。
 - 说明：工作台里所有项目页的对话，投递目标都是**同一个 Lead 会话**（聊天这间）；项目页只是看文件/画像，没有连到别的会话。要「按项目投到对应会话」是另一个功能（未做，待阿冉拍板）。
 
+### v3.5 悬停手感（2026-11-20 23:0x）
+
+- 阿冉说「新建项目卡能点但死气沉沉」：统一加 hover 反馈——
+  - `.bfw-hov`：按钮 / 控制室偏好键 / 底栏 / 对话快捷词 / 右下 tab → 蓝边 + 淡蓝底 + 字变亮
+  - `.bfw-hov-row`：侧栏行 / 文件行 / 可点读数 → 淡白底
+  - `.bfw-hov-card`：项目卡 → 上浮 2px + 发光阴影
+  - `.bfw-hov-dash`：新建项目虚线卡 → 虚线变亮蓝 + 加号放大 1.15 + 背景微亮
+  - 按下统一 1px 下压（`:active`）
+- 实现方式：CSS 规则注入 overlay 的 `<style>` 串（用 `!important` 压内联样式），不给每个组件加 hover state。
+- 冒烟加断言：新建项目卡带 `bfw-hov-dash` 类、样式表里有 `.bfw-hov-dash:hover` 规则。
+
 ### 代码与生效
 
 - 客户端 **v2.7** `client.js`（~150KB）：新增 `HudFrame / StatusLight / CardCorners / Console / TeamPanel` + `useChat / useTeam`；新偏好键 `skin`（hud / glass），控制室「皮肤」键切换。
