@@ -86,6 +86,17 @@
 - 修复：把 `orderIds/dragId/overId` 挪到顶部的钩子区（和别的 state 一起，在 `if (!mounted) return null` 之前）。
 - **防御**：渲染冒烟的迷你 React 加了「钩子数量守卫」——同一组件两次渲染钩子数不一致就直接报错（这个 bug 之前 `node --check` 和普通冒烟都抓不到）。以后这类「写在 return 后面」的错误会被自动抓出来。
 
+### v4.0 待验收条：完成的东西摊在最上面（2026-11-20 24:1x）
+
+- 阿冉的问题：「B站笔记点进去，只显示任务完成等待查看，不知道要查看什么」。根因是「已完成」只是个状态灯，页面里没有把交付物摆出来。
+- 新增 `ReviewBar`（项目页最上面一条横幅，状态是「已完成 / 待审批」时出现）：
+  - 标题「✅ 已完成 · 等你验收」/「⏳ 待你拍板」+ 上次做到 + 近期结论
+  - 「要看的：」最近改动文件胶囊（最多 5 个，点一下直接在预览窗打开）
+  - 「✓ 验收通过」→ 状态改空闲、note 写「已验收 · 时间」；「↩ 打回重修」→ 状态改工作中、note 写打回
+- 宿主新接口 `POST /review {id, verdict}`：参数闸（坏 id / 坏 verdict → 400），写 状态.json 的 status/note/reviewedAt/reviewVerdict。
+- 踩坑复现：第一次把 ReviewBar 插错位置（锚点撞了 LocalFiles 的同名错误行），冒出 `project is not defined`——冒烟 22 条报错抓出来了，已改正。
+- 验收 **29 项全 PASS**（新增 /review 两条参数闸）；渲染冒烟断言 `[待验收] 出现验收条=true`、`点验收通过 -> /review 调用=true`，20 组件 0 抛错。
+
 ### 代码与生效
 
 - 客户端 **v2.7** `client.js`（~150KB）：新增 `HudFrame / StatusLight / CardCorners / Console / TeamPanel` + `useChat / useTeam`；新偏好键 `skin`（hud / glass），控制室「皮肤」键切换。
