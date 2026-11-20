@@ -10,7 +10,7 @@
 
 ### 一句话状态
 
-小鱼工作台做到 **v4.7 / 宿主 v2.1**，功能与体验都已成型：HUD 皮肤、四宫格项目页、内嵌对话抽屉（可发图/截图、**能发任意文件**、**能打 / 指令和 @ 文件**）、dock 可放大铺满项目页、状态条点开看最近 6 步、任务板、待验收条、目录选择器、会话绑定、拖动排序、**中文上下文表**、**会话选择器能认人（标题 + 按目录分组 + 搜索 + 一键在项目目录新开）**、**工作台被重挂后自己弹回（sessionStorage + localStorage 双标记 30 秒宽限）**。活体验收 **40 项全 PASS**，渲染冒烟 **23 组件 0 抛错**。下一步由阿冉定（候选见末尾）。
+小鱼工作台做到 **v4.7 / 宿主 v2.1**，功能与体验都已成型：HUD 皮肤、四宫格项目页、内嵌对话抽屉（可发图/截图、**能发任意文件**、**能打 / 指令和 @ 文件**）、dock 可放大铺满项目页、状态条点开看最近 6 步、任务板、待验收条、目录选择器、会话绑定、拖动排序、**中文上下文表**、**会话选择器能认人（标题 + 按目录分组 + 搜索 + 一键在项目目录新开）**、**工作台被重挂后自己弹回（sessionStorage + localStorage 双标记 30 秒宽限）**、**HTML 文件直接渲染预览（iframe，可切源码）**、**新会话一开自动投「场景认领」词**。活体验收 **41 项全 PASS**，渲染冒烟 **23 组件 0 抛错**。下一步由阿冉定（候选见末尾）。
 
 ### 代码与生效
 
@@ -21,7 +21,7 @@
 ### 宿主接口（全部 `/bluefish-workbench/` 下，exact + query，不走鉴权）
 
 - 读：`/overview` `/profile?id=` `/info?id=` `/index?id=` `/files?path=` `/file?path=` `/raw?path=` `/browse?path=`（本地文件栏，只 D/E） `/render?path=` `/page?id=&name=` `/text?path=` `/asset?name=` `/attachment?id=&session=` `/inbox?path=` `/dirs?path=`（只列文件夹，任意盘） `/chat?limit=&session=` `/activity?session=` `/team` **`/sessions?title=1`（带标题的会话列表）** `/context` **`/commands?session=`（DSH 人指令清单）** **`/refs?q=&session=`（输入框 @ 的文件候选）**
-- 写（POST）：`/claim` `/handover` `/project` `/exec` `/save` `/open`（本地路径或 http(s) 网址） `/prompt {text,images?,sessionId?}` `/review {id,verdict:approve|reject}` `/order {ids}` `/talkto {id,sessionId}` `/shot {rect?}` **`/newsession {cwd}`（在项目目录新开一个会话）** **`/command {line,sessionId?}`（真执行 /指令，不发给模型）** **`/upload {name,dataUrl}`（对话里发文件，落盘收件箱回本机路径）**
+- 写（POST）：`/claim` `/handover` `/project` `/exec` `/save` `/open`（本地路径或 http(s) 网址） `/prompt {text,images?,sessionId?}` `/review {id,verdict:approve|reject}` `/order {ids}` `/talkto {id,sessionId}` `/shot {rect?}` **`/newsession {cwd, sceneName?, dryRun?}`（在项目目录新开一个会话；给 sceneName 就自动投一条场景认领词，dryRun 只预览不建）** **`/command {line,sessionId?}`（真执行 /指令，不发给模型）** **`/upload {name,dataUrl}`（对话里发文件，落盘收件箱回本机路径）**
 
 ### 客户端功能全景
 
@@ -34,7 +34,7 @@
 
 ### 验收与自测（改完就跑）
 
-- **活体验收**：`node "收纳\01-脚本\DSH维护\工作台验收.mjs"` → **40 项 PASS/FAIL**（自动找 DSH 端口）。
+- **活体验收**：`node "收纳\01-脚本\DSH维护\工作台验收.mjs"` → **41 项 PASS/FAIL**（自动找 DSH 端口）。
 - **渲染冒烟**：`%TEMP%\wb_test\test_client_render.mjs` —— 迷你 React 真跑组件树，含断言：HUD/密度/对话抽屉/Shift+Enter/四宫格/内嵌对话/收起展开/放大这一格/状态条最近步骤/**输入框补全（/ 指令、@ 文件、选中执行 POST /command）**/中文上下文表/拖拽 POST /order/会话绑定 POST /talkto/点链接开网页/待验收条/目录选择器/钩子数量守卫。修前端必须跑。
 - 体检/速览：`体检.mjs`（周日 21:00）、`生成交接速览.mjs`。
 
