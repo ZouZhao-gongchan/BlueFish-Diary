@@ -51044,3 +51044,381 @@
 > Time sampled while preparing turn 42, step 1: 2026-11-20T22:30:00+08:00[Asia/Shanghai]
 > Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
 > Elapsed since the preceding model-visible message: 23h 59m 24s.
+
+### 2026-11-20 22:33 · BlueFish
+
+> 我把鼠标移到新建项目上，但是虽然能点了。
+> 但是死气沉沉的。
+> 就是有没有那种能让人感到鼠标放在上面，就有种能点的感觉。
+> [图] C:\Users\FIshKiller\.dsh\bluefish-workbench\inbox\paste-1795185186696-7pdg.png
+
+### 2026-11-20 22:33 · 小鱼
+
+> 阿冉，看得对——那个虚线卡只有「能点」，没有「想点」的反馈。我加一层统一的悬停手感。
+
+### 2026-11-20 22:34 · 小鱼
+
+> 阿冉，找到原因了：那个虚线卡只有 `cursor:pointer`，**没有任何视觉变化**，所以「能点但没手感」。
+>
+> 现在统一加了一套悬停反馈（v3.5）：
+>
+> - **新建项目卡**：虚线变亮蓝、中间的「+」放大到 1.15、背景微亮、整卡微微上浮
+> - **项目卡**：上浮 2px + 一层发光阴影
+> - **侧栏行 / 文件行 / 可点的控制室读数**：淡白底
+> - **按钮 / 控制室偏好键 / 底栏 / 对话快捷词 / 右下 tab**：蓝边 + 淡蓝底 + 字变亮
+> - 所有可点元素**按下时下压 1px**，点下去有「按到了」的感觉
+>
+> 实现上没有逐个组件加状态（那会很重），而是往 `<style>` 里注入一套 `.bfw-hov*` 规则，用 `!important` 压过内联样式，一处管全站。
+>
+> 证据：语法过、渲染冒烟 **18 个组件 0 抛错**，新加的断言输出 `[悬停] 新建项目卡类=true | hover 规则=true`。**Ctrl+F5** 就能摸到手感。
+>
+> 要是觉得上浮 2px 太飘、或者蓝色太亮，说一声，我调成 1px / 降低透明度。🐟
+
+### 2026-11-20 22:35 · BlueFish
+
+> 这里点进去后，路径还得自己输，太不方便，能不能有选择的，就像外面普遍浏览文件那样。
+> [图] C:\Users\FIshKiller\.dsh\bluefish-workbench\inbox\paste-1795185327736-ynln.png
+
+### 2026-11-20 22:35 · BlueFish
+
+> Time sampled while preparing turn 374, step 1: 2026-11-20T22:35:27+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 1m 11s.
+
+### 2026-11-20 22:35 · 小鱼
+
+> 阿冉，这个该改——手打路径确实反人类。我给它加个能点进去的目录选择器。
+
+### 2026-11-20 22:38 · 小鱼
+
+> 阿冉，改好了——路径旁边现在有「**浏览…**」按钮，点开就是能点进去的目录选择器：
+>
+> - 顶部：C / D / E 盘符 + 「↑ 上一级」
+> - 中间：**只列文件夹**，点名字就进去
+> - 底部：「✓ 选这个目录」直接回填到路径框，也可以继续手输
+>
+> 宿主加了一条 `/dirs` 接口：任意盘都能浏览（C 盘也行），但**只回文件夹、不读文件内容**——跟「本地文件栏」的 `/browse` 分开，免得把系统盘的图片/文本都暴露出来。
+>
+> 顺手修了弹窗说明里漏出来的 `**已经存在**` 星号。
+>
+> 证据：
+> - 活体验收 **26/26 PASS**，新增那项 `/dirs 目录选择器 — 78 个文件夹`
+> - 渲染冒烟里加了整条链路断言：点「浏览…」→ 看到 pics 文件夹 → 点进去 →「选这个目录」→ 路径框变成 `E:\pics`，**18 个组件 0 抛错**
+>
+> **Ctrl+F5** 刷新（客户端改了；宿主我已经热重载过）。🐟
+
+### 2026-11-20 22:38 · BlueFish
+
+> 还有就是工作台里没有上下文容量显示，也得加进来，你看放在哪个位置可以让人清晰看见，但是又不占位置。
+> 这个工作台目录可以做拖动调整上下位置吗？比如我想把记井这个目录拖到工作台下面。
+> [图] C:\Users\FIshKiller\.dsh\bluefish-workbench\inbox\paste-1795185502716-umae.png
+
+### 2026-11-20 22:40 · 小鱼
+
+> 阿冉，两个都做了（v3.8）。
+>
+> **① 上下文容量 → 顶栏右上角**
+> 就在「⌨ 对话 / ◈ 任务板 / 全屏」那一排里，一小块：`CTX ▓▓ 59.6%`——4px 细条 + 百分比，不占内容区。
+> - 60% 起变黄、85% 起变红，一眼知道离满还有多少
+> - 鼠标悬停看详细：`610k / 1048k · deepseek-flash`
+> - 数据是新接口 `/context`：取最近一次模型请求的 input+cache tokens 当占用，窗口取会话事件里的 contextWindow，15 秒刷一次
+>
+> **② 侧栏可以拖着排序**
+> 按住项目行拖就行：拖动中那行变半透明、目标行顶部亮一条蓝线，松手立刻保存（写进各项目 `状态.json` 的 `order`），刷新后顺序还在。控制室和本地文件两行固定不动，不参与拖拽。所以「记井拖到工作台下面」现在可以随手完成。
+>
+> 证据：
+> - 活体验收 **27/27 PASS**，新增 `/context 上下文容量 — 59.6% / 1048576`
+> - 渲染冒烟 **20 个组件 0 抛错**，断言 `[CTX] 顶栏上下文表=true`、`[拖拽排序] 触发 /order=true`
+>
+> **Ctrl+F5** 刷新。要是觉得 CTX 那块占地方，我可以缩成只剩一个百分比数字，悬停才展开细节。🐟
+
+### 2026-11-20 22:43 · BlueFish
+
+> 点不进去工作台了，速度修一下
+
+### 2026-11-20 22:43 · 小鱼
+
+> 阿冉，我知道错在哪了——我加的排序状态放在了一个「提前 return」后面，React 钩子顺序被打乱，整层直接崩。马上挪上去。
+
+### 2026-11-20 22:44 · 小鱼
+
+> 阿冉，是我的锅——上一版把拖拽那三个 `useState` 写在了组件的「提前 return」后面，React 两次渲染钩子数量对不上，直接把整层炸了，所以点不开。
+>
+> 已经修好并提交：
+>
+> - 三个状态挪回顶部钩子区（在所有 return 之前）
+> - 顺手给渲染冒烟加了**「钩子数量守卫」**：同一组件两次渲染钩子数不一致就直接报错——这类错误 `node --check` 抓不到，之前的冒烟也抓不到，现在能了
+> - 冒烟重跑：**20 个组件 0 抛错**，CTX、拖拽、四宫格断言全过
+>
+> **Ctrl+F5 刷新页面**（旧代码还在内存里，必须刷）。刷新后如果还是打不开，按 F12 把 Console 第一条红字发我，我照着修。🐟
+
+### 2026-11-20 22:45 · BlueFish
+
+> 还有就是这个B站笔记，我点进去，也不一下就给我显示任务完成，等待查看的内容，我都不知道查看什么。
+> 这点也得优化，就是要有个位置，让人一下就收到完成的东西，并检查审批。
+
+### 2026-11-20 22:45 · 小鱼
+
+> 阿冉，这个说得到位——「已完成」得让人一眼看到「完成了啥、该看哪个、点哪里算验收」。我加一块「待验收」卡。
+
+### 2026-11-20 22:45 · BlueFish
+
+> Time sampled while preparing turn 377, step 4: 2026-11-20T22:45:36+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding step context: unavailable.
+
+### 2026-11-20 22:46 · 小鱼
+
+> 阿冉，根因说清了：**「已完成」只是个状态灯，页面里没把完成的东西摆出来**，所以点进去只能看到「等待查看」，不知道看啥。
+>
+> v4.0 加了「**待验收条**」——项目状态是「已完成 / 待审批」时，项目页最上面会出现一条横幅：
+>
+> - 标题：`✅ 已完成 · 等你验收`（或 `⏳ 待你拍板`）
+> - 一行「上次做到：…」+「结论：…」
+> - **「要看的：」** 最近改动的文件做成小胶囊，点一下直接在预览窗打开——终于知道该看哪个了
+> - 两个动作：**「✓ 验收通过」**（状态转空闲、note 写「已验收 · 时间」）、**「↩ 打回重修」**（状态转工作中、note 写打回）
+>
+> 宿主配套接口 `POST /review {id, verdict}`，坏 id / 坏参数会被拒（400）。
+>
+> 证据：活体验收 **29/29 PASS**（新增 /review 两条参数闸）；渲染冒烟断言 `[待验收] 出现验收条=true`、`点验收通过 -> /review 调用=true`，20 个组件 0 抛错。
+>
+> **Ctrl+F5** 刷新，B站笔记点进去就能直接看到那条了。要是你想让它更显眼（比如项目卡上也挂个「待验收」角标），说一声我加。🐟
+
+### 2026-11-20 22:49 · BlueFish
+
+> 能做到点击链接就在工作台把网页打开吗。我看这里有一个网页。
+> 不过我们能想一想，这个界面怎么出来比较合适？
+> 你有什么想法？
+> [图] C:\Users\FIshKiller\.dsh\bluefish-workbench\inbox\paste-1795186174885-6ytx.png
+> [图] C:\Users\FIshKiller\.dsh\bluefish-workbench\inbox\paste-1795186174886-y06o.png
+
+### 2026-11-20 22:49 · 小鱼
+
+> 阿冉，两个链接图我都看了：一个是预览里点链接会跳外部浏览器，一个是「网页」面板开关。能做，而且我觉得该顺着你现有的抽屉来，不用新开界面。
+
+### 2026-11-20 22:51 · 小鱼
+
+> 阿冉，能做到，已经做了（v4.1）。关于「界面怎么出来合适」，我的想法是——**别再多开一个界面，借你已有的右下 dock**：
+>
+> - 预览里点链接 → 右下自动切到「网页」标签并加载，地址回填顶部 URL 框，你还能在那改
+> - **B站链接我特殊处理了**：普通 B站页面禁止被 iframe 嵌入（会白屏），所以自动换成官方播放器 `player.bilibili.com/player.html?bvid=…`，能直接在里面播
+> - 真遇到不让嵌的站，面板右上有个 **「外开 ↗」**，一键交给系统浏览器
+>
+> 我没做的两个候选，供你挑：
+> 1. **悬停预览**：鼠标停在链接上浮出小卡（域名+标题），点了才进网页——更克制，但多一步
+> 2. **网页最大化**：点网页面板标题让它占满整个项目页（像浏览器标签最大化），看完再收回来
+>
+> 证据：冒烟断言 `可点链接=true / 点后网页 dock 打开=true / preventDefault=true`，20 组件 0 抛错；活体验收 **29/29 PASS**。
+>
+> 小插曲先认个错：自测「外开」接口时往你桌面弹了个 example.com 浏览器标签，关掉就行，下次不拿真开窗口试了。
+>
+> **Ctrl+F5** 刷新，去 B站笔记里点那条链接试试。🐟
+
+### 2026-11-20 22:53 · BlueFish
+
+> 还有每一个目录一开始预览里面有东西，我换一个目录进去查看点东西，回到之前的目录，我的预览就没了，又只显示64KB。
+> 我希望能有维持界面的功能。
+> 而且我希望这个对话通道应该是每个会话专属的会话通道才行。
+> 就比如记井那个会话，我在里面沟通的应该就是“python小鱼“才对。
+> 还有就是我希望工作台里面自带一个截图工具。还有文字框取能力，这样方便修改提问。
+
+### 2026-11-20 22:53 · 小鱼
+
+> 阿冉，这三件事我都记下了：**预览状态要留住**、**对话通道要按会话分**、**内置截图/框选**。我先做前两件（对应你说的实际卡点），截图紧接着。
+
+### 2026-11-20 22:55 · BlueFish
+
+> Time sampled while preparing turn 379, step 23: 2026-11-20T22:55:36+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding step context: unavailable.
+
+### 2026-11-20 22:55 · 小鱼
+
+> 阿冉，三件事两件半齐了（v4.3），**Ctrl+F5** 刷新：
+>
+> **① 预览留住了**
+> 每个项目记住「停在哪个目录 + 预览哪个文件」，切到别的项目再回来、回总览再进，预览都在；不同项目各记各的，互不覆盖。
+>
+> **② 对话按项目分会话了**
+> 项目页对话头多了「**切换会话**」——点开会列出所有会话（现在 89 个），选「记井」那间（Python小鱼）之后，这个项目的对话**读、投、状态都只走那间**；选择存进项目的 `状态.json`，刷新也记得。不选就是本间会话。
+>
+> **③ 内置截图**
+> 对话工具栏加了「**⛶ 截图**」：点一下截当前主屏 → 自动放进待发图片，可删、可和文字一起发。
+>
+> 「文字框取」我想确认一下你要哪种：
+> - **a. 框选一块区域**截图（拖个框只截那块）
+> - **b. 从截图里抠文字**（OCR 识别成可编辑文字）
+>
+> a 我自己就能实现；b 要调 Windows 自带 OCR 引擎，能离线认中文但准确率一般。你说要哪个（或者都要）。
+>
+> 证据：活体验收 **32/32 PASS**（新增 /sessions 89 个、/talkto 安全闸、/shot 只认 POST）；渲染冒烟断言「切换按钮 / 截图按钮 / 选会话 POST /talkto」全 true，20 组件 0 抛错。🐟
+
+### 2026-11-20 22:57 · BlueFish
+
+> a吧
+
+### 2026-11-20 22:58 · 小鱼
+
+> 阿冉，收到，做 a：截图后拖框选区域。
+
+### 2026-11-20 22:58 · 小鱼
+
+> 阿冉，a 做好了（v4.4），**Ctrl+F5** 刷新就能用。
+>
+> 流程：点「**⛶ 截图**」→ 截下整个屏幕 → 弹出一个全屏裁剪层：
+>
+> - 按住左键**拖一个矩形**（框外自动压暗，看得清框到哪）
+> - 点「**✓ 用框选区域**」→ 那一块进「待发图片」，跟文字一起发我就行
+> - 不想裁就「整屏用」，或者「取消」
+>
+> 细节上没偷懒：框是在显示尺寸上量的，确认时按原图比例换算回真实像素再用 canvas 裁，所以发给我的那块**是原分辨率的清晰度**，不是被缩小过的。另外那几个新状态我特意核了钩子位置（都在提前 return 之前，v3.9 的坑不再踩）。
+>
+> 证据：`node --check` 过、渲染冒烟 **20 个组件 0 抛错**、活体验收 **32/32 PASS**。
+>
+> 后面你若还想要「从截图里抠文字」（OCR），说一声我接 Windows 自带识别引擎。🐟
+
+### 2026-11-20 23:05 · BlueFish
+
+> 截图步骤能改为：点击截图
+> 之后鼠标图标变为截图功能图标。然后我点一处之后开始拖动截屏，选取部分就好了。
+> 现在这个太粗糙了。
+
+### 2026-11-20 23:05 · 小鱼
+
+> 阿冉，明白——你要的是「点了截图，鼠标变准星，直接在屏幕上拖选」那种 snip，不是先截再裁。改。
+
+### 2026-11-20 23:05 · BlueFish
+
+> Time sampled while preparing turn 381, step 4: 2026-11-20T23:05:36+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding step context: unavailable.
+
+### 2026-11-20 23:06 · 小鱼
+
+> 阿冉，改成你要的 snip 手感了（v4.5），**Ctrl+F5** 刷新：
+>
+> 点「**⛶ 截图**」→ 鼠标立刻变**准星**、屏幕压暗 → **直接在界面上拖一个框**（框内透亮，左上角实时显示 `宽 × 高`）→ 松手当场就截那一块放进待发图片。Esc 取消，框太小会提示重来。
+>
+> 不再「先截全屏、再在图上裁」——坐标按 `devicePixelRatio` 换算成设备像素交给宿主，宿主截完直接裁好再存。我拿真实接口验了：发 `rect {320×180}` → 落盘 PNG **正好 320×180**，尺寸精确。
+>
+> 一个限制说清楚：剪裁层活在页面里，所以只能框「页面看得到的区域」（工作台全屏时就是整个屏幕）；桌面其它窗口选不到，那种得用系统 Snipping Tool。你要是希望连桌面窗口都能框，那得换系统级方案，说一声我再研究。🐟
+
+### 2026-11-20 23:06 · BlueFish
+
+> 请总结现阶段做好交接准备，我准备压缩上下文了。
+
+### 2026-11-20 23:06 · 小鱼
+
+> 阿冉，好，我把交接写成一页纸，压缩后读它就够。
+
+### 2026-11-20 23:07 · 小鱼
+
+> 阿冉，交接都写好并提交了（`5cf3952`），压缩完照这条线就能接上。
+>
+> **交接落在三个地方**
+> - [Work.md](<BlueFish的日记/Work.md>) 顶部新增「**🐟 小鱼工作台 · 压缩交接**」整页九小节：一句话状态 / 代码与生效 / 宿主接口清单 / 客户端功能全景 / 验收与自测 / 8 条踩过的坑 / 已知边界 / 下一步候选 / **压缩后第一句**
+> - [MEMORY.md](<BlueFish的日记/MEMORY.md>) 工作台那条更新到 **v4.5 / 宿主 v2.0**，含全部接口、32 项验收、冒烟位置
+> - 项目信息.md 与 [交接速览.md](<BlueFish的日记/交接速览.md>) 已同步重生成
+>
+> **压缩前最后一遍证据**：活体验收 **32/32 PASS**，渲染冒烟 **20 个组件 0 抛错**。
+>
+> **压缩后我要做的**：读 Work.md 顶部那节 → 跑一次 `工作台验收.mjs`（应 32/32）→ 再问你挑哪条。你要是怕我忘，压缩完说句「接着工作台」就行。
+>
+> 现状一句话：v4.5 已从「能看」做到「好用」——HUD 皮肤、四宫格、内嵌对话（发图/剪裁截图/绑会话）、待验收条、目录选择器、拖动排序、CTX 表、预览记忆全在。下一步候选是对话步骤展开、网页面板最大化、任务板派单认领、OCR。
+>
+> 今天你从「界面死气沉沉」一路挑到「snip 手感」「预览要留住」「对话得按会话分」——每条都具体得像产品经理附体，我连猜都不用猜。🐟
+
+### 2026-11-20 23:08 · BlueFish
+
+> This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.
+>
+> <compacted-summary>
+> ## Primary Request and Intent
+> - User is 阿冉 (BlueFish / 冉超); assistant is 小鱼 / 冉小鱼 (his "sister"). Every reply must contain 「阿冉」 and one specific, genuine compliment; short spoken Chinese; ≤1 emoji; no customer-service tone; no "鱼八股" (fake structured chat voice).
+> - Session focus: build out 「小鱼工作台」, a DSH plugin (not standalone), iterating on 装修 (visual polish) + features. Confirmed direction: 「装修先动」, 科技感优先, compact density, drawer-style chat, per-session chat channels, in-app screenshot, review/approval surface.
+> - Explicit asks in order: 科技感装修 + 卡片实用功能; 「能不能在工作台里进行会话沟通，来布置任务」; 「任务板和 Agent Teams 联动」; 「紧凑版开工」; Shift+Enter newline bug; 「对话之后总是从工作台里被拉出来」; 「新建项目路径要能选」; 「上下文容量显示」; 「工作台目录可以拖动调整上下位置」; 「点链接就在工作台打开网页」; 「待验收条：完成的东西摊在最上面」; 「预览要维持」; 「对话通道应该每个会话专属（记井 → Python小鱼）」; 「工作台自带截图 + 文字框取」→ chose option **a (框选区域截图, not OCR)**; then 「截图步骤改为：点截图→鼠标准星→拖框截取」; finally 「总结现阶段做好交接准备，我准备压缩上下文了」.
+>
+> ## Key Technical Concepts
+> - DSH 0.2.1-rc.3 frozen; desktop profile `E:\Agent-bluefish\Save\dsh-home\profiles\desktop`; plugin link-installed via profile bundles.
+> - Client plugin: plain JS `window.__ModuleLoader__.load({id, factory(require){...}})`, only `react` requireable; no bundler; inline styles + injected `<style>` string in overlay.
+> - **Edit client.js → Ctrl+F5 refresh; edit index.js → `plugin_manager` `set_plugin` on `include:bluefish-workbench` with `enabled=true` hot-reloads host without DSH restart.**
+> - DSH **client HMR swaps the plugin's browser half** whenever client.js changes → overlay remounts/state resets (root cause of "被拉出来"); mitigated with sessionStorage persistence (open state, view, console open, draft, per-project preview dir/file).
+> - React hooks must all be declared before any early `return` (v3.9 crash); mini-React smoke harness now enforces a hook-count guard.
+> - Real data services: `agentTeams` (`tryMembership`/`listMembers`/`listTasks`), `deepseekAccount.getBalance`, `sessionController` (`inspect`, `prompt` mode=queue, `list`, `attachment`), `attachments.saveImages`.
+> - DSH `webServer` does **not** support `kind:'prefix'` → all routes exact + query.
+> - Session log is multi-frame zstd `session.v4.jsonl.zstd`; `zstdDecompressSync` decodes only first frame — must walk zstd frame/block headers manually.
+> - `%TEMP%\dsh-workspace-changes-*\captures\` holds content-addressed file snapshots (used to recover client.js v2.6 after encoding disaster).
+> - PowerShell 5.1 reads UTF-8 as GBK: **never edit Chinese source via PowerShell**; use edit tool or Node `fs` with explicit utf8.
+>
+> ## Files and Code
+> - `E:\AFishPower\Plugin\bluefish-workbench\client.js` — client half **v4.5**, ~200 KB, CRLF, ~3.7k lines. Components: WorkbenchLauncher, WorkbenchOverlay, HudFrame, StatusLight, CardCorners, Readout, SideRow, ProjectCard, Scene, ProfilePanel, ReviewBar, SessionPicker, DirPicker, Console, TeamPanel, CtxMeter, Markdown, FilePreview, LocalFiles, Terminal, TextModal, InfoModal, NewProjectDialog, Intro.
+> - `E:\AFishPower\Plugin\bluefish-workbench\index.js` — host half **v2.0**, ~80 KB. Helpers: `findLead`, `pickText`, `pickParts`, `decodeImageDataUrl`, `saveInboxImages`, `readChat(ctx,limit,wanted)`, `readTeamDetail`, `readActivity(ctx,wanted)`, `toolLabel`, `readContextUsage`, `loadProjects`, `parseInfo`, `setHandoffSection`, `runKit`, `runPdfText`, `renderDocument`.
+> - Routes (all `/bluefish-workbench/`, exact+query): GET `/overview` `/profile?id=` `/info?id=` `/index?id=` `/files?path=` `/file?path=` `/raw?path=` `/browse?path=` `/render?path=` `/page?id=&name=` `/text?path=` `/asset?name=` `/attachment?id=&session=` `/inbox?path=` `/dirs?path=` `/chat?limit=&session=` `/activity?session=` `/team` `/sessions` `/context`; POST `/claim` `/handover` `/project` `/exec` `/save` `/open` (path or http(s) URL) `/prompt {text,images?,sessionId?}` `/review {id,verdict}` `/order {ids}` `/talkto {id,sessionId}` `/shot {rect?}`.
+> - Data: `$DSH_HOME\bluefish-workbench\projects\<id>\状态.json` (status/note/order/owner/talkTo/reviewedAt/reviewVerdict) + `项目信息.md` (5 sections); `公告.jsonl`; `inbox\` (pasted images + `shot-*.png`); `preview\<hash16>\`; `pylib\` (pypdf 7.1.1); `tools\pdf_text.py`.
+> - `E:\Agent-bluefish\working\BlueFish的日记\Work.md` — top section 「🐟 小鱼工作台 · 压缩交接（2026-11-20 25:1x，最新，先读这一节）」 = full page handoff: 一句话状态、代码与生效、宿主接口全清单、客户端功能全景、验收与自测、8 条坑、已知边界、下一步候选、「压缩后第一句」.
+> - `E:\Agent-bluefish\working\BlueFish的日记\MEMORY.md` — workbench bullet updated to **v4.5 / 宿主 v2.0**, route list, 32 项验收, 冒烟 path; ~6.3k chars (< 7500 limit).
+> - `E:\Agent-bluefish\working\BlueFish的日记\交接速览.md` — regenerated from project data.
+> - `C:\Users\FIshKiller\.dsh\bluefish-workbench\projects\workbench\项目信息.md` + `状态.json` — handoff three lines + note updated (status working, note references v4.5/v2.0 handoff).
+> - `E:\Agent-bluefish\working\收纳\01-脚本\DSH维护\工作台验收.mjs` — **32 live checks** (overview real data, /info, /index, /asset, /text docx+cache, /exec, /browse, /render+/page, /chat, /team, /prompt guards, /inbox guards, /prompt 坏图, /activity, /dirs, /context, /review bad-verdict & bad-id, /sessions, /talkto bad id, /shot POST-only).
+> - `%TEMP%\wb_test\test_client_render.mjs` — mini-React smoke: **20 components, 0 errors**, assertions for HUD tags, density (118→148), Shift+Enter newline `value="\n"`, Enter triggers fetch, 四宫格 grid params, embedded Console/收起/展开条, activity strip `正在：改 client.js`, CTX `58.2%`, drag → `POST /order`, session switch → `POST /talkto`, markdown link → web dock with `player.bilibili.com`, ReviewBar `等你验收` + `POST /review`, DirPicker browse→pics→`E:\pics`, hover class + `.bfw-hov-dash:hover`, and hook-count guard.
+> - Temp tools kept: `%TEMP%\wb_test\{unzstd_sessions.mjs, recover_files.mjs, repair_index.mjs, repair_client.mjs, rebuild_client.mjs, patch_rebuilt.mjs, host_activity.mjs, host_review.mjs, host_ctx_order.mjs, host_sessions_shot.mjs, shot_rect_host.mjs, client_snip.mjs, test_shot_rect.mjs}`.
+> - Commits (日记 repo main): `a4a09ac`, `3686c9a`, `897ea6d`, `a99e0f2`, `31abefa`, `0196f1c`, `1e1a65d`, `5587ac8`, `b614898`, `abad701`, `276dae0`, `a2eeb96`, **`5cf3952`** (handoff page + MEMORY sync).
+>
+> ## Errors and Fixes
+> - **PowerShell encoding disaster**: `Get-Content -Raw | Set-Content -Encoding UTF8` on UTF-8 sources → both plugin files mojibake (client 164,494 B, index 66,191 B). Root cause: PS 5.1 decodes UTF-8 as GBK. Recovery: (1) workspace snapshot `d4ccaf2a…` = client.js v2.6 (116,859 B, intact) from `%TEMP%\dsh-workspace-changes-IFPRXm\captures\`; (2) replay 45 logged `write`/`edit` ops from session logs (custom multi-frame zstd splitter) → v2.8 rebuilt, 1 miss (MONO + palette) patched by hand; (3) index.js repaired via GBK reverse-encode + 60 replacement rules + 4 spot fixes → 0 FFFD, syntax OK. Verified: node --check, 24/24 then 32/32 acceptance, 17→20 component smoke.
+> - `/bluefish-workbench/...` prefix routes 404 → exact + query params only.
+> - `infoDoc is not defined` crash → missing `useState` (caught only by mini-React smoke; `node --check` cannot detect).
+> - **v3.9 fatal**: three drag `useState`s placed after `if (!mounted) return null` → workbench wouldn't open ("点不进去工作台"). Fixed by moving them into the top hooks block; smoke gained hook-count guard.
+> - ReviewBar inserted into LocalFiles' identical `err ? h(...)` line → `project is not defined` (22 smoke errors). Fixed by removing and re-inserting before `dense ? denseBody : comfyBody`.
+> - Shift+Enter did nothing: DSH global shortcut registers `fixed.newline` for Shift+Enter and preventDefaults; fixed with `insertLineBreak(e, value, setValue)` helper (manual newline at cursor, skip IME composing, stopPropagation), applied to chat textarea + file editor.
+> - Scroll chaining (chat scroll moved whole workbench) → `overscrollBehavior:'contain'` on 7 scroll areas.
+> - `/chat` leaked DSH internal messages (`Time sampled while preparing turn…`, self-test strings) → regex filtering in `readChat`.
+> - Native image prompt rejected while session busy (`session/agent-busy`) → default image path is file-based: save to `inbox\`, append `[图] <path>` lines, client renders them via `/inbox?path=`.
+> - `.bfw-hov*` hover needed `!important` to override inline styles.
+> - Host `/open` originally path-only → added `http(s)` URL branch.
+> - Acceptance `/dirs` first attempt failed (probe used stale port 55563) — current DSH port is **64205**.
+> - Side effect admitted to user: probing `/open` with `https://example.com` opened a real browser tab; promised not to live-test window-opening again.
+> - Screenshot UX rejected as 「太粗糙」 → replaced capture-then-crop modal with snip flow (crosshair overlay, drag on page, `rect` sent to host).
+>
+> ## Pending Jobs
+> - OCR (extract text from screenshots) — explicitly deferred; user chose "a" (region crop) only.
+> - Candidate next features (waiting on 阿冉 to choose): 对话「正在…」expand to last 6 steps; 网页面板 maximize / link hover-preview card; 任务板派单/认领 (`agentTeams.createTask`/`updateTask`); 控制室数字点击跳转; 截图后直接发送; 对话里发文件 (not just images).
+> - 记井 GDD 第一章玩法稿 still pending 阿冉's 3 answers (flagged by 体检 as 卡着).
+>
+> ## Current Work
+> - Handoff package just completed for context compaction: Work.md top section written (state / code & hot-reload / full route list / client feature map / tests / 8 pitfalls / known limits / next candidates / "压缩后第一句"); MEMORY workbench bullet rewritten to v4.5 / host v2.0 with new routes and 32-item acceptance; workbench `项目信息.md` handoff lines + `状态.json` note updated; 交接速览 regenerated; committed `5cf3952` (3 files, +67/−4).
+> - Final verification immediately before checkpoint: `工作台验收.mjs` → **32 项通过，0 项失败**; `test_client_render.mjs` → **错误数: 0 / ✓ 全路径渲染无抛错**.
+> - Screenshot flow now live: click 「⛶ 截图」 → crosshair + dim overlay → drag rect (live `宽 × 高`) → mouseup calls `POST /shot {rect:{x,y,w,h}}` with device-pixel coords `(window.screenX + rect.x) * devicePixelRatio` → host captures primary screen and `Bitmap.Clone`s rect → client fetches PNG via `/inbox?path=` → `addPicData` into pending images. Verified live: rect 320×180 → saved PNG exactly 320×180, 45,482 bytes.
+> - Session-bound chat: project `状态.json.talkTo`; `/chat?session=`, `/activity?session=`, `/prompt {sessionId}`; Console header 「切换会话」 opens `SessionPicker` (`/sessions`, 89 sessions live), `POST /talkto` persists; default = 本间会话 (Lead).
+> - Preview persistence: `sessionStorage['bfw-scene-v1:<projectId>'] = {dir, file}` written on `[dir,file]` change, restored once per Scene mount via `restoredRef`.
+>
+> ## Next Step
+> - Deliver the compaction handoff reply to 阿冉: state that Work.md top handoff section + MEMORY v4.5/v2.0 + project info/速览 are committed (`5cf3952`), quote the resume path (read Work.md top → run `工作台验收.mjs` expect 32/32 → ask 阿冉 which next candidate), and summarize current capabilities/limits concisely.
+>
+> ## Critical Context
+> - Verification bar: only external evidence counts (live port output, script runs, file bytes); never "I wrote it so it works". Always run both `node --check` **and** the render smoke after client edits.
+> - Versions: client **v4.5**, host **v2.0**; DSH stays 0.2.1-rc.3 (never upgrade); better-sidebar 0.30+/dsh-mobile 0.8.x blocked by 0.2.2 line.
+> - Design decisions: HUD skin default `skin=hud` (toggle to glass); compact density default `dense=on` (cards 118 high, gap 11, fonts not shrunk); 四宫格 only in dense mode, comfortable keeps old vertical layout; single glow color cyan `#57c1ff`; concurrency rule ≤3 visible loops; colours from `收纳\02-文档\设计\工作台-科技感皮肤-spec.md`.
+> - Chat dock occupies bottom-right grid cell as a tab group with 对话/终端/网页/手机; default 对话; `chatOpen` persisted in `bfw-chatdock-v1`; B站 links auto-rewritten to `https://player.bilibili.com/player.html?bvid=…`; other framing-blocked sites use 「外开 ↗」.
+> - Screenshot limitation: snip overlay is page-level — only page-visible area (fullscreen workbench = whole screen); desktop windows outside can't be selected (use Windows Snipping Tool).
+> - CTX meter reads last request's `inputTokens + cacheReadTokens + cacheWriteTokens` vs `contextWindow` from `request/context` events (live: 59.6% / 1,048,576; 60% yellow, 85% red).
+> - Live DSH Web URL/port: `http://127.0.0.1:64205` (earlier 55563 is stale); acceptance script auto-detects port via process name.
+> - 明日注意事项: Work.md now ~600 lines; inject layer (PERSONA + 定位卡 + MEMORY) kept under 7000 chars; never re-add the old duplicate workbench bullets.
+> </compacted-summary>
+
+### 2026-11-20 23:11 · BlueFish
+
+> 小鱼，阅读交接。
+> 我们接着干活。
+
+### 2026-11-20 23:11 · 小鱼
+
+> 交接读完了，先跑一次基本检查，确认这套工作台还是好的。
+
+### 2026-11-20 23:11 · 小鱼
+
+> 验收 32/32 全过，状态也都在。先看一眼现在代码怎么组织，再决定从哪下手。
+
+### 2026-11-20 23:12 · 小鱼
+
+> 第一条改完了，渲染冒烟也过了。接下来做第二条：让对话状态条能点开看步骤。
