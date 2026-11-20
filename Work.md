@@ -80,6 +80,12 @@
 - **侧栏拖动排序**：项目行按住可拖（`cursor:grab`，拖动行半透明、目标行顶部亮蓝线），松手 `POST /order` 把顺序写进各项目 `状态.json` 的 `order`（10/20/30…），刷新后保持；控制室和本地文件两行不参与拖。
 - 验收加一项 → **27 项全 PASS**（`/context 上下文容量 — 59.6% / 1048576`）；渲染冒烟 20 组件 0 抛错，断言 `[CTX] 顶栏上下文表=true`、`[拖拽排序] 触发 /order=true`。
 
+### v3.9 紧急修复：点不进工作台（2026-11-20 24:0x）
+
+- 事故：v3.8 我把「排序/拖拽」的三个 `useState` 写在组件**提前 return 之后**，React 两次渲染钩子数量不一致 → 整层抛错，工作台点不开。
+- 修复：把 `orderIds/dragId/overId` 挪到顶部的钩子区（和别的 state 一起，在 `if (!mounted) return null` 之前）。
+- **防御**：渲染冒烟的迷你 React 加了「钩子数量守卫」——同一组件两次渲染钩子数不一致就直接报错（这个 bug 之前 `node --check` 和普通冒烟都抓不到）。以后这类「写在 return 后面」的错误会被自动抓出来。
+
 ### 代码与生效
 
 - 客户端 **v2.7** `client.js`（~150KB）：新增 `HudFrame / StatusLight / CardCorners / Console / TeamPanel` + `useChat / useTeam`；新偏好键 `skin`（hud / glass），控制室「皮肤」键切换。
