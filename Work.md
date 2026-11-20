@@ -106,6 +106,14 @@
 - 验收 29/29；冒烟断言 `[链接] 可点链接=true / 点后网页 dock 打开=true / preventDefault=true`，20 组件 0 抛错。
 - 插曲：自测 /open 时系统浏览器弹了个 example.com 标签，属于探针副作用，无危害。
 
+### v4.2 / v4.3 预览记忆 + 每项目专属会话 + 截图（2026-11-20 24:4x）
+
+- **预览状态留住**（阿冉：切目录再回来预览没了）：Scene 把「停在哪个目录 + 预览哪个文件」写进 `sessionStorage['bfw-scene-v1:<项目id>']`，重进项目/回总览再回来都恢复；切到别的项目再切回来也各记各的。
+- **对话通道按项目绑会话**（阿冉：记井里应该跟 Python小鱼 说话）：项目页对话头加「切换会话」→ 弹会话列表（宿主 `GET /sessions`，89 个），选一个存进项目 `状态.json` 的 `talkTo`；之后这个项目的对话**读和投都只走那间**（`/chat?session=`、`/prompt` 的 sessionId、`/activity?session=`）；不选就是「本间会话」。
+- **内置截图**：对话工具栏加「⛶ 截图」→ 宿主 `POST /shot`（PowerShell + System.Drawing 抓主屏）存到收件箱 → 前端读回成 dataURL 放进「待发图片」，可删可一起发送。**框选区域裁剪还没做**，下一步补。
+- 验收 **32 项全 PASS**（新增 /sessions 89 个、/talkto 坏 id 400、/shot 只认 POST）；渲染冒烟断言 `[会话绑定] 切换按钮=true/截图按钮=true/选中后 POST /talkto=true`，20 组件 0 抛错。
+- 宿主升到 **v2.0**（chat/activity 支持 ?session=、新增 /sessions /talkto /shot）。
+
 ### 代码与生效
 
 - 客户端 **v2.7** `client.js`（~150KB）：新增 `HudFrame / StatusLight / CardCorners / Console / TeamPanel` + `useChat / useTeam`；新偏好键 `skin`（hud / glass），控制室「皮肤」键切换。
