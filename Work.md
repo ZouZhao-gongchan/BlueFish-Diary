@@ -19,6 +19,7 @@
 - **已验证（不用重启就能验的那部分）**：拿 `%TEMP%\wb_test\test_host.mjs` 直接 import 新版 `index.js` 跑假 ctx——5 条路由全注册、画像三条解析正确、claim 写/放回成功、越界 403、`../etc` 404、GET claim 405。**还没验的只有肉眼画面**（要重启 + 刷新）。
 - **Markdown 预览（v0.6，17:50 加）**：预览窗里 `.md` 不再显示 `#` `**` 符号，改真排版——标题 4 级、粗体/斜体/行内码、可点链接、列表、引用、代码块、表格、分隔线。渲染器手写 `mdInline` + `mdBlocks`（约 190 行），**不生成 HTML**（只拼 React 元素，无 XSS），不装依赖。预览窗头右上角「原文 / 渲染」可切回。**只改客户端，刷新页面即可，不用重启。** 自测：抽出渲染函数跑真实文件（bili 日报 / Work.md / 记井进度总结），0 残留 `**`/`#`，表格识别 6 张，单文件 2ms 内。
 - **已验证**：离线自测 `%TEMP%\wb_test\test_host.mjs`（5 条路由 / 画像解析 / claim 写回 / 越界 403 / 坏 id 404 / GET 405）与 `test_md.mjs`（Markdown 渲染）；**live 端口也验过**：重启后 `/profile?id=jijing` 200 带全文画像，`POST /claim` 写回成功。肉眼画面等阿冉看。
+- **看阿冉截图修掉的 bug**：画像卡「上次做到」显示「—」——真因是宿主 `profile` 对象里只放 what/next/blocked/pitfalls，**没带 handoff**（顶层有，但画像卡读的是 profile）。客户端加了兜底 `prof.handoff || full.handoff || project.handoff`，宿主也把 handoff 放进 profile。刷新页面即好（宿主那处改动下次重启生效也无害）。
 - **待办**：① 周日体检（5 类：记忆/索引/技能/场景/规矩）；② SSH 面板；③ 控制室的「在跑成员 / 任务 / 余额」还是写死的占位（余额显示「—」），要接真数据；④ 图片预览没做（要宿主加 `/raw` 二进制路由，得再重启一次）；⑤ JSON 预览可以顺手美化。
 - **已知坑**：`requestFullscreen` 只收系统任务栏，收不掉应用自己的原生菜单栏（「应用 编辑」那排）；NVIDIA Overlay 的 FPS/GPU 是系统置顶层，网页盖不住（Alt+R 关）。
 
