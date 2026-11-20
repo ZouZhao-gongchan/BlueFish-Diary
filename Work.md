@@ -2,6 +2,69 @@
 
 > 留给工作用的地方。想到什么先记下来，做完的移到「已完成」，不用讲究格式。
 
+## 🐟 小鱼工作台 · 压缩交接（2026-11-20 25:1x，最新，先读这一节）
+
+> 压缩上下文前写的整页交接。下面 v2.8 那节讲的是更早的状态，当作历史；**以这一节为准**。
+
+### 一句话状态
+
+小鱼工作台做到 **v4.5 / 宿主 v2.0**，功能与体验都已成型：HUD 皮肤、四宫格项目页、内嵌对话抽屉（可发图/截图）、任务板、待验收条、目录选择器、会话绑定、拖动排序、CTX 表。活体验收 **32 项全 PASS**，渲染冒烟 **20 组件 0 抛错**。下一步由阿冉定（候选见末尾）。
+
+### 代码与生效
+
+- 插件：`@local/bluefish-workbench`，源码 `E:\AFishPower\Plugin\bluefish-workbench`（`client.js` ~200KB v4.5、`index.js` ~80KB v2.0、`assets\intro.mp4`、`tools\pdf_text.py`）。profile 里 link 装，不重装。
+- **改 `client.js` → 刷新页面（Ctrl+F5）**；**改 `index.js` → `plugin_manager` 对 `include:bluefish-workbench` 设一次 `enabled=true` 热重载，不用重启 DSH**。
+- 数据：`$DSH_HOME\bluefish-workbench\projects\<id>\状态.json` + `项目信息.md`；公告 `公告.jsonl`；收件箱/截图 `inbox\`；渲染缓存 `preview\`；pypdf 隔离 `pylib\`。
+
+### 宿主接口（全部 `/bluefish-workbench/` 下，exact + query，不走鉴权）
+
+- 读：`/overview` `/profile?id=` `/info?id=` `/index?id=` `/files?path=` `/file?path=` `/raw?path=` `/browse?path=`（本地文件栏，只 D/E） `/render?path=` `/page?id=&name=` `/text?path=` `/asset?name=` `/attachment?id=&session=` `/inbox?path=` `/dirs?path=`（只列文件夹，任意盘） `/chat?limit=&session=` `/activity?session=` `/team` `/sessions` `/context`
+- 写（POST）：`/claim` `/handover` `/project` `/exec` `/save` `/open`（本地路径或 http(s) 网址） `/prompt {text,images?,sessionId?}` `/review {id,verdict:approve|reject}` `/order {ids}` `/talkto {id,sessionId}` `/shot {rect?}`
+
+### 客户端功能全景
+
+- **总览**：控制室（花费/余额/成员/任务真数据 + 密度/皮肤/深浅/列数等偏好键）、项目卡（四色灯 + 卡着呼吸 + DECK 编号 + 悬停手感）、拖拽排序（写各项目 order）、新建项目（带目录选择器）。
+- **项目页（紧凑=四宫格）**：左上画像（窄版单列，可写交接/接手/索引/开文档）、右上文件、左下预览、右下 dock（对话/终端/网页/手机 tab，默认对话）；舒适模式还是旧竖排。
+- **对话**：内嵌抽屉（可收起、有状态条「正在：改 client.js」）、发图（粘贴/拖入/挑选/截图）、截图改剪裁式（点截图→准星→拖框）、按项目绑会话（「切换会话」，存 talkTo）、点预览链接在网页 tab 打开（B站自动换播放器，右上「外开 ↗」兜底）。
+- **其它**：任务板抽屉（成员/任务真数据）、待验收条（done/pending 项目顶部：上次做到+最近文件胶囊+✓验收/↩打回）、CTX 上下文表（顶栏，60%黄 85%红）、开场动画（每次 DSH 启动只播一次）、本地文件栏、终端（20s 超时 + 危险命令软确认）。
+- **状态保留**：开着没关/停在哪个项目/对话抽屉开合/草稿/每项目预览目录与文件 → 都存 sessionStorage，HMR 热重载后自动弹回。
+
+### 验收与自测（改完就跑）
+
+- **活体验收**：`node "收纳\01-脚本\DSH维护\工作台验收.mjs"` → **32 项 PASS/FAIL**（自动找 DSH 端口）。
+- **渲染冒烟**：`%TEMP%\wb_test\test_client_render.mjs` —— 迷你 React 真跑组件树，含断言：HUD/密度/对话抽屉/Shift+Enter/四宫格/内嵌对话/收起展开/CTX 表/拖拽 POST /order/会话绑定 POST /talkto/点链接开网页/待验收条/目录选择器/钩子数量守卫。修前端必须跑。
+- 体检/速览：`体检.mjs`（周日 21:00）、`生成交接速览.mjs`。
+
+### 踩过的坑（都别再踩）
+
+1. **绝对不要用 PowerShell 改含中文的源码**——PS 5.1 按 GBK 读 UTF-8，会整文件乱码（2026-11-20 毁过 client.js/index.js 一次）。改文件用编辑工具或 Node fs（显式 utf8）；批量改写成 .mjs 脚本。
+2. **`node --check` 查不出未定义变量/钩子顺序**：`useState` 写在提前 return 后面会让整个工作台打不开（v3.9 修过），冒烟里已有「钩子数量守卫」。
+3. 改代码用编辑工具的锚点要足够独特：曾把 ReviewBar 插进 LocalFiles 的同名错误行，冒烟报 `project is not defined`。
+4. DSH webServer 不支持 prefix 路由（404），一律 exact + query。
+5. client HMR 会热替换插件浏览器半边 → 状态清零；已用 sessionStorage 兜住（开着/视图/草稿）。改 client 后阿冉若在页面里，会「闪一下回来」属正常。
+6. 会话忙时 DSH 拒原生带图 prompt（`session/agent-busy`）→ 工作台改成图落盘 + 正文 `[图] 路径`；`[图]` 行在对话里也会渲染成图。
+7. `/chat` 会混入 DSH 内部上下文消息（`Time sampled…`），已过滤。
+8. 滚动穿透：7 个滚动区加了 `overscroll-behavior: contain`。
+
+### 已知边界
+
+- 截图剪裁层是页面级：只能框页面看得到的区域（工作台全屏时=整屏），桌面其它窗口选不到（用系统 Snipping Tool）。
+- 普通 B站页面禁止 iframe 嵌入 → 已换官方播放器；其它站仍可能白屏，用「外开 ↗」。
+- 拖拽排序只在侧栏；控制室/本地文件两行固定。
+- 对话默认投「本间会话」，要投别的会话得在项目页里手动「切换会话」。
+- 没做 OCR（从截图抠文字）；要的话接 Windows OCR。
+
+### 下一步候选（等阿冉挑）
+
+- 对话里「正在…」展开成最近 6 步历史；网页面板「最大化占满项目页」/链接悬停预览卡。
+- 任务板支持派单/认领（宿主可调 agentTeams.createTask/updateTask）；控制室数字点击跳转。
+- OCR；截图后直接发送（不等点发送）；对话里发文件（不只图片）。
+
+### 压缩后第一句
+
+读这一节 → 跑一次 `工作台验收.mjs`（应为 32/32）→ 再问阿冉接着做哪条。
+
+
 ## 小鱼工作台 v2.8 · 科技感装修 + 对话通道（能发图）+ 任务板（2026-11-20 23:5x，最新，先读这一节）
 
 > 比下面那节「22:4x 整页总结」新；那节写的是 v2.6 的接口与功能全景，仍然有效。
