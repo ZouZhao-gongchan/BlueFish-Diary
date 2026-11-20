@@ -12,8 +12,8 @@
 
 ### 一句话状态
 
-**v4.8 / 宿主 v2.2**。活体验收 **44 项全 PASS**，渲染冒烟 **23 组件 0 抛错**。
-能做：HUD 皮肤、四宫格项目页、内嵌对话（发图 / 发任意文件 / `/` 指令 / `@` 文件 / **每条回复带本轮费用**）、**浮窗（可拖可全屏可丢进右侧格子存着）**、**右侧工具栏（全局截图）**、dock 放大、状态条看步骤 + **点开看每步输出**、任务板 + 派单、待验收条、会话选择器（认人 / 搜索 / 一键开工 / 轻确认）、花费闸、快捷卡片、点路径复制、**终端流式**、HTML 渲染预览。
+**v4.9 / 宿主 v2.2**。活体验收 **44 项全 PASS**，渲染冒烟 **29 组件 0 抛错**。
+能做：HUD 皮肤、四宫格项目页、内嵌对话（发图 / 发任意文件 / `/` 指令 / `@` 文件 / **每条回复带本轮费用**）、**浮窗（可拖 / 右下角可缩放 / 可全屏 / 可丢进右侧格子）**、**右侧工具栏（全局截图）**、**链接悬停预览卡**、dock 放大、状态条看步骤 + **点开看每步输出**、任务板 + 派单、待验收条、会话选择器（认人 / 搜索 / 一键开工 / 轻确认）、花费闸、快捷卡片、点路径复制、**终端流式**、HTML 渲染预览。
 
 ### 派单（2026-11-21 起：这间只调度，不直接改代码）
 
@@ -21,6 +21,7 @@
 - **怎么派**：阿冉说一句「这个给工作台」→ 我把要求写清（做什么 / 怎么算成 / 落盘在哪 / 怎么回我）投过去（POST /prompt {text, sessionId}）
 - **怎么收**：读它 /chat?session=<id> 近几条，**核对证据**（验收数字 / 文件字节 / 路径）再转述；没回就说没回，不假装干了
 - **别越界**：这间不直接改 client.js / index.js、不跑验收——那是工位的活
+- **2026-11-21 02:1x 第一次派单跑通**（已验）：派「浮窗缩放 + 链接悬停预览卡」→ 工位收单 → 中间报进度 → 改完回执（带行号范围 / 8 条新断言 / 两道闸数字）。**这间亲自复核**：`node --check` exit 0、验收 44/44、冒烟 29 组件 0 错、`data-bfw-win` 确实挪到了 props。**结论：交接成立，以后照这套派。**
 
 ### 怎么改（三条命令）
 
@@ -42,6 +43,8 @@ node "%TEMP%\wb_test\test_client_render.mjs"                          → 应「
 6. **终端流式**（`/execstream`，边跑边回，超时 20s→120s）
 7. **任务板派单**（展开任务 → 派给某个会话 → 投标准派活消息：做什么 / 写盘范围 / 回执要求）
 8. 快捷卡片 / 点路径复制 / 花费闸（软线 ¥8、硬线 ¥12）/ 一句话开工 / 会话选择器轻确认
+9. **浮窗右下角缩放**（12×12 手柄，双击回默认 760×580，全屏不出手柄，尺寸存 sessionStorage）+ **链接悬停预览卡**（网址看域名+路径，本机路径看文件名+类型+大小，不联网）——**2026-11-21 02:1x 由工位会话改的**
+10. **修掉老 bug**：`data-bfw-win` 以前误写在 `style` 对象里（React 不会把它变 DOM 属性），`querySelector` 永远找不到节点 → 拖动/缩放其实一直「松手才跳位」。已挪到 props（client.js 2305–2307 有注释），拖动才真·丝滑。
 
 ### 宿主接口（全部 `/bluefish-workbench/` 下，exact + query）
 
@@ -50,7 +53,7 @@ node "%TEMP%\wb_test\test_client_render.mjs"                          → 应「
 
 ### 客户端结构
 
-`client.js` ~250KB / v4.8：`WorkbenchOverlay`（state 全在这）→ `Overview`（控制室）/ `Scene`（项目页）/ `Console`（对话）/ `TeamPanel`（任务板）/ `FloatWin` + `WinDock` + `SideTools`（浮窗 / 收纳格 / 工具栏）/ `CostMeter` + `CtxMeter`（顶栏）/ `SessionPicker` / `FilePreview` / `DirPicker` / `LocalFiles` / `Terminal` / `ChatImg`。
+`client.js` ~291KB / v4.9（6866 行）：`WorkbenchOverlay`（state 全在这）→ `Overview`（控制室）/ `Scene`（项目页）/ `Console`（对话）/ `TeamPanel`（任务板）/ `FloatWin` + `WinDock` + `SideTools`（浮窗 / 收纳格 / 工具栏）/ `LinkTipCard`（链接悬停预览）/ `CostMeter` + `CtxMeter`（顶栏）/ `SessionPicker` / `FilePreview` / `DirPicker` / `LocalFiles` / `Terminal` / `ChatImg`。
 宿主 `index.js` ~95KB / v2.2：`loadProjects` / `readChat`（带每轮费用）/ `readActivity`（带步骤输出）/ `readCost` / `readCommands` / `runCommand` / `listRefs` / `saveInboxFile` / `claimPrompt` + 各路由。
 
 ### 踩过的坑（都别再踩）
@@ -66,6 +69,7 @@ node "%TEMP%\wb_test\test_client_render.mjs"                          → 应「
 9. **白底上别用 `.bfw-hov`**：它 hover 时背景变 12% 透明蓝、字变近白，浮在白色网页上会「消失」。浮在内容上的胶囊用 `.bfw-pill`（深底不透明 hover）。
 10. **测试不许拿真实会话投递**：会留下指向已删文件的坏图消息。测截图只测 `/shot`，不 `/prompt`。
 11. 会话绑定误点会改配置：现在点行只是选中，要再点「确认切换」（双击直切）。
+12. **`data-*` 属性必须写在 props 上，写进 `style` 对象里不会变成 DOM 属性**。`data-bfw-win` 栽过一次（见凌晨第 10 条），改这类定位属性前先看冒烟里那条「误写在 style 里=false」的守卫。
 
 ### 已知边界
 
@@ -78,10 +82,10 @@ node "%TEMP%\wb_test\test_client_render.mjs"                          → 应「
 ### 下一步候选（等阿冉挑）
 
 - 接 DSH 真 PTY 终端（交互式、cd 保留、Ctrl+C）
-- 链接悬停预览卡
-- 浮窗边缘缩放（现在只有默认大小和全屏）
 - OCR（截图抠字）
 - 控制室数字点击跳转
+- 浮窗四边缩放（现在只做了右下角）
+- 链接预览卡联网抓网页标题（现在纯本地）
 
 ### 压缩后第一句
 
