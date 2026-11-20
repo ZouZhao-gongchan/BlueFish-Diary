@@ -28,7 +28,7 @@
 ## 三、现在（正在做的事）
 
 - **记忆系统**：本文件每轮注入，硬上限 8000 字；旧事在 `MEMORY-archive.md`，靠第四节索引 + grep 找。
-- **小鱼工作台**：DSH 插件 `@local/bluefish-workbench`（源码 `E:\AFishPower\Plugin\bluefish-workbench`，link 装）。会话顶栏「工作台」→ 全屏层：左列表 + 控制室 + 项目页 + 本地文件栏（D:/E: 只读）。数据在 `$DSH_HOME\bluefish-workbench\projects\<id>\`：`状态.json`（状态/接手人/接手记录）+ `项目信息.md`（一句话/交接三条/约定与坑），改文件 10 秒内刷新。宿主 v0.7：`/overview` `/profile?id=` `/claim`(POST) `/handover`(POST) `/browse` `/files` `/file` `/raw`。
+- **小鱼工作台**：DSH 插件 `@local/bluefish-workbench`（源码 `E:\AFishPower\Plugin\bluefish-workbench`，link 装）。会话顶栏「工作台」→ 全屏层：左列表 + 控制室 + 项目页 + 本地文件栏（D:/E: 只读）。数据在 `$DSH_HOME\bluefish-workbench\projects\<id>\`：`状态.json`（状态/接手人/接手记录）+ `项目信息.md`（一句话/交接三条/约定与坑），改文件 10 秒内刷新。宿主 v0.9：`/overview` `/profile?id=` `/claim` `/handover` `/project`(POST) `/browse` `/exec`(POST) `/files` `/file` `/raw`；界面搜索/筛选/新建/深浅/圆卡/背景/列数/刷新/体检/快捷键全接通（偏好存 localStorage）。
 - **交接速览**：`BlueFish的日记\交接速览.md`（脚本 `生成交接速览.mjs` 从工作台数据生成：每个项目谁在跟/做到哪/卡在哪）。**换会话开工先读它**——项目信息.md 不在注入层，这一页才是跨会话交接的入口。
 - **刷B站**：只私信（dmMode=only，UID 552164191），perDay=8，峰谷开。报告在 `C:\Users\FIshKiller\.dsh\bili-duty\out\`，归档在 `digest/`。
 - **bili-scroll 本地补丁**：saveCfg/loadCfg 两处 + 失败重试（lastWindowKey / exit 撤销）。升级会覆盖，改了要重打；备份 `index.js.bak-20261116`。
