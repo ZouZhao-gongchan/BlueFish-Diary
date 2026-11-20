@@ -64,7 +64,7 @@
   - **① 控制室接真数据**：`agents/tasks` 改从 Agent Teams 服务读（遍历 `ctx.agents.list()` → `agentTeams.tryMembership` 找 lead → `listMembers` + `listTasks`）；`balance` 改从 `deepseekAccount.getBalance()` 拿官方余额（含赠金）；拿不到就返回 null，前端显示「—」并在 title 里写明未接，**不再写死 2/3、4 件**。
   - **② 画像三件**：`项目信息.md` 新增「## 五、近期结论」小节（6 个项目都填了一条真结论），画像卡多一行绿字「近期结论：…」；卡片灯联动——`卡在哪 ≠ 没有卡点` 的项目卡片直接黄边呼吸 + 「卡着」标（不用改状态.json）；新增「索引」和「开文档」按钮（`/index` 扫项目内 md/txt/json/代码 ≤200 个，按目录排，点一行在预览窗打开；`/info` 吐 项目信息.md 原文用 Markdown 渲染）。
   - **③ 视频/音频预览**：`.mp4/.webm/.mov/.mkv` 用 `<video controls>`，`.mp3/.wav/.ogg/.m4a/.flac` 用 `<audio controls>`，都走 `/raw`；文件图标加了「影」「声」。
-  - **④ Office 提取文字**：`/text?path=` 用 LibreOffice Kit `convert` 把 docx/odt/rtf 转 txt（docx 实测 25,983 字节、二次走缓存），预览窗「提取文字」弹窗 + 一键复制全文。**PDF 不支持转换（kit 只支持 pdf→图片，没有 pdftotext/pypdf）**，会老实提示，不假装能。
+  - **④ Office 提取文字**：`/text?path=` 用 LibreOffice Kit `convert` 把 docx/odt/rtf 转 txt（docx 实测 25,983 字节、二次走缓存），预览窗「提取文字」弹窗 + 一键复制全文。**PDF 也支持了（2026-11-20 21:3x 补）**：pypdf 装在 `$DSH_HOME\bluefish-workbench\pylib`（隔离目录，不动 DSH 自带的 Python 环境），`tools\pdf_text.py` 逐页 extract_text；实测 mock_preview.pdf 提出 **15,238 字节中文**（含「电磁场」），docx 25,983 字节，两者都带缓存。
   - **⑤ 终端**：↑/↓ 历史命令（最近 60 条）；危险命令软确认（del /f、rd /s、rm -rf、format、diskpart、shutdown、reg delete、cipher /w、takeown、Remove-Item -Force）——命中先弹黄条「确认执行/取消」，不硬拦。
   - **⑥ 本地文件栏**：图片文件显示 22px 缩略图（走 `/raw`、lazy）。
   - **⑦ 目录级索引**：见 ② 的「索引」按钮。
