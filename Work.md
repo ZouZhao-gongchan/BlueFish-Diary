@@ -9,7 +9,7 @@
 
 ## 待办
 
-- [ ] （空）
+- [ ] 等阿冉验一眼 dsh-context 的面板（输入框打 `/context`，或者刷新页面看右边栏有没有多一个 Context 标签）。好用就留着；不好用我按回退说明卸掉。
 
 ## 我自己的事
 
@@ -50,6 +50,9 @@
 - 【待阿冉确认，不是规矩】把「换房间」的触发点从「感觉变慢」改成一条能数的线：**单会话到 30 万字就换**（来源 BV1K6sa6YEoZ，作者建议，不是我拍的板）。要不要写进 PERSONA，你点头才算。
 
 ## 已完成
+
+- **2026-11-20 · 装 dsh-context 0.86.0（上下文洞察）** —— 装完 `include:dsh-context` 就是 `fiberPhase: active`，不用重启，host 半边已活。改动只有 package.json 两行（dependencies + bundles）。**副作用一个**：pnpm 重新解包了 `dsh-startup-secret`（file: tgz），毛先生补丁被冲掉 → 已用快照还原，指纹 `691468D666BC1C95` 与装前一致；agent-team 的旧依赖行被 pnpm 删掉，正好回到「bundles 里留名字、从安装目录解析」的正确形态，三行 team 插件仍 active。回退说明：`Backups\context-install-20261120\回退说明.md`。
+- **2026-11-20 · 另外三个插件的兼容性（查 npm engines 得出的，不是猜）** —— `dsh-media-desk` 2.7.2 要 DSH **≥0.2.1-rc.5**，我们 rc.3 → **装不了**；`agentero-dsh` 0.1.8 也要 rc.5（另外要 node ≥24.9，我们 v26.2 够）→ **装不了**；`dsh-guizang-design` 0.1.4 只要 ≥rc.2、node ^22.19/≥24 → **能装**。DSH 版本是从 `resources\app.asar` 里读的（`@deepseek-ai/dsh-desktop` = 0.2.1-rc.3）。
 
 - **2026-11-18 · 文件整理（阿冉提的「抽屉式」）** —— working 根目录 74 个散文件收进 `收纳/`（95 项 → 25 项），Speaking 22 个变 4 项。12 个脚本的写死路径同步改好；`render_it.ps1` 和 `sync-bili-diary.vbs` 因为新增了中文路径，转成带 BOM 的编码才活过来（详见 MEMORY 那条编码坑）。两个渲染脚本实跑通过，计划任务端到端验证通过。快照 `995faa1`、整理 `e627af6`，已 push brain 分支。
 
