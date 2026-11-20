@@ -59,9 +59,9 @@
   - 升级后核过：`dsh-startup-secret` splash.js 指纹仍是 **691468D666BC1C95**（毛先生没丢）；video-skin 补丁仍在（resolveAsset 3 处 + 指纹逻辑）；profile 依赖只有这 3 个版本变了，bundles 列表完整。
   - 中途插曲：先试了 `plugin_updates_auto_update` 自动升级 cost-meter，**失败**（`INSTALL_FAILED`）——真因是 pnpm 重装时 `dsh-qq-bridge` 的 GitHub tarball 与 lockfile 里的 integrity 对不上（`ERR_PNPM_TARBALL_INTEGRITY`），跟 cost-meter 无关。**自动更新开关已关回去**（当前 disabled）；remove+install 的增量路径不碰那个 tarball，所以才通。
   - 待办：**重启一次**验三样——fish-memory 召回（最该记住的能想起来）/ cost-meter 数字与峰谷 / bili-scroll 面板与日报；bili-scroll 升级后设置项建议看一眼还在不在。
-- **开场自检动画（2026-11-20 20:4x，客户端 v1.7）**：进工作台时播 1.6 秒——按 11-20 那版 v6 过场（`收纳\03-截图\20261120-工作台设计稿\过场动画预览-v6.gif`）复刻：四行字「装载任务 / 同步成员 / 读取回执 / 挂载面板」逐行亮起（每行隔 280ms）、绿色方块光标闪、底部蓝绿进度条 1.55s 走完、右上「略过 SKIP」，整层点一下也能跳。播完淡出 340ms。控制室多了个「开场」键（开/关，存 localStorage）。**只改客户端，刷新即可。** 注意：机器上没装点阵中文字体，现在用等宽粗体 + 8px 字距「模拟」像素感；要真像素可以把 Zpix 等字体放进来再改 font-family。- **Office / PDF 预览 + 文本编辑（2026-11-20 20:4x，客户端 v1.6 / 宿主 v1.0）**：
+- **开场自检动画（2026-11-20 20:4x，客户端 v1.7）**：进工作台时播 1.6 秒——按 11-20 那版 v6 过场（`收纳\03-截图\20261120-工作台设计稿\过场动画预览-v6.gif`）复刻：四行字「装载任务 / 同步成员 / 读取回执 / 挂载面板」逐行亮起（每行隔 280ms）、绿色方块光标闪、底部蓝绿进度条 1.55s 走完、右上「略过 SKIP」，整层点一下也能跳。播完淡出 340ms。控制室多了个「开场」键（开/关，存 localStorage）。实现方式（v1.8 改）：**低分辨率 canvas 画字（320×180）→ CSS 放大 + `image-rendering: pixelated`**，出来是真正的像素块，不依赖任何字体文件；原来用等宽粗体模拟的版本作废。- **Office / PDF 预览 + 文本编辑（2026-11-20 20:4x，客户端 v1.6 / 宿主 v1.0）**：
   - 预览窗里 `.pdf / .docx / .doc / .xlsx / .pptx / .odt / .rtf` 用 **DSH 自带的 LibreOffice Kit** 渲染成 PNG 页图（`@deepseek-ai/libreoffice-kit` 的 CLI，`render` 子命令；PDF 走 pdfium），按 `path+mtime+size` 缓存到 `$DSH_HOME\bluefish-workbench\preview\<hash>\`，最多留 24 份。页图竖着排、带页码；缺字体会在顶上标出来。
-  - 新接口：`GET /render?path=`（返回 pages 数组）、`GET /page/<id>/<png>`（吐缓存页图）、`POST /save {path,text}`（写文本，先落 `.bak-时间戳` 备份）、`POST /open {path}`（交给系统默认程序打开）。
+  - 新接口：`GET /render?path=`（返回 pages 数组）、`GET /page?id=<hash>&name=<png>`（吐缓存页图；**别用 prefix 路由——DSH 里 prefix 实测 404，改成 exact+query 才通**）、`POST /save {path,text}`（写文本，先落 `.bak-时间戳` 备份）、`POST /open {path}`（交给系统默认程序打开）。
   - **编辑**：md / txt / json / 代码这类文本可以就地改并保存（自动备份）；**docx/pdf 不做就地编辑**——正经改格式得在 Word/WPS 里，所以给「本机打开」按钮一键交给系统默认程序。
   - 自测：pdf 5 页 1.3s（二次缓存 4ms）、docx 8 页 3.9s、页图 200 image/png 388985 B、非 Office 400、界外 403、save 生成备份且内容正确、docx 存不了 400。**要重启一次**（宿主新路由）。- **本地文件栏小改（客户端 v1.5）**：「↑ 上一级」从顶栏挪到左边列表头，排在 D:/E: 盘符按钮左边；顶栏只留盘符切换。
 
