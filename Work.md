@@ -10,7 +10,7 @@
 
 ### 一句话状态
 
-小鱼工作台做到 **v4.7 / 宿主 v2.1**，功能与体验都已成型：HUD 皮肤、四宫格项目页、内嵌对话抽屉（可发图/截图、**能发任意文件**、**能打 / 指令和 @ 文件**）、dock 可放大铺满项目页、状态条点开看最近 6 步、任务板、待验收条、目录选择器、会话绑定、拖动排序、**中文上下文表**。活体验收 **38 项全 PASS**，渲染冒烟 **23 组件 0 抛错**。下一步由阿冉定（候选见末尾）。
+小鱼工作台做到 **v4.7 / 宿主 v2.1**，功能与体验都已成型：HUD 皮肤、四宫格项目页、内嵌对话抽屉（可发图/截图、**能发任意文件**、**能打 / 指令和 @ 文件**）、dock 可放大铺满项目页、状态条点开看最近 6 步、任务板、待验收条、目录选择器、会话绑定、拖动排序、**中文上下文表**、**会话选择器能认人（标题 + 按目录分组 + 搜索 + 一键在项目目录新开）**。活体验收 **40 项全 PASS**，渲染冒烟 **23 组件 0 抛错**。下一步由阿冉定（候选见末尾）。
 
 ### 代码与生效
 
@@ -20,20 +20,21 @@
 
 ### 宿主接口（全部 `/bluefish-workbench/` 下，exact + query，不走鉴权）
 
-- 读：`/overview` `/profile?id=` `/info?id=` `/index?id=` `/files?path=` `/file?path=` `/raw?path=` `/browse?path=`（本地文件栏，只 D/E） `/render?path=` `/page?id=&name=` `/text?path=` `/asset?name=` `/attachment?id=&session=` `/inbox?path=` `/dirs?path=`（只列文件夹，任意盘） `/chat?limit=&session=` `/activity?session=` `/team` `/sessions` `/context` **`/commands?session=`（DSH 人指令清单）** **`/refs?q=&session=`（输入框 @ 的文件候选）**
-- 写（POST）：`/claim` `/handover` `/project` `/exec` `/save` `/open`（本地路径或 http(s) 网址） `/prompt {text,images?,sessionId?}` `/review {id,verdict:approve|reject}` `/order {ids}` `/talkto {id,sessionId}` `/shot {rect?}` **`/command {line,sessionId?}`（真执行 /指令，不发给模型）** **`/upload {name,dataUrl}`（对话里发文件，落盘收件箱回本机路径）**
+- 读：`/overview` `/profile?id=` `/info?id=` `/index?id=` `/files?path=` `/file?path=` `/raw?path=` `/browse?path=`（本地文件栏，只 D/E） `/render?path=` `/page?id=&name=` `/text?path=` `/asset?name=` `/attachment?id=&session=` `/inbox?path=` `/dirs?path=`（只列文件夹，任意盘） `/chat?limit=&session=` `/activity?session=` `/team` **`/sessions?title=1`（带标题的会话列表）** `/context` **`/commands?session=`（DSH 人指令清单）** **`/refs?q=&session=`（输入框 @ 的文件候选）**
+- 写（POST）：`/claim` `/handover` `/project` `/exec` `/save` `/open`（本地路径或 http(s) 网址） `/prompt {text,images?,sessionId?}` `/review {id,verdict:approve|reject}` `/order {ids}` `/talkto {id,sessionId}` `/shot {rect?}` **`/newsession {cwd}`（在项目目录新开一个会话）** **`/command {line,sessionId?}`（真执行 /指令，不发给模型）** **`/upload {name,dataUrl}`（对话里发文件，落盘收件箱回本机路径）**
 
 ### 客户端功能全景
 
 - **总览**：控制室（花费/余额/成员/任务真数据 + 密度/皮肤/深浅/列数等偏好键）、项目卡（四色灯 + 卡着呼吸 + DECK 编号 + 悬停手感）、拖拽排序（写各项目 order）、新建项目（带目录选择器）。
 - **项目页（紧凑=四宫格）**：左上画像（窄版单列，可写交接/接手/索引/开文档）、右上文件、左下预览、右下 dock（对话/终端/网页/手机 tab，默认对话）；舒适模式还是旧竖排。**右下 dock 右上角「⤢ 放大」→ 铺满整个项目页（看 B站/PDF/长文件用），Esc 或「⤡ 还原」回来，状态存 sessionStorage。**
 - **对话**：内嵌抽屉（可收起、有状态条「正在：改 client.js」）、**状态条可点开 → 最近 6 步（读/写/改哪个文件、跑什么命令、搜什么）**、**输入框打 `/` 出指令面板（6 条 DSH 人指令，每条：中文标题 + 干什么 + 用法；compact/export/feedback/goal/permission/plan；选中直接执行、不走模型；`/` 前面有中文也弹，路径 E:/ 不误弹；中文能筛中文标题）**、**打 `@` 出当前工作目录的文件候选（↑↓ 选、Enter 插入 @路径）**、发图（粘贴/拖入/挑选/截图）、**发任意文件（拖入 / 点「＋ 文件」→ 落盘收件箱 → 正文带 `[文件] 本机路径`，我直接能读能改；对话里显示成文件卡片，点一下用系统程序打开）**、截图改剪裁式（点截图→准星→拖框）、按项目绑会话（「切换会话」，存 talkTo）、点预览链接在网页 tab 打开（B站自动换播放器，右上「外开 ↗」兜底）。
+- **会话选择器（项目页「切换会话」）**：搜索框按「会话里说过的话 / 目录 / id」筛；按目录分组、同目录（这个项目的）置顶；每行显示**这个会话第一句说了什么**（DSH 列表不带标题，宿主读首条 user 消息当标题，85/92 有）；默认收起 bili-duty 值班会话和团队子会话，可点开；顶部「＋ 在这里开新会话」直接在这个项目目录建一个并绑上（实测 41ms）。
 - **其它**：任务板抽屉（成员/任务真数据）、待验收条（done/pending 项目顶部：上次做到+最近文件胶囊+✓验收/↩打回）、**顶栏上下文表（中文：上下文 ▓ 3.6% 37k / 1.0M，60%黄 85%红，悬停看已用/窗口/剩余/模型）**、开场动画（每次 DSH 启动只播一次）、本地文件栏、终端（20s 超时 + 危险命令软确认）。
 - **状态保留（不打断使用者）**：开着没关 / 停在哪个项目 / 对话抽屉开合 / 草稿 / 每项目预览目录与文件 / **主内容区滚动位置** → 都存 sessionStorage；热重载后自动弹回，**且首帧直接显示、不播入场动画**（不然看着像被弹出去又回来）；草稿没发完会自动把焦点放回输入框。**Esc 在总览要按两次才退出**（第一次只提示，2.5 秒内再按才真退），退出工作台只有这一条路和右上「返回对话」。
 
 ### 验收与自测（改完就跑）
 
-- **活体验收**：`node "收纳\01-脚本\DSH维护\工作台验收.mjs"` → **38 项 PASS/FAIL**（自动找 DSH 端口）。
+- **活体验收**：`node "收纳\01-脚本\DSH维护\工作台验收.mjs"` → **40 项 PASS/FAIL**（自动找 DSH 端口）。
 - **渲染冒烟**：`%TEMP%\wb_test\test_client_render.mjs` —— 迷你 React 真跑组件树，含断言：HUD/密度/对话抽屉/Shift+Enter/四宫格/内嵌对话/收起展开/放大这一格/状态条最近步骤/**输入框补全（/ 指令、@ 文件、选中执行 POST /command）**/中文上下文表/拖拽 POST /order/会话绑定 POST /talkto/点链接开网页/待验收条/目录选择器/钩子数量守卫。修前端必须跑。
 - 体检/速览：`体检.mjs`（周日 21:00）、`生成交接速览.mjs`。
 
