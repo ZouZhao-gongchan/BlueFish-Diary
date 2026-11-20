@@ -7,12 +7,12 @@
 ### 2026-11-20 工作台交接（压缩上下文前必读 · 18:40 更新）
 
 - **开工先读**：同目录 `交接速览.md`（工作台数据自动生成：6 个项目谁在跟 / 做到哪 / 下一步 / 卡在哪）。项目明细不在注入层，这一页才是跨会话交接的入口；它由 `收纳\01-脚本\DSH维护\生成交接速览.mjs` 生成。
-- **插件**：`@local/bluefish-workbench`，源码 `E:\AFishPower\Plugin\bluefish-workbench`（`index.js` 宿主 **v0.9** / `client.js` 浏览器半边 **v1.2** / `package.json` / `cordis.patch.yml` / `icon.svg`）。profile 里是 **link 装的**，改源码不用重装。
+- **插件**：`@local/bluefish-workbench`，源码 `E:\AFishPower\Plugin\bluefish-workbench`（`index.js` 宿主 **v0.9** / `client.js` 浏览器半边 **v1.3** / `package.json` / `cordis.patch.yml` / `icon.svg`）。profile 里是 **link 装的**，改源码不用重装。
 - **生效方式**：改 `client.js` → **刷新页面**；改 `index.js` → **必须重启 DSH**（路由在启动时注册）。宿主 v0.7 `/browse`、v0.8 `/exec` 已生效（18:5x 验证）；**v0.9 `/project`（新建项目）要再重启一次**。
 - **数据**：`$DSH_HOME\bluefish-workbench\projects\<id>\状态.json` + `项目信息.md`（≤25KB / 交接 ≤4KB）。`状态.json` 里现在还有 `owner` / `claimedAt` / `handovers`（接手记录，留最近 8 条）；接手公告另写 `$DSH_HOME\bluefish-workbench\公告.jsonl`。改文件 = 改画面，10 秒内自动刷新。
 - **接口**：只读 `/overview`（含 announcements 最近接手）、`/profile?id=`、`/browse?path=`（本地文件栏：只放行 D:\ 和 E:\）、`/files?path=`、`/file?path=`（文本前 64KB）、`/raw?path=`（二进制 ≤24MB）；写 `POST /claim`（`{id, owner}`，顺带记 handover + 公告）、`POST /handover`（`{id, handoff, next, blocked}`）、`POST /exec`（`{cmd, cwd}` 终端：跑一条 PowerShell，**20 秒超时、输出各截 200KB、cwd 只认项目根或 D:/E:**）。`POST /project`（`{name, dir}` 新建项目，dir 必须是已存在的绝对目录）。**`/file` `/raw` 也放行 D:/E: 盘内任意文件（本地文件栏要用）**。
 - **无用键全接通（v1.2/v0.9，阿冉 18:5x「还有很多无用键，完成无用键变有用再走下一步」）**：
-  - 左栏「查」→ 搜索框（按名字过滤项目，`/` 也能叫出来）；「筛」→ 状态筛选循环（全部/工作中/待审批/已完成/空闲）；「＋」→ 新建项目弹窗。
+  - 左栏「查」→ 搜索框（按名字过滤项目，`/` 也能叫出来）；「筛」→ **下拉选择框**（全部/工作中/待审批/已完成/空闲，每项带数量、当前项打勾，点空白或 Esc 关，快捷键 F）；筛选生效后底栏出现「筛：工作中 ×」可一键清；「＋」→ 新建项目弹窗。
   - 控制室五个键：**深浅**（整层亮度深/浅，存 localStorage）、**圆卡**（卡片圆角 20/12）、**背景**（网格开/关）、**列数**（2/3/4 循环）、**更新**（立刻刷新，并显示「更新于 HH:MM:SS」）。
   - 「＋ 新建项目」虚线卡 → 弹窗填名字 + 已存在目录 → `POST /project` 生成状态.json 与项目信息.md。
   - 底栏原来那句「派单 / 验收 / 新建项目 / 圈选页面提要求」是假承诺，**换成真按钮**：＋新建 / ⟳刷新 / ⌕搜索 / ▤本地文件 / ✓跑体检；右边提示改成真快捷键 `[N] [R] [/] [L] [C]`。
