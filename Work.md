@@ -3,8 +3,59 @@
 > 留给工作用的地方。想到什么先记下来，做完的移到「已完成」，不用讲究格式。
 
 ## 进行中
+## 小鱼工作台交接 · 2026-11-20 22:4x（压缩后先读这一节）
 
-### 2026-11-20 工作台交接（压缩上下文前必读 · 18:40 更新）
+> 这一节是「现在到底什么样」的整页总结；下面那节「2026-11-20 工作台交接（18:40）」是过程记录，只在需要翻旧账时看。
+
+### 一句话状态
+
+功能清单（7 项）**全部做完**，活体验收 **15/15 PASS**；客户端 **v2.6**、宿主 **v1.3**。下一步是阿冉要的「**装修 + 加功能**」——方向还没定，压缩后先问他。
+
+### 代码与生效方式
+
+- 插件：`@local/bluefish-workbench`，源码 `E:\AFishPower\Plugin\bluefish-workbench`（`index.js` 宿主、`client.js` 客户端、`assets\intro.mp4`、`tools\pdf_text.py`）。profile 里 **link 装**，不重装。
+- **改 `client.js` → 刷新页面**。
+- **改 `index.js` → 不用重启 DSH**：`plugin_manager` 里 `set_plugin` 对 `include:bluefish-workbench` 设 `enabled=true`，它会重新加载插件（实测 `/info` 404→200）。**这是本次最大的效率发现。**
+- 数据：`$DSH_HOME\bluefish-workbench\projects\<id>\状态.json`（status / note / owner / claimedAt / handovers）+ `项目信息.md`（一、这是什么 / 二、当前交接 / 三、约定与坑 / 四、归档 / 五、近期结论）；公告在 `$DSH_HOME\bluefish-workbench\公告.jsonl`；渲染/提取缓存 `preview\<hash>\`；pypdf 隔离装在 `pylib\`。
+
+### 接口（都在 `/bluefish-workbench/` 下，插件路由不走鉴权）
+
+- 读：`/overview`（控制室真数 + 6 张卡 + 最近接手）、`/profile?id=`、`/info?id=`（项目信息原文）、`/index?id=`（项目内 md/txt/json/代码 ≤200 个）、`/files?path=`、`/file?path=`、`/raw?path=`（二进制 ≤24MB）、`/browse?path=`（本地文件栏，只放行 D:/E:）、`/render?path=`（Office/PDF→PNG 页图，LibreOffice Kit）、`/page?id=&name=`（页图）、`/text?path=`（docx/odt/rtf 走 LibreOffice、pdf 走 pypdf，带缓存）、`/asset?name=`（插件素材）
+- 写：`POST /claim`（接手）、`POST /handover`（写交接三条）、`POST /project`（新建项目，dir 必须已存在）、`POST /exec`（终端，20s 超时、cwd 限项目根或 D:/E:）、`POST /save`（文本保存，先写 `.bak-时间戳`）、`POST /open`（交给系统默认程序）
+
+### 客户端功能全景
+
+- **控制室**：今日花费（真）、官方余额（`deepseekAccount.getBalance`，含赠金）、在跑成员 / 任务（`agentTeams` 真数据；拿不到就「—」+ 悬停说明未接）、最近接手公告、五个偏好键（深浅/圆卡/背景/列数/开场）＋「更新」。
+- **项目卡**：四色状态灯 + 工作中柔光扫过 + 黄/蓝边框流光；**卡在哪≠「没有卡点」→ 卡片黄边呼吸 + 「卡着」标**；卡上显示「交接 · 上次做到」、接手人、最近改动。
+- **画像卡**：一句话 / 上次做到·下一步·卡在哪（可「写交接」直接改 项目信息.md）/ 近期结论（绿字）/ 最近改动 3 个文件（点开预览）/ 约定与坑条数 / 接手与接手记录 /「索引」「开文档」按钮。
+- **项目页**：文件窗（带字形图标）+ 预览窗（Markdown 排版、图片、视频 `<video>`、音频 `<audio>`、JSON 美化、Office/PDF 页图、**「提取文字」弹窗可复制**、文本「编辑→保存」带备份）+ 网页 iframe + 终端（↑/↓ 历史、危险命令确认）+ 手机预览 + 面板开关。
+- **本地文件栏**：D:/E: 只读浏览，路径输入框 + 「跳转」按钮 + 盘符按钮 + 图片缩略图 + 同款预览窗。
+- **其它**：左栏搜索/状态筛选（下拉带数量、快捷键 F）、新建项目弹窗与快捷键 N/R///L/C、开场动画（小鱼 `intro.mp4` + canvas 像素字，**每次 DSH 启动后只播第一次**，可关）。
+- **偏好**存 localStorage（`bfw-prefs-v1`）。
+
+### 验收与自测工具（改完就跑，别靠感觉）
+
+- **活体验收**：`node "收纳\01-脚本\DSH维护\工作台验收.mjs"` → 15 项 PASS/FAIL（自动找 DSH 端口）。
+- **客户端渲染冒烟**：`%TEMP%\wb_test\test_client_render.mjs` 用迷你 React 真跑组件树（抓 undefined 变量这类 `node --check` 查不出的错）。
+- **体检**：`体检.mjs`（周日 21:00 自动）；**交接速览**：`生成交接速览.mjs`。
+
+### 踩过的坑（别再踩）
+
+1. **DSH 的 webServer 不支持 prefix 路由**（实测 404）→ 一律 exact + query。
+2. **`node --check` 查不出未定义变量**：曾漏插 `infoDoc` 状态，导致工作台整个打不开；前端改完必须跑渲染冒烟。
+3. 改代码别按行号大段删；这次已经吃过一次「删过头、语法还过」的亏。
+4. 插件目录里 Python 写不进去（PermissionError）；pypdf 装到 `$DSH_HOME\...\pylib`。
+5. `intro.mp4` 必须去音轨（`-an`），不然切进工作台会突然有声。
+6. 开场动画只播一次靠 `sessionStorage['bfw-intro-shown']`；改「开场」偏好会清标记。
+
+### 下一步（阿冉要「装修 + 加功能」，方向待定）
+
+- 装修候选：主题皮肤（现在只有深/更亮两档）、卡片动效、布局自定义、图标系统、控制室可视化。
+- 功能候选：控制室读数可点击跳转、任务板与 Agent Teams 联动、项目拖拽排序/分组、图片/文件直接拖进来、更多面板（SSH 已确认不要，终端已有）。
+- **压缩后第一句先问阿冉：装修想从哪块开始、要不要先找参考图。**
+
+
+### 2026-11-20 工作台过程记录（18:40 之前的历史，最新状态看上面那节）
 
 - **开工先读**：同目录 `交接速览.md`（工作台数据自动生成：6 个项目谁在跟 / 做到哪 / 下一步 / 卡在哪）。项目明细不在注入层，这一页才是跨会话交接的入口；它由 `收纳\01-脚本\DSH维护\生成交接速览.mjs` 生成。
 - **插件**：`@local/bluefish-workbench`，源码 `E:\AFishPower\Plugin\bluefish-workbench`（`index.js` 宿主 **v0.9** / `client.js` 浏览器半边 **v1.4** / `package.json` / `cordis.patch.yml` / `icon.svg`）。profile 里是 **link 装的**，改源码不用重装。
@@ -160,7 +211,8 @@
 
 ## 2026-11-16 小结（压缩前存档）
 
-- **C 盘清理**：清了 6.21 GB（VS 安装临时 2.1G、旧 dsh-workspace-changes 1.55G、Edge 缓存、pip/npm、sogoupdf 更新包 0.73G）。快照库机制查清：会话 dispose 时会 m -rf 自己，正常退出自清，只有异常退出才留残留。
+- **C 盘清理**：清了 6.21 GB（VS 安装临时 2.1G、旧 dsh-workspace-changes 1.55G、Edge 缓存、pip/npm、sogoupdf 更新包 0.73G）。快照库机制查清：会话 dispose 时会 
+m -rf 自己，正常退出自清，只有异常退出才留残留。
 - **工作区瘦身**：把 D_/G_2333333.pth（1.25G）移出工作区到 FishVoiceLab\models\rvc\_old-runs；hubert_base 因 RVC 代码写死路径不能动。
 - **装了 dsh-auth-cookie-guard 1.0.6**：修「启动约 72 次后 Web authentication failed」。实测 20KB 头返回 401（不再 431）、71 条假 cookie 删 67 条。装前备份 Backups\dsh-before-cookieguard-20261116-1351。
 - **网络坑**：Electron 剥掉 NODE_OPTIONS，靠用户级 NODE_EXTRA_CA_CERTS 才让 pnpm 通被加速器换证的 GitHub。

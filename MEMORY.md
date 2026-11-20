@@ -28,7 +28,7 @@
 ## 三、现在（正在做的事）
 
 - **记忆系统**：本文件每轮注入，硬上限 8000 字；旧事在 `MEMORY-archive.md`，靠第四节索引 + grep 找。
-- **小鱼工作台**：DSH 插件 `@local/bluefish-workbench`（源码 `E:\AFishPower\Plugin\bluefish-workbench`，link 装）。会话顶栏「工作台」→ 全屏层：左列表 + 控制室 + 项目页 + 本地文件栏（D:/E: 只读）。数据在 `$DSH_HOME\bluefish-workbench\projects\<id>\`：`状态.json`（状态/接手人/接手记录）+ `项目信息.md`（一句话/交接三条/约定与坑），改文件 10 秒内刷新。宿主 v0.9：`/overview` `/profile?id=` `/claim` `/handover` `/project`(POST) `/browse` `/exec`(POST) `/files` `/file` `/raw`；界面搜索/筛选/新建/深浅/圆卡/背景/列数/刷新/体检/快捷键全接通（偏好存 localStorage）。
+- **小鱼工作台**：DSH 插件 `@local/bluefish-workbench`（源码 `E:\AFishPower\Plugin\bluefish-workbench`，link 装）。会话顶栏「工作台」→ 全屏层：控制室（花费/官方余额/成员/任务都是真数据）、项目卡（四色灯+卡着黄边）、画像卡（交接三条可写、近期结论、接手、索引/开文档）、项目页（文件/预览/网格/终端/手机）、本地文件栏（D:/E: 只读+路径跳转）、新建项目、搜索筛选、开场动画（小鱼 mp4，每次启动只播一次）。**改 client.js 刷新页面；改 index.js 用 plugin_manager set_plugin enabled=true 热重载，不用重启 DSH**（2026-11-20 发现）。验收脚本 `收纳\01-脚本\DSH维护\工作台验收.mjs`（15 项）。
 - **交接速览**：`BlueFish的日记\交接速览.md`（脚本 `生成交接速览.mjs` 从工作台数据生成：每个项目谁在跟/做到哪/卡在哪）。**换会话开工先读它**——项目信息.md 不在注入层，这一页才是跨会话交接的入口。
 - **插件版本（2026-11-20 升）**：fish-memory 1.6.0→1.6.3、cost-meter 1.9.41→1.9.80、bili-scroll 2.2.2→2.5.2。**DSH 保持 0.2.1-rc.3 不用升**（这三个要求最高才 >=0.2.1-rc.2）；better-sidebar 0.30+ 和 dsh-mobile 0.8.x 要 0.2.2 线，所以没升。备份 `Backups\plugin-upgrade-20261120\`。
 - **刷B站**：只私信（dmMode=only，UID 552164191），perDay=8，峰谷开。报告在 `C:\Users\FIshKiller\.dsh\bili-duty\out\`，归档在 `digest/`。
@@ -82,3 +82,4 @@
 - 2026-11-19 记忆重构：规矩搬进 PERSONA，11-11~11-18 时间线归档，本文件从 9173 字压到 7000 以内。
 - 2026-11-19《记井》项目目录已从「像素地牢」改名为「记井」：E:\python\期末大作业\记井\ 。文档、代码标题、bat 里的引用全部同步改过，测试和启动都验过。
 - 2026-11-20 阿冉定的重心：做游戏（记井）、插件、视频、绘图；设计类插件 dsh-guizang-design 明确不装，等有要做 PPT/图的活再提。
+
