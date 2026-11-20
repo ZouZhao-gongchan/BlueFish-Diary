@@ -6,8 +6,8 @@
 
 ### 2026-11-20 工作台交接（压缩上下文前必读 · 18:20 更新）
 
-- **插件**：`@local/bluefish-workbench`，源码 `E:\AFishPower\Plugin\bluefish-workbench`（`index.js` 宿主 **v0.6** / `client.js` 浏览器半边 **v0.8** / `package.json` / `cordis.patch.yml` / `icon.svg`）。profile 里是 **link 装的**，改源码不用重装。
-- **生效方式**：改 `client.js` → **刷新页面**；改 `index.js` → **必须重启 DSH**（路由在启动时注册）。宿主 v0.4 已随 17:4x 重启生效；**v0.5 `/raw` 和 v0.6 `/handover` 都还要再重启一次才活**。
+- **插件**：`@local/bluefish-workbench`，源码 `E:\AFishPower\Plugin\bluefish-workbench`（`index.js` 宿主 **v0.6** / `client.js` 浏览器半边 **v0.9** / `package.json` / `cordis.patch.yml` / `icon.svg`）。profile 里是 **link 装的**，改源码不用重装。
+- **生效方式**：改 `client.js` → **刷新页面**；改 `index.js` → **必须重启 DSH**（路由在启动时注册）。宿主 v0.5 `/raw`、v0.6 `/handover` **已于 18:0x 那次重启生效**（live 验过：/raw 出图 200 image/png 1867 B、/handover 回写 200）。
 - **数据**：`$DSH_HOME\bluefish-workbench\projects\<id>\状态.json` + `项目信息.md`（≤25KB / 交接 ≤4KB）。改文件 = 改画面，10 秒内自动刷新。宿主路径白名单只认状态.json 里的 path。
 - **接口**：只读 `/overview`、`/profile?id=`、`/files?path=`、`/file?path=`（文本前 64KB）、`/raw?path=`（二进制原样，≤24MB，图片/PDF/视频用）；写 `POST /claim`（`{id, owner}` 认领）、`POST /handover`（`{id, handoff, next, blocked}` 覆盖写「二、当前交接」）。越界 403，坏 id 400，不存在项目 404，方法不对 405。**插件路由不走鉴权**。
 - **形态**：会话标题旁「工作台」按钮 → 全屏层（`requestFullscreen` 会收掉任务栏）→ 左侧工作台列表 + 总览（控制室 + 项目卡）/ 项目页（**场景画像** + 文件窗 + 预览窗 + 网页 + 手机预览 + 开关卡）。Esc 在项目页是返回总览，在总览才是退出；焦点在输入框时 Esc 不关层。
@@ -28,7 +28,15 @@
 - **图片 + JSON 预览（v0.7 客户端 / v0.5 宿主，18:0x 加）**：png / jpg / gif / webp / svg / bmp / ico / avif 直接在预览窗里显示（走 `/raw`，居中、最大 70vh、带文件名+大小），GIF 会动；>24MB 给一句提示不硬拉。`.json` 自动缩进美化。**要重启一次**（宿主新路由）。
 - **已验证**：离线自测 `%TEMP%\wb_test\test_host.mjs`（5 条路由 / 画像解析 / claim 写回 / 越界 403 / 坏 id 404 / GET 405）、`test_md.mjs`（Markdown 渲染）、`test_raw.mjs`（`/raw` 出 png 200 image/png 1867 B 与源文件一致、界外 403、缺 path 400、目录 400、POST 405）、`test_handover.mjs`（写交接 200、其余小节未被破坏、GET 405、坏 id 400、不存在 404、测完还原到字节一致）；**live 端口也验过**：重启后 `/profile?id=jijing` 200 带全文画像，`POST /claim` 写回成功。肉眼画面等阿冉看。
 - **看阿冉截图修掉的 bug**：画像卡「上次做到」显示「—」——真因是宿主 `profile` 对象里只放 what/next/blocked/pitfalls，**没带 handoff**（顶层有，但画像卡读的是 profile）。客户端加了兜底 `prof.handoff || full.handoff || project.handoff`，宿主也把 handoff 放进 profile。刷新页面即好（宿主那处改动下次重启生效也无害）。
-- **待办**：① **重启一次**让宿主 v0.5/v0.6 生效，然后验：图片预览、写交接、接手、卡着黄标；② 周日体检（5 类：记忆/索引/技能/场景/规矩）；③ SSH 面板；④ 控制室的「在跑成员 / 任务 / 余额」还是写死的占位（余额显示「—」），要接真数据；⑤ 画像锦上添花三件：近期结论一行 / 卡片灯联动 / 开文档；⑥ 视频、PDF、音频预览界面还没接（`/raw` 已经能吐）。
+- **卡着效果加重（阿冉 18:1x 反馈「黄边呼吸太微弱」）**：现在是 2px 黄边（0.62）+ 流动的金色 borderFlow（12s，2px 边 + 8px 模糊外发光）+ 内层黄光呼吸（5.5s，透明度 0.45↔1）+ 淡黄渐变底。刷新页面即见。
+- **周日体检（2026-11-20 18:2x 立，阿冉说「可以做，我确实很在乎记忆的连贯性」）**：
+  - 脚本：`收纳\01-脚本\DSH维护\体检.mjs`（Node，无依赖，**只读**）；报告：`收纳\02-文档\体检\YYYY-MM-DD-体检.md`。
+  - 五类：**记忆**（MEMORY 字数 / 归档在不在 / 注入层合计）· **索引**（定位卡绑定文件在不在 / MEMORY 里反引号路径能不能打开）· **技能**（skills 目录说明文件齐不齐）· **场景**（每个项目画像四要素空不空 / 谁卡着）· **规矩**（待拍板关键词数 / PERSONA 条文数 / 「规矩只认机主」在不在）。
+  - 首跑结果（2026-11-20）：13 项，12 正常，1 项要看——卡着的 2 个：记井等你拍板 3 问、工作台等你定 SSH 目标。MEMORY 4256 字、注入层合计 7117 字、归档 24963 字、MEMORY 里 10 个路径全部存在。
+  - 自动：`schedule-3708e345-f99d-42cb-a65e-838636e6b648`（每周日 21:00 Asia/Shanghai，挂在这间会话；换房间要重建）。首跑 2026-11-22 21:00。
+  - 工作台多了一张「每周体检」卡（项目 id `checkup`，指向报告目录），报告一更新卡上最近改动就变。
+  - 清单说明：`收纳\02-文档\体检\体检清单.md`；抽屉便签：同目录 `README.md`。
+- **待办**：① **SSH 面板**——等阿冉说清「连哪台机器 / 拿来干嘛（敲命令 / 看日志 / 传文件）」；② 控制室的「在跑成员 / 任务 / 余额」还是写死的占位（余额显示「—」），要接真数据；③ 画像锦上添花三件：近期结论一行 / 卡片灯联动 / 开文档；④ 视频、PDF、音频预览界面还没接（`/raw` 已经能吐）；⑤ 记井 GDD 第一章玩法稿还没派（等阿冉拍板 3 问）。
 - **已知坑**：`requestFullscreen` 只收系统任务栏，收不掉应用自己的原生菜单栏（「应用 编辑」那排）；NVIDIA Overlay 的 FPS/GPU 是系统置顶层，网页盖不住（Alt+R 关）。
 
 - **2026-11-20 下午 · 工作台 v0.1 半成品已装上** —— 插件 `@local/bluefish-workbench`（源码 `E:\AFishPower\Plugin\bluefish-workbench`，链接装进 profile）。客户端在会话顶栏注册了一个「工作台」View（实测 `id: bluefish-workbench, order 25, active: true`）；宿主路由 `/bluefish-workbench/overview` 实测 200，返回今日花费 ¥5.88 / 42 笔 + 5 张项目卡 + 成员/任务读数。装完三个补丁指纹未变。**还没做**：余额来源、卡片数据真实化、5 个控制键、过场动画、紫色网格背景。
