@@ -67,6 +67,13 @@
 - 实现方式：CSS 规则注入 overlay 的 `<style>` 串（用 `!important` 压内联样式），不给每个组件加 hover state。
 - 冒烟加断言：新建项目卡带 `bfw-hov-dash` 类、样式表里有 `.bfw-hov-dash:hover` 规则。
 
+### v3.6 / v3.7 新建项目的目录选择器（2026-11-20 23:4x）
+
+- 阿冉嫌「新建项目要手打路径」：弹窗里加「浏览…」按钮 → 打开内嵌**目录选择器**（`DirPicker`）：盘符 C/D/E + ↑ 上一级 + 文件夹列表（点进去）+「✓ 选这个目录」回填到路径框；也保留手输。
+- 宿主新接口 `GET /dirs?path=`：**只列文件夹、任意盘**（C 盘也能选），不读文件内容；坏路径 400；另回 C/D/E 盘符列表。和 `/browse`（本地文件栏，D/E 只读）分开，避免把 C 盘文件内容放出来。
+- 顺手修掉弹窗说明里漏出来的 markdown 星号（`**已经存在**`）。
+- 验收加一项 → **26 项全 PASS**（`/dirs 目录选择器 — 78 个文件夹`）；渲染冒烟加断言（点「浏览…」→ 出现 pics 文件夹 → 点进去 →「选这个目录」→ 路径框回填 `E:\pics`），18 组件 0 抛错。
+
 ### 代码与生效
 
 - 客户端 **v2.7** `client.js`（~150KB）：新增 `HudFrame / StatusLight / CardCorners / Console / TeamPanel` + `useChat / useTeam`；新偏好键 `skin`（hud / glass），控制室「皮肤」键切换。
