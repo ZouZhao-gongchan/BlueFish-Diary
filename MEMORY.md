@@ -28,7 +28,8 @@
 ## 三、现在（正在做的事）
 
 - **记忆系统**：本文件每轮注入，硬上限 8000 字；旧事在 `MEMORY-archive.md`，靠第四节索引 + grep 找。
-- **小鱼工作台**：DSH 插件 `@local/bluefish-workbench`（源码 `E:\AFishPower\Plugin\bluefish-workbench`，link 装）。会话顶栏「工作台」→ 全屏层：左列表 + 控制室 + 项目页。数据在 `$DSH_HOME\bluefish-workbench\projects\<id>\`：`状态.json`（状态 / 认领人）+ `项目信息.md`（一句话 / 交接三条 / 约定与坑），改文件 10 秒内刷新。宿主 v0.4：`/overview` `/profile?id=` `/claim`(POST) `/files` `/file`。
+- **小鱼工作台**：DSH 插件 `@local/bluefish-workbench`（源码 `E:\AFishPower\Plugin\bluefish-workbench`，link 装）。会话顶栏「工作台」→ 全屏层：左列表 + 控制室 + 项目页 + 本地文件栏（D:/E: 只读）。数据在 `$DSH_HOME\bluefish-workbench\projects\<id>\`：`状态.json`（状态/接手人/接手记录）+ `项目信息.md`（一句话/交接三条/约定与坑），改文件 10 秒内刷新。宿主 v0.7：`/overview` `/profile?id=` `/claim`(POST) `/handover`(POST) `/browse` `/files` `/file` `/raw`。
+- **交接速览**：`BlueFish的日记\交接速览.md`（脚本 `生成交接速览.mjs` 从工作台数据生成：每个项目谁在跟/做到哪/卡在哪）。**换会话开工先读它**——项目信息.md 不在注入层，这一页才是跨会话交接的入口。
 - **刷B站**：只私信（dmMode=only，UID 552164191），perDay=8，峰谷开。报告在 `C:\Users\FIshKiller\.dsh\bili-duty\out\`，归档在 `digest/`。
 - **bili-scroll 本地补丁**：saveCfg/loadCfg 两处 + 失败重试（lastWindowKey / exit 撤销）。升级会覆盖，改了要重打；备份 `index.js.bak-20261116`。
 - **《记井》**（原「像素地牢」）：定位改成「以记/墨/笔世界观为核心的完整独立游戏」，世界观优先、玩法服务世界观；要从 Python 原型换到能撑起完整游戏的引擎（我的建议是 Godot 4），走体系化开发——先 GDD 再写代码。进度见 `记井/docs/进度总结_20261119.md`（项目目录：`E:\python\期末大作业\记井`）。**当前优先于期末大作业。**
