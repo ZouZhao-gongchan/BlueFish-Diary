@@ -28,14 +28,15 @@
 ## 三、现在（正在做的事）
 
 - **记忆系统**：本文件每轮注入，硬上限 8000 字；旧事在 `MEMORY-archive.md`，靠第四节索引 + grep 找。
-- **刷B站**：只私信（dmMode=only，UID 552164191），perDay=10，峰谷开。报告在 `C:\Users\FIshKiller\.dsh\bili-duty\out\`，归档在 `digest/`。
+- **小鱼工作台**：DSH 插件 `@local/bluefish-workbench`（源码 `E:\AFishPower\Plugin\bluefish-workbench`，link 装）。会话顶栏「工作台」→ 全屏层：左列表 + 控制室 + 项目页。数据在 `$DSH_HOME\bluefish-workbench\projects\<id>\`：`状态.json`（状态 / 认领人）+ `项目信息.md`（一句话 / 交接三条 / 约定与坑），改文件 10 秒内刷新。宿主 v0.4：`/overview` `/profile?id=` `/claim`(POST) `/files` `/file`。
+- **刷B站**：只私信（dmMode=only，UID 552164191），perDay=8，峰谷开。报告在 `C:\Users\FIshKiller\.dsh\bili-duty\out\`，归档在 `digest/`。
 - **bili-scroll 本地补丁**：saveCfg/loadCfg 两处 + 失败重试（lastWindowKey / exit 撤销）。升级会覆盖，改了要重打；备份 `index.js.bak-20261116`。
 - **《记井》**（原「像素地牢」）：定位改成「以记/墨/笔世界观为核心的完整独立游戏」，世界观优先、玩法服务世界观；要从 Python 原型换到能撑起完整游戏的引擎（我的建议是 Godot 4），走体系化开发——先 GDD 再写代码。进度见 `记井/docs/进度总结_20261119.md`（项目目录：`E:\python\期末大作业\记井`）。**当前优先于期末大作业。**
 - **期末大作业**：坦克大战已完成；剩打包前补跑「模拟老师环境」测试、根目录排序美化。
 - **减脂**：180cm / 215 斤 → 180 斤；2200–2300 kcal、蛋白 130–160g；吃饭提醒已关，不再催。
 - **绝区零**：下版本挽昼 + 卡芙卡都想要，挽昼还想抽专武；月卡党；危局第五间缺第三队。
 - **QQ**：SnowLuma 小号 2135702903（3000 端口）常被挤下线，掉了要他自己扫码，我替不了。
-- **图库**：`E:\Agent-bluefish\小鱼图库\xiaoyu-001`（约 78 张），GUI 和 QQ 都能按中文搜。
+- **图库**：`E:\Agent-bluefish\小鱼图库\xiaoyu-001`（实测 88 张 / 36.9 MB / 23 类，2026-11-20 校准），GUI 和 QQ 都能按中文搜。
 - **我的时间**：每天 13:30（看报告、细读一条、写笔记、主动找他）。
 - **聊天背景轮换**：卧室鱼 5 分钟 → DP娘 10 分钟 → 长征衔接 10 分钟，一圈 25 分钟。脚本在 `收纳\01-脚本\DSH维护\`，建 `PAUSE-轮换背景` 空文件可暂停。
 - **备份**：`E:\Agent-bluefish\Backups\` 下按日期分（MEMORY 旧版 / video-skin 补丁 / 启动动画 / startup / memory-slim-20261119）；仓库本身有 git 历史。

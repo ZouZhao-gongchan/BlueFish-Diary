@@ -4,16 +4,20 @@
 
 ## 进行中
 
-### 2026-11-20 工作台交接（压缩上下文前必读）
+### 2026-11-20 工作台交接（压缩上下文前必读 · 17:45 更新）
 
-- **插件**：`@local/bluefish-workbench`，源码 `E:\AFishPower\Plugin\bluefish-workbench`（`index.js` 宿主 / `client.js` 浏览器半边 / `package.json` / `cordis.patch.yml` / `icon.svg`）。profile 里是 **link 装的**，改源码不用重装。
-- **生效方式**：改 `client.js` → **刷新页面**；改 `index.js` → **必须重启 DSH**（路由在启动时注册）。
-- **数据**：`$DSH_HOME\bluefish-workbench\projects\<id>\状态.json` + `项目信息.md`（≤25KB / 交接 ≤4KB）。改 json = 改卡片，10 秒内自动刷新。宿主的路径白名单只允许这些 path 里面。
-- **接口**：`/bluefish-workbench/overview`、`/files?path=`、`/file?path=`（只读，均要 path 参数；越界 403）。
-- **形态**：会话标题旁「工作台」按钮 → 全屏层（`requestFullscreen` 会收掉任务栏）→ 左侧工作台列表 + 总览（控制室 + 项目卡）/ 项目页（文件窗 + 预览窗 + 网页 + 手机预览 + 开关卡）。Esc 在项目页是返回总览，在总览才是退出。
+- **插件**：`@local/bluefish-workbench`，源码 `E:\AFishPower\Plugin\bluefish-workbench`（`index.js` 宿主 **v0.4** / `client.js` 浏览器半边 **v0.5** / `package.json` / `cordis.patch.yml` / `icon.svg`）。profile 里是 **link 装的**，改源码不用重装。
+- **生效方式**：改 `client.js` → **刷新页面**；改 `index.js` → **必须重启 DSH**（路由在启动时注册）。**宿主 v0.4 现在还没重启，所以 `/profile`、`/claim` 暂时是 404**，重启后才有。
+- **数据**：`$DSH_HOME\bluefish-workbench\projects\<id>\状态.json` + `项目信息.md`（≤25KB / 交接 ≤4KB）。改文件 = 改画面，10 秒内自动刷新。宿主路径白名单只认状态.json 里的 path。
+- **接口**：只读 `/overview`、`/profile?id=`、`/files?path=`、`/file?path=`；写 `POST /claim`（`{id, owner}`，写回状态.json 的 owner/claimedAt）。越界 403，坏 id 404，非 POST 405。**插件路由不走鉴权**（和 `dsh-video-skin` 一样）。
+- **形态**：会话标题旁「工作台」按钮 → 全屏层（`requestFullscreen` 会收掉任务栏）→ 左侧工作台列表 + 总览（控制室 + 项目卡）/ 项目页（**场景画像** + 文件窗 + 预览窗 + 网页 + 手机预览 + 开关卡）。Esc 在项目页是返回总览，在总览才是退出；焦点在输入框时 Esc 不关层。
+- **场景画像（v0.5 新加）**：项目页顶部一张横版画像卡——一句话 / 上次做到 / 下一步 / 卡在哪 / 最近改动 3 个文件（点了直接在预览窗打开）/ 约定与坑条数（悬停看全文）/ 认领人。来源：`项目信息.md`（文字）+ `状态.json`（owner）+ 扫盘（最近改动，宿主机搜：深度 3、预算 700 个文件、缓存 15s）。
+- **认领**：画像卡里点「认领 / 改」→ 填名字回车（或失焦）→ `POST /claim` 写状态.json。空字符串 = 放回未认领。语义是「这间归谁跟」，卡片标题旁也会显示。
+- **5 份画像数据（2026-11-20 由成员 profile-writer 填写，我复核过）**：5 个项目各一份真实内容（一句话 / 交接三条 / 4 条坑），实测 live `/overview` 的 handoff 全部带值；`bili` 的 path 我从 `收纳\02-文档\参考` 改成 `C:\Users\FIshKiller\.dsh\bili-duty\out`（原来那个目录是参考资料，不是日报），状态.json 里还顺手补了 `owner`/`claimedAt`、清掉了种子里编的假 `meta`（宿主现在会按真实最近改动生成）。
 - **视觉规格（2026-11-20 定稿，改之前问阿冉）**：卡片高 148、三列网格、圆角 20、`backdrop-filter blur(18px) saturate(150%)`、轻落影 `0 6px 18px rgba(0,0,0,0.22)`；四色状态 **蓝=工作中 / 白=空闲 / 黄=待审批 / 绿=已完成**。
 - **光效（阿冉验收过的版本）**：只有「没结束」的两种会动——工作中：大面积柔光扫过（14s 周期，扫 4s 停 10s，`blur(22px)`）+ 边框流光绕圈 9s + 呼吸 8s；待审批：同款边框流光 **12s** + 呼吸 7s；已完成：静态绿边；空闲：静态白边。边框流光 = `conic-gradient` 绕圈 + `mask` 只留 1.6px 边 + 外层 `blur(7px)` 辉光，靠 `@property --bfw-angle` 驱动。
-- **待办**：① 重启后确认卡片出现「交接 · …」行（宿主新增 handoff 解析，读项目信息.md 的「上次做到」）；② 宿主 BOM 容错 / 路径大小写 两处修复也要重启才生效；③ 下一步：场景画像完整化（画像 + 认领）、周日体检（5 类）、SSH 面板。
+- **已验证（不用重启就能验的那部分）**：拿 `%TEMP%\wb_test\test_host.mjs` 直接 import 新版 `index.js` 跑假 ctx——5 条路由全注册、画像三条解析正确、claim 写/放回成功、越界 403、`../etc` 404、GET claim 405。**还没验的只有肉眼画面**（要重启 + 刷新）。
+- **待办**：① **重启 DSH 一次**让宿主 v0.4 生效，然后刷页面看项目页顶部有没有画像卡、点最近改动能不能开预览、点认领能不能写进去；② 周日体检（5 类：记忆/索引/技能/场景/规矩）；③ SSH 面板；④ 控制室的「在跑成员 / 任务 / 余额」还是写死的占位（余额显示「—」），要接真数据。
 - **已知坑**：`requestFullscreen` 只收系统任务栏，收不掉应用自己的原生菜单栏（「应用 编辑」那排）；NVIDIA Overlay 的 FPS/GPU 是系统置顶层，网页盖不住（Alt+R 关）。
 
 - **2026-11-20 下午 · 工作台 v0.1 半成品已装上** —— 插件 `@local/bluefish-workbench`（源码 `E:\AFishPower\Plugin\bluefish-workbench`，链接装进 profile）。客户端在会话顶栏注册了一个「工作台」View（实测 `id: bluefish-workbench, order 25, active: true`）；宿主路由 `/bluefish-workbench/overview` 实测 200，返回今日花费 ¥5.88 / 42 笔 + 5 张项目卡 + 成员/任务读数。装完三个补丁指纹未变。**还没做**：余额来源、卡片数据真实化、5 个控制键、过场动画、紫色网格背景。
