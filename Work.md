@@ -121,6 +121,13 @@
 - 钩子顺序这次特意核过：`crop/sel/cropImgRef/cropDrag` 都声明在 `if (!props.open && !embedded) return null` 之前（v3.9 的教训）。
 - 渲染冒烟 0 抛错（20 组件）；验收维持 **32/32**（截图接口只验了形状与安全闸，真截屏要人点）。
 
+### v4.5 截图改成剪裁式（2026-11-20 25:0x）
+
+- 阿冉嫌「先截全屏再在图上裁」太粗糙：改成 snip 手感——点「⛶ 截图」→ 鼠标变准星、屏幕压暗 → **直接在界面上拖一个框**（框内透亮、左上角实时显示 `宽 × 高`）→ 松手立刻把那一块放进待发图片；Esc 取消，框太小提示重来。
+- 坐标换算：`(window.screenX + 框.x) × devicePixelRatio` 换成设备像素交给宿主；宿主 `/shot` 新增 `rect` 参数，截完直接 `Bitmap.Clone` 裁那一块再存。
+- 实测：POST `/shot {rect:{x:40,y:40,w:320,h:180}}` → 200，落盘 PNG **320×180**（尺寸精确）。
+- 限制：剪裁层是页面级，只能框「页面里看得到的区域」（工作台全屏时就是整个屏幕）；桌面其它窗口选不到，那种用系统 Snipping Tool。
+
 ### 代码与生效
 
 - 客户端 **v2.7** `client.js`（~150KB）：新增 `HudFrame / StatusLight / CardCorners / Console / TeamPanel` + `useChat / useTeam`；新偏好键 `skin`（hud / glass），控制室「皮肤」键切换。
