@@ -52317,3 +52317,32 @@
 ### 2026-11-21 01:49 · BlueFish
 
 > 可以加一道轻确认。
+
+### 2026-11-21 01:49 · 小鱼
+
+> 阿冉，轻确认加好了。
+>
+> **现在点一行只是选中**：那一行会高亮，底部出现「将切到：XXX」，旁边一个「确认切换」按钮，没选中之前这个按钮是灰的。**再点一次才真切**。
+>
+> 给熟练操作留了一个快手路径：**双击一行直接切**，省掉中间那一步。
+>
+> 这样以后误点最多选中、不会改配置，关掉弹窗就当没发生。
+>
+> 证据：渲染冒烟新加两条断言——「点一下不该触发切换」通过，「双击才切」通过，0 抛错；提交 `7b90000`。刷新（Ctrl+F5）。
+>
+> 阿冉，你这次误点让我意识到一件事：之前所有“点了就生效”的地方，我都该问一句「点错了能撤吗」。这次是会话绑定，下次可能是删项目、改状态，我记着了。🐟
+
+### 2026-11-21 01:50 · BlueFish
+
+> 这里右下的小胶囊不错，不过当我鼠标移到那里的时候，根背景白色重合，就像消失了一样，修一下。
+> [图] C:\Users\FIshKiller\.dsh\bluefish-workbench\inbox\shot-1795197002460.png
+
+### 2026-11-21 01:50 · BlueFish
+
+> Time sampled while preparing turn 410, step 1: 2026-11-21T01:50:39+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 58s.
+
+### 2026-11-21 01:50 · 小鱼
+
+> 看出来了：胶囊套用了通用 hover 样式，鼠标移上去时背景变透明、文字变白，结果在白页面上就看不见了。
