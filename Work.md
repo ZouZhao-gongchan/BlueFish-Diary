@@ -97,6 +97,15 @@
 - 踩坑复现：第一次把 ReviewBar 插错位置（锚点撞了 LocalFiles 的同名错误行），冒出 `project is not defined`——冒烟 22 条报错抓出来了，已改正。
 - 验收 **29 项全 PASS**（新增 /review 两条参数闸）；渲染冒烟断言 `[待验收] 出现验收条=true`、`点验收通过 -> /review 调用=true`，20 组件 0 抛错。
 
+### v4.1 点链接就在工作台里打开（2026-11-20 24:2x）
+
+- 预览（Markdown）里的链接不再跳外站：点一下 → 项目页右下 dock 自动切到「网页」并加载，地址回填顶部 URL 框。
+- **B站链接自动处理**：识别 `bilibili.com/video/BV…` → 换成官方播放器 `player.bilibili.com/player.html?bvid=…`（普通 B站页面禁止被 iframe 嵌入，白屏；播放器页可以嵌）。
+- 「网页」面板右上加 **「外开 ↗」**：站点不让嵌时一键交给系统浏览器；空态文案写清这个兜底。宿主 `/open` 现在也认 `http(s)` 网址。
+- **界面取舍**：不新开窗口/不新加面板，就复用已有的右下 dock（对话/终端/网页/手机那组 tab）；「悬停预览链接卡片」「网页占满整页」暂不做，等阿冉要再加。
+- 验收 29/29；冒烟断言 `[链接] 可点链接=true / 点后网页 dock 打开=true / preventDefault=true`，20 组件 0 抛错。
+- 插曲：自测 /open 时系统浏览器弹了个 example.com 标签，属于探针副作用，无危害。
+
 ### 代码与生效
 
 - 客户端 **v2.7** `client.js`（~150KB）：新增 `HudFrame / StatusLight / CardCorners / Console / TeamPanel` + `useChat / useTeam`；新偏好键 `skin`（hud / glass），控制室「皮肤」键切换。
