@@ -2,72 +2,84 @@
 
 > 留给工作用的地方。想到什么先记下来，做完的移到「已完成」，不用讲究格式。
 
-## 🐟 小鱼工作台 · 压缩交接（2026-11-20 25:1x，最新，先读这一节）
+## 🐟 小鱼工作台 · 交接（2026-11-21 02:0x，最新，先读这一节）
 
-> 压缩上下文前写的整页交接。下面 v2.8 那节讲的是更早的状态，当作历史；**以这一节为准**。
->
-> **框架图**（2026-11-21 照 B站 BV15mnJ6YELj「DSH 搭 AI 工作台」拆的，含四层骨架 + 六步链路 + 六条建议）：`收纳\02-文档\设计\工作台-框架图.html`。**逐分钟拆解**（同日，740 秒拆 13 段：每段「说了什么 / 能不能做到 / 落点」+ 安全三级 + 7 条差距 + 验收清单）：`收纳\02-文档\设计\工作台-原视频逐分钟拆解.html`。**修改指标**（阿冉 2026-11-20 定）：`收纳\02-文档\设计\工作台-修改指标.md`——「**工作台里写的东西是给人用的，不是给日志看的**」；舒服便捷 + 专业性。改之前先读，改完拿它量。
+> 压缩前写的整页交接。下面 v2.8 那节是历史，**以这一节为准**。
+> **三份参考文档**（工作台 → 收纳 → 02-文档 → 设计）：
+> - `工作台-修改指标.md` —— **改之前先读**。三条底线：不打断使用者 / 中文优先 / 写清干什么。
+> - `工作台-框架图.html` —— 四层骨架：外壳 / 引擎 / 场景 / 体检 + 六步链路。
+> - `工作台-原视频逐分钟拆解.html` —— B站 BV15mnJ6YELj 拆 13 段 + 7 条差距 + 安全三级。
 
 ### 一句话状态
 
-小鱼工作台做到 **v4.7 / 宿主 v2.1**，功能与体验都已成型：HUD 皮肤、四宫格项目页、内嵌对话抽屉（可发图/截图、**能发任意文件**、**能打 / 指令和 @ 文件**）、dock 可放大铺满项目页、状态条点开看最近 6 步、任务板、待验收条、目录选择器、会话绑定、拖动排序、**中文上下文表**、**会话选择器能认人（标题 + 按目录分组 + 搜索 + 一键在项目目录新开）**、**工作台被重挂后自己弹回（sessionStorage + localStorage 双标记 30 秒宽限）**、**HTML 文件直接渲染预览（iframe，可切源码）**、**新会话一开自动投「场景认领」词**、**一句话开工（项目页「＋ 开工」一步建会话+认领+绑定）**、**花费闸（/cost，软线 ¥8 提示 / 硬线 ¥12 发送要二次确认）**、**点路径复制**、**快捷卡片（网址框存成卡片，点一下在网页面板开）**、**任务板派单（展开任务 → 派给某个会话，消息里带齐做什么/怎么写盘/怎么回执）**、**终端流式跑命令（边跑边回，超时 20s→120s）**。活体验收 **44 项全 PASS**，渲染冒烟 **23 组件 0 抛错**。下一步由阿冉定（候选见末尾）。
+**v4.8 / 宿主 v2.2**。活体验收 **44 项全 PASS**，渲染冒烟 **23 组件 0 抛错**。
+能做：HUD 皮肤、四宫格项目页、内嵌对话（发图 / 发任意文件 / `/` 指令 / `@` 文件 / **每条回复带本轮费用**）、**浮窗（可拖可全屏可丢进右侧格子存着）**、**右侧工具栏（全局截图）**、dock 放大、状态条看步骤 + **点开看每步输出**、任务板 + 派单、待验收条、会话选择器（认人 / 搜索 / 一键开工 / 轻确认）、花费闸、快捷卡片、点路径复制、**终端流式**、HTML 渲染预览。
 
-### 代码与生效
+### 怎么改（三条命令）
 
-- 插件：`@local/bluefish-workbench`，源码 `E:\AFishPower\Plugin\bluefish-workbench`（`client.js` ~200KB v4.5、`index.js` ~80KB v2.0、`assets\intro.mp4`、`tools\pdf_text.py`）。profile 里 link 装，不重装。
-- **改 `client.js` → 刷新页面（Ctrl+F5）**；**改 `index.js` → `plugin_manager` 对 `include:bluefish-workbench` 设一次 `enabled=true` 热重载，不用重启 DSH**。
-- 数据：`$DSH_HOME\bluefish-workbench\projects\<id>\状态.json` + `项目信息.md`；公告 `公告.jsonl`；收件箱/截图 `inbox\`；渲染缓存 `preview\`；pypdf 隔离 `pylib\`。
+- **改客户端**：编辑 `client.js` → 浏览器 Ctrl+F5
+- **改宿主**：编辑 `index.js` → `plugin_manager` set_plugin `{target:'include:bluefish-workbench', enabled:true}` 热重载（不用重启 DSH）
+- **改完必跑**（两道闸，缺一不可）：
+```
+node "E:\Agent-bluefish\working\收纳\01-脚本\DSH维护\工作台验收.mjs"   → 应 44/44
+node "%TEMP%\wb_test\test_client_render.mjs"                          → 应「错误数: 0」
+```
 
-### 宿主接口（全部 `/bluefish-workbench/` 下，exact + query，不走鉴权）
+### 2026-11-21 凌晨这批（最新，已在里面）
 
-- 读：`/overview` `/profile?id=` `/info?id=` `/index?id=` `/files?path=` `/file?path=` `/raw?path=` `/browse?path=`（本地文件栏，只 D/E） `/render?path=` `/page?id=&name=` `/text?path=` `/asset?name=` `/attachment?id=&session=` `/inbox?path=` `/dirs?path=`（只列文件夹，任意盘） `/chat?limit=&session=` `/activity?session=` `/team` **`/sessions?title=1`（带标题的会话列表）** `/context` **`/commands?session=`（DSH 人指令清单）** **`/refs?q=&session=`（输入框 @ 的文件候选）**
-- 写（POST）：`/claim` `/handover` `/project` `/exec` `/save` `/open`（本地路径或 http(s) 网址） `/prompt {text,images?,sessionId?}` `/review {id,verdict:approve|reject}` `/order {ids}` `/talkto {id,sessionId}` `/shot {rect?}` **`/newsession {cwd, sceneName?, dryRun?}`（在项目目录新开一个会话；给 sceneName 就自动投一条场景认领词，dryRun 只预览不建）** **`/command {line,sessionId?}`（真执行 /指令，不发给模型）** **`/upload {name,dataUrl}`（对话里发文件，落盘收件箱回本机路径）**
+1. **浮窗系统**：双击文件列表的文件 → 弹可拖窗口；标题栏拖（**DOM 直改 transform，不走 React**，所以丝滑）、双击标题栏或 ⤢ 全屏、⇥ 丢进右侧「存着」格子、× 关；位置 / 大小 / 收纳状态存 sessionStorage；同文件只开一个
+2. **右侧工具栏**：52px 竖条 —— ⛶ 全局截图 / ⌨ 对话 / ◈ 任务板 / ⤢ 全屏
+3. **全局截图**：任何界面拖框 → 截完弹小框写一句 → Enter 或按钮 = 图和话一起发；Esc 取消
+4. **对话每条回复带本轮费用**（`· ¥0.1263`，按轮汇总自 cost-meter 的 `.dshw-usage.json`）
+5. **状态条步骤可点开看输出**（`/activity` 的 recent 带 `out`，来自 tool/result）
+6. **终端流式**（`/execstream`，边跑边回，超时 20s→120s）
+7. **任务板派单**（展开任务 → 派给某个会话 → 投标准派活消息：做什么 / 写盘范围 / 回执要求）
+8. 快捷卡片 / 点路径复制 / 花费闸（软线 ¥8、硬线 ¥12）/ 一句话开工 / 会话选择器轻确认
 
-### 客户端功能全景
+### 宿主接口（全部 `/bluefish-workbench/` 下，exact + query）
 
-- **总览**：控制室（花费/余额/成员/任务真数据 + 密度/皮肤/深浅/列数等偏好键）、项目卡（四色灯 + 卡着呼吸 + DECK 编号 + 悬停手感）、拖拽排序（写各项目 order）、新建项目（带目录选择器）。
-- **项目页（紧凑=四宫格）**：左上画像（窄版单列，可写交接/接手/索引/开文档）、右上文件、左下预览、右下 dock（对话/终端/网页/手机 tab，默认对话）；舒适模式还是旧竖排。**右下 dock 右上角「⤢ 放大」→ 铺满整个项目页（看 B站/PDF/长文件用），Esc 或「⤡ 还原」回来，状态存 sessionStorage。**
-- **对话**：内嵌抽屉（可收起、有状态条「正在：改 client.js」）、**状态条可点开 → 最近 6 步（读/写/改哪个文件、跑什么命令、搜什么）**、**输入框打 `/` 出指令面板（6 条 DSH 人指令，每条：中文标题 + 干什么 + 用法；compact/export/feedback/goal/permission/plan；选中直接执行、不走模型；`/` 前面有中文也弹，路径 E:/ 不误弹；中文能筛中文标题）**、**打 `@` 出当前工作目录的文件候选（↑↓ 选、Enter 插入 @路径）**、发图（粘贴/拖入/挑选/截图）、**发任意文件（拖入 / 点「＋ 文件」→ 落盘收件箱 → 正文带 `[文件] 本机路径`，我直接能读能改；对话里显示成文件卡片，点一下用系统程序打开）**、截图改剪裁式（点截图→准星→拖框）、按项目绑会话（「切换会话」，存 talkTo）、点预览链接在网页 tab 打开（B站自动换播放器，右上「外开 ↗」兜底）。
-- **会话选择器（项目页「切换会话」）**：搜索框按「会话里说过的话 / 目录 / id」筛；按目录分组、同目录（这个项目的）置顶；每行显示**这个会话第一句说了什么**（DSH 列表不带标题，宿主读首条 user 消息当标题，85/92 有）；默认收起 bili-duty 值班会话和团队子会话，可点开；顶部「＋ 在这里开新会话」直接在这个项目目录建一个并绑上（实测 41ms）。
-- **其它**：任务板抽屉（成员/任务真数据）、待验收条（done/pending 项目顶部：上次做到+最近文件胶囊+✓验收/↩打回）、**顶栏上下文表（中文：上下文 ▓ 3.6% 37k / 1.0M，60%黄 85%红，悬停看已用/窗口/剩余/模型）**、开场动画（每次 DSH 启动只播一次）、本地文件栏、终端（20s 超时 + 危险命令软确认）。
-- **状态保留（不打断使用者）**：开着没关 / 停在哪个项目 / 对话抽屉开合 / 草稿 / 每项目预览目录与文件 / **主内容区滚动位置** → 都存 sessionStorage；热重载后自动弹回，**且首帧直接显示、不播入场动画**（不然看着像被弹出去又回来）；草稿没发完会自动把焦点放回输入框。**Esc 在总览要按两次才退出**（第一次只提示，2.5 秒内再按才真退），退出工作台只有这一条路和右上「返回对话」。
+- 读：`/overview` `/profile?id=` `/info?id=` `/index?id=` `/files?path=` `/file?path=` `/raw?path=` `/browse?path=` `/render?path=` `/page?id=&name=` `/text?path=` `/asset?name=` `/attachment?id=&session=` `/inbox?path=` `/dirs?path=` `/chat?limit=&session=` `/activity?session=` `/team` `/sessions?title=1` `/context` `/cost` `/commands?session=` `/refs?q=&session=` `/execstream?cmd=&cwd=`
+- 写（POST）：`/claim` `/handover` `/project` `/exec` `/save` `/open` `/prompt {text,images?,sessionId?}` `/review {id,verdict}` `/order {ids}` `/talkto {id,sessionId}` `/shot {rect?}` `/command {line,sessionId?}` `/upload {name,dataUrl}` `/newsession {cwd,sceneName?,dryRun?}` `/archivesession {sessionId}` `/quicklinks {id,links}`
 
-### 验收与自测（改完就跑）
+### 客户端结构
 
-- **活体验收**：`node "收纳\01-脚本\DSH维护\工作台验收.mjs"` → **44 项 PASS/FAIL**（自动找 DSH 端口）。
-- **渲染冒烟**：`%TEMP%\wb_test\test_client_render.mjs` —— 迷你 React 真跑组件树，含断言：HUD/密度/对话抽屉/Shift+Enter/四宫格/内嵌对话/收起展开/放大这一格/状态条最近步骤/**输入框补全（/ 指令、@ 文件、选中执行 POST /command）**/中文上下文表/拖拽 POST /order/会话绑定 POST /talkto/点链接开网页/待验收条/目录选择器/钩子数量守卫。修前端必须跑。
-- 体检/速览：`体检.mjs`（周日 21:00）、`生成交接速览.mjs`。
+`client.js` ~250KB / v4.8：`WorkbenchOverlay`（state 全在这）→ `Overview`（控制室）/ `Scene`（项目页）/ `Console`（对话）/ `TeamPanel`（任务板）/ `FloatWin` + `WinDock` + `SideTools`（浮窗 / 收纳格 / 工具栏）/ `CostMeter` + `CtxMeter`（顶栏）/ `SessionPicker` / `FilePreview` / `DirPicker` / `LocalFiles` / `Terminal` / `ChatImg`。
+宿主 `index.js` ~95KB / v2.2：`loadProjects` / `readChat`（带每轮费用）/ `readActivity`（带步骤输出）/ `readCost` / `readCommands` / `runCommand` / `listRefs` / `saveInboxFile` / `claimPrompt` + 各路由。
 
 ### 踩过的坑（都别再踩）
 
-1. **绝对不要用 PowerShell 改含中文的源码**——PS 5.1 按 GBK 读 UTF-8，会整文件乱码（2026-11-20 毁过 client.js/index.js 一次）。改文件用编辑工具或 Node fs（显式 utf8）；批量改写成 .mjs 脚本。
-2. **`node --check` 查不出未定义变量/钩子顺序**：`useState` 写在提前 return 后面会让整个工作台打不开（v3.9 修过），冒烟里已有「钩子数量守卫」。
-3. 改代码用编辑工具的锚点要足够独特：曾把 ReviewBar 插进 LocalFiles 的同名错误行，冒烟报 `project is not defined`。
-4. DSH webServer 不支持 prefix 路由（404），一律 exact + query。
-5. client HMR 会热替换插件浏览器半边 → 状态清零；已用 sessionStorage 兜住（开着/视图/草稿）。改 client 后阿冉若在页面里，会「闪一下回来」属正常。
-6. 会话忙时 DSH 拒原生带图 prompt（`session/agent-busy`）→ 工作台改成图落盘 + 正文 `[图] 路径`；`[图]` 行在对话里也会渲染成图。
-7. `/chat` 会混入 DSH 内部上下文消息（`Time sampled…`），已过滤。
-8. 滚动穿透：7 个滚动区加了 `overscroll-behavior: contain`。
+1. **不要用 PowerShell 改含中文的源码**——PS 5.1 按 GBK 读 UTF-8 会整文件乱码。改文件用编辑工具或 Node fs（显式 utf8）。
+2. **`node --check` 查不出钩子顺序**：`useState` 写在提前 return 后面会让工作台打不开；冒烟里有「钩子数量守卫」。
+3. DSH webServer 不支持 prefix 路由，一律 exact + query。
+4. HMR 重挂会清状态：sessionStorage + localStorage 双标记（30 秒宽限）兜住；首帧不播动画；**打字时（`bfw-typing-v1`）2 分钟内自动接回焦点**。
+5. 截图是 PowerShell 画主屏再裁：**坐标越界会崩**，已加 `$r.Intersect($b)`；**PowerShell 退出码 0 不等于文件在**，已加 stat 校验（之前出现过「返回了路径但文件不存在」的假成功）。
+6. 会话忙时拒原生带图 prompt → 图落盘 + 正文 `[图] 路径`；文件没了对话里显示「这张图已经找不到了」。
+7. `/chat` 会混入 DSH 内部上下文消息，已过滤。
+8. 滚动穿透：7 个滚动区加 `overscroll-behavior: contain`。
+9. **白底上别用 `.bfw-hov`**：它 hover 时背景变 12% 透明蓝、字变近白，浮在白色网页上会「消失」。浮在内容上的胶囊用 `.bfw-pill`（深底不透明 hover）。
+10. **测试不许拿真实会话投递**：会留下指向已删文件的坏图消息。测截图只测 `/shot`，不 `/prompt`。
+11. 会话绑定误点会改配置：现在点行只是选中，要再点「确认切换」（双击直切）。
 
 ### 已知边界
 
-- 截图剪裁层是页面级：只能框页面看得到的区域（工作台全屏时=整屏），桌面其它窗口选不到（用系统 Snipping Tool）。
-- 普通 B站页面禁止 iframe 嵌入 → 已换官方播放器；其它站仍可能白屏，用「外开 ↗」。
-- 拖拽排序只在侧栏；控制室/本地文件两行固定。
-- 对话默认投「本间会话」，要投别的会话得在项目页里手动「切换会话」。
-- 没做 OCR（从截图抠文字）；要的话接 Windows OCR。
+- 截图层是页面级：只能框页面看得到的区域；桌面其它窗口选不到。
+- 禁止 iframe 的站（platform.deepseek.com / github）会白屏 → 右下角「白屏？点我用浏览器开」胶囊。
+- **终端是流式一次性命令**：不能交互、`cd` 不保留、不能 Ctrl+C、不能跑 REPL。真 PTY 要接 DSH 的 `terminals` / `terminalController`（还没做）。
+- 浮窗内容按类型渲染（html / pdf / 图片 / 文本 / 网页），其它类型提示用预览面板。
+- 没做 OCR。
 
 ### 下一步候选（等阿冉挑）
 
-- ~~对话里「正在…」展开成最近 6 步历史~~ ✅ v4.6 已做
-- ~~网页面板「最大化占满项目页」~~ ✅ v4.6 已做（dock 通用放大，对话/终端/网页/手机都能放大）
-- 链接悬停预览卡（鼠标停在预览里的链接上，先看一张卡片再决定点不点）。
-- 任务板支持派单/认领（宿主可调 agentTeams.createTask/updateTask）；控制室数字点击跳转。
-- OCR；截图后直接发送（不等点发送）；对话里发文件（不只图片）。
+- 接 DSH 真 PTY 终端（交互式、cd 保留、Ctrl+C）
+- 链接悬停预览卡
+- 浮窗边缘缩放（现在只有默认大小和全屏）
+- OCR（截图抠字）
+- 控制室数字点击跳转
 
 ### 压缩后第一句
 
-读这一节 → 跑一次 `工作台验收.mjs`（应为 32/32）→ 再问阿冉接着做哪条。
+读这一节 → 跑 `工作台验收.mjs`（应 **44/44**）+ `test_client_render.mjs`（应 **错误数: 0**）→ 再问阿冉接着做哪条。
+
 
 
 ## 小鱼工作台 v2.8 · 科技感装修 + 对话通道（能发图）+ 任务板（2026-11-20 23:5x，最新，先读这一节）
