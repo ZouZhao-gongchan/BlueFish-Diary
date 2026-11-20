@@ -50,6 +50,17 @@
 - **待办**：① 控制室的「在跑成员 / 任务 / 余额」还是写死的占位（余额显示「—」），要接真数据；② 画像锦上添花三件：近期结论一行 / 卡片灯联动 / 开文档；③ 视频、PDF、音频预览界面还没接（`/raw` 已经能吐）；④ 记井 GDD 第一章玩法稿还没派（等阿冉拍板 3 问）；⑤ 本地文件栏只读，阿冉要是想「用资源管理器打开」「复制路径」再加（这两个要宿主调系统命令，先问）；⑥ 终端面板没有历史命令/快捷键（↑ 上一条），也没做「这条命令危险不危险」的提示——想加再说。
 - **已知坑**：`requestFullscreen` 只收系统任务栏，收不掉应用自己的原生菜单栏（「应用 编辑」那排）；NVIDIA Overlay 的 FPS/GPU 是系统置顶层，网页盖不住（Alt+R 关）。`listDir` 一次最多 200 项，盘根这种大目录会截断。终端面板等于「这台机器上的一个真 shell」——**没有白名单拦截，只能靠人别在里面敲危险命令**；要做拦截得另加一层规则。
 
+- **2026-11-20 20:1x · 插件升级（阿冉批准，按我排的顺序；三个全升完）**：
+  - `dsh-fish-memory` 1.6.0 → **1.6.3**（`plugin_manager install_bundle github:Yuuyuko-uu/dsh-fish-memory#v1.6.3`，一次成）。
+  - `dsh-cost-meter` 1.9.41 → **1.9.80**（install_bundle 说 already-installed，先 remove_bundle 再装，成功）。
+  - `dsh-bili-scroll` 2.2.2 → **2.5.2**（同样 remove + install）。**本地补丁不用重打了**：2.5.2 官方内建 `windowTries` 失败重试（MAX_WINDOW_TRIES=3，跑成才记窗口用过），新版代码里 `lastWindowKey` 已不存在；我们当年的 saveCfg/loadCfg 补丁就是为持久化 lastWindowKey 打的，一起作废。
+  - **DSH 不用升**：三个插件的 dshRequirement 分别是 `>=0.2.1-rc.2` / `>=0.2.0-rc.1 <0.3.0` / `>=0.1.7-rc.1`，当前 0.2.1-rc.3 全满足。只有 better-sidebar 0.30+（要 0.2.2-rc.1/rc.2）和 dsh-mobile 0.8.x（对 0.2.2 线）要 0.2.2，这两个本来就不升。
+  - 备份：`Backups\plugin-upgrade-20261120\`（package.json / pnpm-lock.yaml / ledger.json.bak / `dsh-bili-scroll-index.js.patched-2.2.2`）。
+  - 升级后核过：`dsh-startup-secret` splash.js 指纹仍是 **691468D666BC1C95**（毛先生没丢）；video-skin 补丁仍在（resolveAsset 3 处 + 指纹逻辑）；profile 依赖只有这 3 个版本变了，bundles 列表完整。
+  - 中途插曲：先试了 `plugin_updates_auto_update` 自动升级 cost-meter，**失败**（`INSTALL_FAILED`）——真因是 pnpm 重装时 `dsh-qq-bridge` 的 GitHub tarball 与 lockfile 里的 integrity 对不上（`ERR_PNPM_TARBALL_INTEGRITY`），跟 cost-meter 无关。**自动更新开关已关回去**（当前 disabled）；remove+install 的增量路径不碰那个 tarball，所以才通。
+  - 待办：**重启一次**验三样——fish-memory 召回（最该记住的能想起来）/ cost-meter 数字与峰谷 / bili-scroll 面板与日报；bili-scroll 升级后设置项建议看一眼还在不在。
+- **本地文件栏小改（客户端 v1.5）**：「↑ 上一级」从顶栏挪到左边列表头，排在 D:/E: 盘符按钮左边；顶栏只留盘符切换。
+
 - **2026-11-20 下午 · 工作台 v0.1 半成品已装上** —— 插件 `@local/bluefish-workbench`（源码 `E:\AFishPower\Plugin\bluefish-workbench`，链接装进 profile）。客户端在会话顶栏注册了一个「工作台」View（实测 `id: bluefish-workbench, order 25, active: true`）；宿主路由 `/bluefish-workbench/overview` 实测 200，返回今日花费 ¥5.88 / 42 笔 + 5 张项目卡 + 成员/任务读数。装完三个补丁指纹未变。**还没做**：余额来源、卡片数据真实化、5 个控制键、过场动画、紫色网格背景。
 - **2026-11-20 傍晚 · 工作台 v0.2** —— ① 全屏覆盖层（`shell.overlay` + `requestFullscreen`，任务栏会消失）+ 左侧工作台列表（照参考样式：状态行 + 两个状态点）；② 一场景一页：文件窗 + 预览窗 + 折叠开关卡（文件/预览能用，网页/SSH/手机预览标「未接」）；③ 宿主新增 `/files` `/file` 两条只读接口，限制在项目根目录内；④ **数据搬出代码**：`$DSH_HOME\bluefish-workbench\projects\<id>\状态.json` + `项目信息.md`（≤25KB / 交接 ≤4KB），改文件 = 改卡片，不用重装。宿主 v0.3 待重启生效。
 - **2026-11-20 00:0x · 两处补丁的活体验证，3/4 已过** —— 背景：已证明页面运行时活着、轮换改配置后没被拆层（证据在文末「换房间前交接」的追加里）；只剩「肉眼看到画面」一项，等 DSH 窗口从任务栏恢复。启动画面：补丁在位、语法过，只能等下次启动看图。

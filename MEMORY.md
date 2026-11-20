@@ -30,8 +30,9 @@
 - **记忆系统**：本文件每轮注入，硬上限 8000 字；旧事在 `MEMORY-archive.md`，靠第四节索引 + grep 找。
 - **小鱼工作台**：DSH 插件 `@local/bluefish-workbench`（源码 `E:\AFishPower\Plugin\bluefish-workbench`，link 装）。会话顶栏「工作台」→ 全屏层：左列表 + 控制室 + 项目页 + 本地文件栏（D:/E: 只读）。数据在 `$DSH_HOME\bluefish-workbench\projects\<id>\`：`状态.json`（状态/接手人/接手记录）+ `项目信息.md`（一句话/交接三条/约定与坑），改文件 10 秒内刷新。宿主 v0.9：`/overview` `/profile?id=` `/claim` `/handover` `/project`(POST) `/browse` `/exec`(POST) `/files` `/file` `/raw`；界面搜索/筛选/新建/深浅/圆卡/背景/列数/刷新/体检/快捷键全接通（偏好存 localStorage）。
 - **交接速览**：`BlueFish的日记\交接速览.md`（脚本 `生成交接速览.mjs` 从工作台数据生成：每个项目谁在跟/做到哪/卡在哪）。**换会话开工先读它**——项目信息.md 不在注入层，这一页才是跨会话交接的入口。
+- **插件版本（2026-11-20 升）**：fish-memory 1.6.0→1.6.3、cost-meter 1.9.41→1.9.80、bili-scroll 2.2.2→2.5.2。**DSH 保持 0.2.1-rc.3 不用升**（这三个要求最高才 >=0.2.1-rc.2）；better-sidebar 0.30+ 和 dsh-mobile 0.8.x 要 0.2.2 线，所以没升。备份 `Backups\plugin-upgrade-20261120\`。
 - **刷B站**：只私信（dmMode=only，UID 552164191），perDay=8，峰谷开。报告在 `C:\Users\FIshKiller\.dsh\bili-duty\out\`，归档在 `digest/`。
-- **bili-scroll 本地补丁**：saveCfg/loadCfg 两处 + 失败重试（lastWindowKey / exit 撤销）。升级会覆盖，改了要重打；备份 `index.js.bak-20261116`。
+- **bili-scroll 2.5.2**（2026-11-20 升）：官方已内建 `windowTries` 失败重试，**我们以前的 lastWindowKey/saveCfg 本地补丁不用再打**（新版代码里已无 lastWindowKey）。升级前旧补丁备份在 `Backups\plugin-upgrade-20261120\`。
 - **《记井》**（原「像素地牢」）：定位改成「以记/墨/笔世界观为核心的完整独立游戏」，世界观优先、玩法服务世界观；要从 Python 原型换到能撑起完整游戏的引擎（我的建议是 Godot 4），走体系化开发——先 GDD 再写代码。进度见 `记井/docs/进度总结_20261119.md`（项目目录：`E:\python\期末大作业\记井`）。**当前优先于期末大作业。**
 - **期末大作业**：坦克大战已完成；剩打包前补跑「模拟老师环境」测试、根目录排序美化。
 - **减脂**：180cm / 215 斤 → 180 斤；2200–2300 kcal、蛋白 130–160g；吃饭提醒已关，不再催。
