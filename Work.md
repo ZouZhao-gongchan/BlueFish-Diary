@@ -74,6 +74,12 @@
 - 顺手修掉弹窗说明里漏出来的 markdown 星号（`**已经存在**`）。
 - 验收加一项 → **26 项全 PASS**（`/dirs 目录选择器 — 78 个文件夹`）；渲染冒烟加断言（点「浏览…」→ 出现 pics 文件夹 → 点进去 →「选这个目录」→ 路径框回填 `E:\pics`），18 组件 0 抛错。
 
+### v3.8 顶栏上下文容量 + 侧栏拖动排序（2026-11-20 23:5x）
+
+- **顶栏 CTX 表**（放右上角那排按钮里，不占内容区）：`CTX ▓▓ 59.6%`，4px 细条 + 数字；60% 起黄、85% 起红；悬停看 `610k / 1048k · deepseek-flash`。数据来自新接口 `GET /context`——取最近一次模型请求的 `input+cacheRead+cacheWrite` tokens 当占用，窗口取事件里的 `contextWindow`，2 秒缓存、每 15 秒刷。
+- **侧栏拖动排序**：项目行按住可拖（`cursor:grab`，拖动行半透明、目标行顶部亮蓝线），松手 `POST /order` 把顺序写进各项目 `状态.json` 的 `order`（10/20/30…），刷新后保持；控制室和本地文件两行不参与拖。
+- 验收加一项 → **27 项全 PASS**（`/context 上下文容量 — 59.6% / 1048576`）；渲染冒烟 20 组件 0 抛错，断言 `[CTX] 顶栏上下文表=true`、`[拖拽排序] 触发 /order=true`。
+
 ### 代码与生效
 
 - 客户端 **v2.7** `client.js`（~150KB）：新增 `HudFrame / StatusLight / CardCorners / Console / TeamPanel` + `useChat / useTeam`；新偏好键 `skin`（hud / glass），控制室「皮肤」键切换。
