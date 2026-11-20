@@ -114,6 +114,13 @@
 - 验收 **32 项全 PASS**（新增 /sessions 89 个、/talkto 坏 id 400、/shot 只认 POST）；渲染冒烟断言 `[会话绑定] 切换按钮=true/截图按钮=true/选中后 POST /talkto=true`，20 组件 0 抛错。
 - 宿主升到 **v2.0**（chat/activity 支持 ?session=、新增 /sessions /talkto /shot）。
 
+### v4.4 截图框选（2026-11-20 24:5x）
+
+- 阿冉选 a（框选区域，不是 OCR）：点「⛶ 截图」→ 截全屏 → 弹出全屏裁剪层，按住左键拖一个矩形（框外压暗）→「✓ 用框选区域」把那一块放进待发图片；另有「整屏用」「取消」。
+- 坐标换算：框选是在显示尺寸上量的，确认时按 `naturalWidth / width` 比例换算回原图像素，再用 canvas 裁剪 —— 发给小鱼的是原分辨率清晰度。
+- 钩子顺序这次特意核过：`crop/sel/cropImgRef/cropDrag` 都声明在 `if (!props.open && !embedded) return null` 之前（v3.9 的教训）。
+- 渲染冒烟 0 抛错（20 组件）；验收维持 **32/32**（截图接口只验了形状与安全闸，真截屏要人点）。
+
 ### 代码与生效
 
 - 客户端 **v2.7** `client.js`（~150KB）：新增 `HudFrame / StatusLight / CardCorners / Console / TeamPanel` + `useChat / useTeam`；新偏好键 `skin`（hud / glass），控制室「皮肤」键切换。
