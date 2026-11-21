@@ -23,7 +23,7 @@
 
 ## 三、现在
 
-- **小鱼工作台**（v5.1 / 宿主 v2.2）：DSH 插件 `@local/bluefish-workbench`，源码 `E:\AFishPower\Plugin\bluefish-workbench`（独立 git 仓库 → `git@github.com:ZouZhao-gongchan/bluefish-workbench.git`，private）。
+- **小鱼工作台**（v5.2 / 宿主 v2.4）：DSH 插件 `@local/bluefish-workbench`，源码 `E:\AFishPower\Plugin\bluefish-workbench`（独立 git 仓库 → `git@github.com:ZouZhao-gongchan/bluefish-workbench.git`，private）。
   **细节全在 `Work.md` 顶部「🐟 小鱼工作台 · 交接」那节**（版本 / 接口 / 能力 / 坑 / 边界 / 下一步 / 改法三条命令）。
   **改之前先读 `收纳\02-文档\设计\工作台-修改指标.md`**：写给人用的，不是给日志看的；三条底线=不打断使用者 / 中文优先 / 写清干什么。
   改完必跑两道闸：`工作台验收.mjs`（44/44）+ `%TEMP%\wb_test\test_client_render.mjs`（错误数 0）。
