@@ -13,8 +13,8 @@
 
 ### 一句话状态
 
-**v5.2 / 宿主 v2.4**。活体验收 **44 项全 PASS**，渲染冒烟 **30 组件 0 抛错**。
-能做：HUD 皮肤、四宫格项目页、内嵌对话（发图 / 发任意文件 / `/` 指令 / `@` 文件 / **每条回复带本轮费用**）、**浮窗（可拖 / 右下角可缩放 / 可全屏 / 可丢进右侧格子）**、**右侧工具栏（全局截图 / GitHub）**、**链接悬停预览卡**、**GitHub 面板**（公开 + **私有**仓库列表 / README / commits / issue；走宿主代理，**token 只在主进程**，前端拿不到）、dock 放大、状态条看步骤 + **点开看每步输出**、任务板 + 派单、待验收条、会话选择器（认人 / 搜索 / 一键开工 / 轻确认）、花费闸、快捷卡片、点路径复制、**终端流式**、HTML 渲染预览。
+**v5.3 / 宿主 v2.4**。活体验收 **44 项全 PASS**，渲染冒烟 **30 组件 0 抛错**。
+能做：HUD 皮肤、四宫格项目页、内嵌对话（发图 / 发任意文件 / `/` 指令 / `@` 文件 / **每条回复带本轮费用**）、**浮窗（可拖 / 右下角可缩放 / 可全屏 / 可丢进右侧格子）**、**右侧工具栏（全局截图 / GitHub）**、**链接悬停预览卡**、**GitHub 面板**（公开 + **私有**仓库列表 / README / commits / issue；走宿主代理，**token 只在主进程**，前端拿不到）、**窗口控件安全区**（自动避开 DSH 窗口按钮那一行，抽屉/浮窗都让位）、dock 放大、状态条看步骤 + **点开看每步输出**、任务板 + 派单、待验收条、会话选择器（认人 / 搜索 / 一键开工 / 轻确认）、花费闸、快捷卡片、点路径复制、**终端流式**、HTML 渲染预览。
 
 ### 派单（2026-11-21 起：这间只调度，不直接改代码）
 
@@ -25,6 +25,7 @@
 - **2026-11-21 02:1x 第一次派单跑通**（已验）：派「浮窗缩放 + 链接悬停预览卡」→ 工位收单 → 中间报进度 → 改完回执（带行号范围 / 8 条新断言 / 两道闸数字）。**这间亲自复核**：`node --check` exit 0、验收 44/44、冒烟 29 组件 0 错、`data-bfw-win` 确实挪到了 props。**结论：交接成立，以后照这套派。**
 - **2026-11-21 中午第二单**（GitHub 面板）：派单里让它**先探 CSP 再动手** → 它探出页面没有 CSP 头，选了纯前端直连 `api.github.com`，`index.js` 一个字没动。v5.1 / 30 组件。本间复核：`node --check` exit 0、验收 44/44、6 条 GitHub 断言全 true、`git status` 确认只改了 client.js。
 - **2026-11-21 中午第三单**（私有仓库）：派「宿主代理 + token 落地」→ 工位改 `index.js` v2.4 + `client.js` v5.2，热重载后**真机验证**。本间复核：`node --check` 双 0、44/44、30 组件 0 错、真机 4 仓库（2 私有）/ `cached=true` / `/evil` → 400；安全扫描确认提交里没有 token（只有代码里的正则前缀）。**三单全部跑通，派单流程定型。**
+- **2026-11-21 下午第四单**（窗口控件避让）：阿冉报「GitHub 刷新点不动 + 非全屏和 DSH 窗口按钮相撞」→ 我判断是同一根因，工位扒 `app.asar` 发现**按钮是 Electron 原生控件、不在 DOM 里**，于是做了「DOM 探针 + DSH 标记兜底」两级探测。本间复核：`node --check` 双 0、44/44、30 组件 0 错、7 条窗口控件断言全过，且 asar 里那套标记是真的。**待办：兜底 40 → 42**（主进程实际 42）。
 
 ### 怎么改（三条命令）
 
@@ -51,6 +52,7 @@ node "%TEMP%\wb_test\test_client_render.mjs"                          → 应「
 10. **修掉老 bug**：`data-bfw-win` 以前误写在 `style` 对象里（React 不会把它变 DOM 属性），`querySelector` 永远找不到节点 → 拖动/缩放其实一直「松手才跳位」。已挪到 props（client.js 2305–2307 有注释），拖动才真·丝滑。
 11. **GitHub 面板**（2026-11-21 中午，工位改）：右侧工具栏 `⟨⟩` → 抽屉（宽 420）→ 仓库列表（名字 / `Private` 标 / 描述 / 语言 / 「N 天前推过」）→ 点开看 README 前 40 行 + 最近 5 条提交 + 未关 issue。8 秒 AbortController 超时、5 分钟内存缓存、「刷新」才绕缓存；失败态带「点这去浏览器看」。**纯前端直连 `api.github.com`，`index.js` 没动。**
 12. **私有仓库可见**（2026-11-21 中午第三单）：面板改走宿主代理 `GET /github?path=&refresh=` —— 宿主读 `E:\Agent-bluefish\Save\dsh-home\bluefish-workbench\github-token.txt`（`#` 注释 + 一行 token，只读 fine-grained），加 `Authorization` 转发 `api.github.com`；5 分钟缓存、8 秒超时、**白名单只放 `/user` `/users/` `/repos/` `/rate_limit`**（防 SSRF）。前端只打本地路由，**token 不进浏览器 / 日志 / 响应 / commit**。没 token 时降级看公开仓库 + 顶部提示。真机：4 个仓库（2 私有）、`cached=true`、`/evil` → 400。
+13. **窗口控件安全区**（2026-11-21 下午第四单，修「GitHub 刷新点不动 + 和 DSH 窗口按钮相撞」）：两级探测 —— ① DOM 探针（右上角 4×3 点，找 fixed 按钮组）② **DSH 桌面原生兜底**：按钮是 Electron `titleBarOverlay`（**不在 DOM 里**），DSH 自己写 `<html data-windows-titlebar>` + `--dsh-windows-titlebar-height`，全屏时有 `data-fullscreen`。探到后写 CSS 变量 `--bfw-winctl-w/h`，**整条抽屉从按钮行下面开始**（`paddingTop`），抽屉头再让右侧（`paddingRight`）。浏览器版/全屏时自动回 0。
 
 ### 宿主接口（全部 `/bluefish-workbench/` 下，exact + query）
 
@@ -76,6 +78,7 @@ node "%TEMP%\wb_test\test_client_render.mjs"                          → 应「
 10. **测试不许拿真实会话投递**：会留下指向已删文件的坏图消息。测截图只测 `/shot`，不 `/prompt`。
 11. 会话绑定误点会改配置：现在点行只是选中，要再点「确认切换」（双击直切）。
 12. **`data-*` 属性必须写在 props 上，写进 `style` 对象里不会变成 DOM 属性**。`data-bfw-win` 栽过一次（见凌晨第 10 条），改这类定位属性前先看冒烟里那条「误写在 style 里=false」的守卫。
+13. **DSH 的窗口按钮不在 DOM 里**：Windows 走 Electron `titleBarOverlay`（主进程 `height: 42`），`document.elementsFromPoint` 永远探不到。要避让只能读 DSH 自己给的标记：`<html data-windows-titlebar>` + 内联 `--dsh-windows-titlebar-height`（preload 的 `syncWindowsAppearance()` 写的），全屏时有 `data-fullscreen` → 按钮消失、安全区回 0。**别写死像素猜按钮宽度**，高度整行让开就够。
 
 ### 已知边界
 
@@ -86,6 +89,7 @@ node "%TEMP%\wb_test\test_client_render.mjs"                          → 应「
 - 没做 OCR。
 - **GitHub 面板**：有 token 看全部（含私有）；token 在 `E:\Agent-bluefish\Save\dsh-home\bluefish-workbench\github-token.txt`（只读 fine-grained），**只在宿主进程读**，不进 git / 浏览器 / 日志。没 token 自动降级看公开仓库。
 - GitHub API 带 token 后 5000 次/小时（没 token 是 60），面板有 5 分钟缓存，别狂点刷新。
+- **DSH 窗口按钮是原生控件**（Electron `titleBarOverlay`，主进程实际 `height: 42`）：工作台探到标记就整行让开；浏览器版/全屏自动回 0。工位原生兜底写的是 40，读得到 `--dsh-windows-titlebar-height` 时以变量为准，差 2px 只在读不到变量时出现——**下次派单顺手改成 42**。
 
 ### 下一步候选（等阿冉挑）
 
