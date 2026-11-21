@@ -13,7 +13,7 @@
 
 ### 一句话状态
 
-**v5.3 / 宿主 v2.4**。活体验收 **44 项全 PASS**，渲染冒烟 **30 组件 0 抛错**。
+**v5.5 / 宿主 v2.4**。活体验收 **44 项全 PASS**，渲染冒烟 **30 组件 0 抛错**。
 能做：HUD 皮肤、四宫格项目页、内嵌对话（发图 / 发任意文件 / `/` 指令 / `@` 文件 / **每条回复带本轮费用**）、**浮窗（可拖 / 右下角可缩放 / 可全屏 / 可丢进右侧格子）**、**右侧工具栏（全局截图 / GitHub）**、**链接悬停预览卡**、**GitHub 面板**（公开 + **私有**仓库列表 / README / commits / issue；走宿主代理，**token 只在主进程**，前端拿不到）、**窗口控件安全区**（自动避开 DSH 窗口按钮那一行，抽屉/浮窗都让位）、dock 放大、状态条看步骤 + **点开看每步输出**、任务板 + 派单、待验收条、会话选择器（认人 / 搜索 / 一键开工 / 轻确认）、花费闸、快捷卡片、点路径复制、**终端流式**、HTML 渲染预览。
 
 ### 派单（2026-11-21 起：这间只调度，不直接改代码）
@@ -26,6 +26,7 @@
 - **2026-11-21 中午第二单**（GitHub 面板）：派单里让它**先探 CSP 再动手** → 它探出页面没有 CSP 头，选了纯前端直连 `api.github.com`，`index.js` 一个字没动。v5.1 / 30 组件。本间复核：`node --check` exit 0、验收 44/44、6 条 GitHub 断言全 true、`git status` 确认只改了 client.js。
 - **2026-11-21 中午第三单**（私有仓库）：派「宿主代理 + token 落地」→ 工位改 `index.js` v2.4 + `client.js` v5.2，热重载后**真机验证**。本间复核：`node --check` 双 0、44/44、30 组件 0 错、真机 4 仓库（2 私有）/ `cached=true` / `/evil` → 400；安全扫描确认提交里没有 token（只有代码里的正则前缀）。**三单全部跑通，派单流程定型。**
 - **2026-11-21 下午第四单**（窗口控件避让）：阿冉报「GitHub 刷新点不动 + 非全屏和 DSH 窗口按钮相撞」→ 我判断是同一根因，工位扒 `app.asar` 发现**按钮是 Electron 原生控件、不在 DOM 里**，于是做了「DOM 探针 + DSH 标记兜底」两级探测。本间复核：`node --check` 双 0、44/44、30 组件 0 错、7 条窗口控件断言全过，且 asar 里那套标记是真的。**待办：兜底 40 → 42**（主进程实际 42）。
+- **2026-11-21 下午第五单**（GitHub 端点 + 手感）：阿冉报「列表只有 2 个、没见到工作台仓库」。我先验宿主（`/github` 返回 4 个正常），再对比端点 —— `/users/名字/repos` **只回 2 个公开**，`/user/repos` **回 4 个含 2 私有**，根因坐实。工位改端点 + `.bfw-btn` 按下手感（填色 + 下沉）+ 卡片补 star/未关 issue + 底部汇总，版本 v5.5。本间复核：`node --check` 0、44/44、30 组件 0 错、11 条 GitHub 断言全 true、真机 4 仓库。
 
 ### 怎么改（三条命令）
 
@@ -53,6 +54,7 @@ node "%TEMP%\wb_test\test_client_render.mjs"                          → 应「
 11. **GitHub 面板**（2026-11-21 中午，工位改）：右侧工具栏 `⟨⟩` → 抽屉（宽 420）→ 仓库列表（名字 / `Private` 标 / 描述 / 语言 / 「N 天前推过」）→ 点开看 README 前 40 行 + 最近 5 条提交 + 未关 issue。8 秒 AbortController 超时、5 分钟内存缓存、「刷新」才绕缓存；失败态带「点这去浏览器看」。**纯前端直连 `api.github.com`，`index.js` 没动。**
 12. **私有仓库可见**（2026-11-21 中午第三单）：面板改走宿主代理 `GET /github?path=&refresh=` —— 宿主读 `E:\Agent-bluefish\Save\dsh-home\bluefish-workbench\github-token.txt`（`#` 注释 + 一行 token，只读 fine-grained），加 `Authorization` 转发 `api.github.com`；5 分钟缓存、8 秒超时、**白名单只放 `/user` `/users/` `/repos/` `/rate_limit`**（防 SSRF）。前端只打本地路由，**token 不进浏览器 / 日志 / 响应 / commit**。没 token 时降级看公开仓库 + 顶部提示。真机：4 个仓库（2 私有）、`cached=true`、`/evil` → 400。
 13. **窗口控件安全区**（2026-11-21 下午第四单，修「GitHub 刷新点不动 + 和 DSH 窗口按钮相撞」）：两级探测 —— ① DOM 探针（右上角 4×3 点，找 fixed 按钮组）② **DSH 桌面原生兜底**：按钮是 Electron `titleBarOverlay`（**不在 DOM 里**），DSH 自己写 `<html data-windows-titlebar>` + `--dsh-windows-titlebar-height`，全屏时有 `data-fullscreen`。探到后写 CSS 变量 `--bfw-winctl-w/h`，**整条抽屉从按钮行下面开始**（`paddingTop`），抽屉头再让右侧（`paddingRight`）。浏览器版/全屏时自动回 0。
+14. **GitHub 列表能看私有仓库了**（第五单，v5.5）：真凶是**端点选错**——原来用 `/users/{名字}/repos`，这个端点**天生只返回公开仓库，带 token 也一样**；改成 `/user/repos?per_page=20&sort=pushed&affiliation=owner` 才包含私有。卡片补 ★ star + 未关 issue，底部加「共 N 个仓库 · 在 GitHub 打开全部」，卡片 hover 有反馈。按钮统一 `.bfw-btn`（hover 边框亮 / `:active` 填色 + `translateY(1px) scale(0.98)`）。抽屉头显示 **`v5.5 · token ✓`** 自诊断行。
 
 ### 宿主接口（全部 `/bluefish-workbench/` 下，exact + query）
 
@@ -79,6 +81,8 @@ node "%TEMP%\wb_test\test_client_render.mjs"                          → 应「
 11. 会话绑定误点会改配置：现在点行只是选中，要再点「确认切换」（双击直切）。
 12. **`data-*` 属性必须写在 props 上，写进 `style` 对象里不会变成 DOM 属性**。`data-bfw-win` 栽过一次（见凌晨第 10 条），改这类定位属性前先看冒烟里那条「误写在 style 里=false」的守卫。
 13. **DSH 的窗口按钮不在 DOM 里**：Windows 走 Electron `titleBarOverlay`（主进程 `height: 42`），`document.elementsFromPoint` 永远探不到。要避让只能读 DSH 自己给的标记：`<html data-windows-titlebar>` + 内联 `--dsh-windows-titlebar-height`（preload 的 `syncWindowsAppearance()` 写的），全屏时有 `data-fullscreen` → 按钮消失、安全区回 0。**别写死像素猜按钮宽度**，高度整行让开就够。
+14. **GitHub API 两个端点差别很大**：`/users/{名字}/repos` **只返回公开仓库**（带 token 也一样）；`/user/repos` 才是「当前认证用户的全部仓库」（含私有），记得带 `affiliation=owner`。这个坑让我们多绕了两轮——「看不到私有仓库」先查端点，再怀疑 token。
+15. **DSH 里刷新页面用 Ctrl+R**（或菜单「重新加载」/「刷新页面」）：asar 主进程只注册了 `reload()`，**没有 `forceReload`/`reloadIgnoringCache`**，所以 Ctrl+F5 不一定有用。改了 client.js 先 Ctrl+R，还不对就 `plugin_manager` disable→enable 强重载插件。
 
 ### 已知边界
 
