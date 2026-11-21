@@ -2,9 +2,10 @@
 
 > 留给工作用的地方。想到什么先记下来，做完的移到「已完成」，不用讲究格式。
 
-## 🐟 小鱼工作台 · 交接（2026-11-21 02:0x，最新，先读这一节）
+## 🐟 小鱼工作台 · 交接（2026-11-21 中午更新，最新，先读这一节）
 
-> 压缩前写的整页交接。下面 v2.8 那节是历史，**以这一节为准**。
+> 压缩前写的整页交接 + 中午两单后续。下面 v2.8 那节是历史，**以这一节为准**。
+> **插件现在有自己的 git 仓库**（2026-11-21 立）：`E:\AFishPower\Plugin\bluefish-workbench` → `git@github.com:ZouZhao-gongchan/bluefish-workbench.git`（**private**，main）。改完记得 `git add -A && git commit && git push`，改坏了能回滚。
 > **三份参考文档**（工作台 → 收纳 → 02-文档 → 设计）：
 > - `工作台-修改指标.md` —— **改之前先读**。三条底线：不打断使用者 / 中文优先 / 写清干什么。
 > - `工作台-框架图.html` —— 四层骨架：外壳 / 引擎 / 场景 / 体检 + 六步链路。
@@ -12,8 +13,8 @@
 
 ### 一句话状态
 
-**v4.9 / 宿主 v2.2**。活体验收 **44 项全 PASS**，渲染冒烟 **29 组件 0 抛错**。
-能做：HUD 皮肤、四宫格项目页、内嵌对话（发图 / 发任意文件 / `/` 指令 / `@` 文件 / **每条回复带本轮费用**）、**浮窗（可拖 / 右下角可缩放 / 可全屏 / 可丢进右侧格子）**、**右侧工具栏（全局截图）**、**链接悬停预览卡**、dock 放大、状态条看步骤 + **点开看每步输出**、任务板 + 派单、待验收条、会话选择器（认人 / 搜索 / 一键开工 / 轻确认）、花费闸、快捷卡片、点路径复制、**终端流式**、HTML 渲染预览。
+**v5.1 / 宿主 v2.2**。活体验收 **44 项全 PASS**，渲染冒烟 **30 组件 0 抛错**。
+能做：HUD 皮肤、四宫格项目页、内嵌对话（发图 / 发任意文件 / `/` 指令 / `@` 文件 / **每条回复带本轮费用**）、**浮窗（可拖 / 右下角可缩放 / 可全屏 / 可丢进右侧格子）**、**右侧工具栏（全局截图 / GitHub）**、**链接悬停预览卡**、**GitHub 面板**（公开仓库列表 + README / commits / issue，直连 `api.github.com`，不联网代理）、dock 放大、状态条看步骤 + **点开看每步输出**、任务板 + 派单、待验收条、会话选择器（认人 / 搜索 / 一键开工 / 轻确认）、花费闸、快捷卡片、点路径复制、**终端流式**、HTML 渲染预览。
 
 ### 派单（2026-11-21 起：这间只调度，不直接改代码）
 
@@ -22,6 +23,7 @@
 - **怎么收**：读它 /chat?session=<id> 近几条，**核对证据**（验收数字 / 文件字节 / 路径）再转述；没回就说没回，不假装干了
 - **别越界**：这间不直接改 client.js / index.js、不跑验收——那是工位的活
 - **2026-11-21 02:1x 第一次派单跑通**（已验）：派「浮窗缩放 + 链接悬停预览卡」→ 工位收单 → 中间报进度 → 改完回执（带行号范围 / 8 条新断言 / 两道闸数字）。**这间亲自复核**：`node --check` exit 0、验收 44/44、冒烟 29 组件 0 错、`data-bfw-win` 确实挪到了 props。**结论：交接成立，以后照这套派。**
+- **2026-11-21 中午第二单**（GitHub 面板）：派单里让它**先探 CSP 再动手** → 它探出页面没有 CSP 头，选了纯前端直连 `api.github.com`，`index.js` 一个字没动。v5.1 / 30 组件。本间复核：`node --check` exit 0、验收 44/44、6 条 GitHub 断言全 true、`git status` 确认只改了 client.js。
 
 ### 怎么改（三条命令）
 
@@ -32,6 +34,7 @@
 node "E:\Agent-bluefish\working\收纳\01-脚本\DSH维护\工作台验收.mjs"   → 应 44/44
 node "%TEMP%\wb_test\test_client_render.mjs"                          → 应「错误数: 0」
 ```
+- **改完提交**：插件目录是独立 git 仓库（private），`git add -A && git commit -m "..." && git push` 推上去，改坏了能回滚
 
 ### 2026-11-21 凌晨这批（最新，已在里面）
 
@@ -45,6 +48,7 @@ node "%TEMP%\wb_test\test_client_render.mjs"                          → 应「
 8. 快捷卡片 / 点路径复制 / 花费闸（软线 ¥8、硬线 ¥12）/ 一句话开工 / 会话选择器轻确认
 9. **浮窗右下角缩放**（12×12 手柄，双击回默认 760×580，全屏不出手柄，尺寸存 sessionStorage）+ **链接悬停预览卡**（网址看域名+路径，本机路径看文件名+类型+大小，不联网）——**2026-11-21 02:1x 由工位会话改的**
 10. **修掉老 bug**：`data-bfw-win` 以前误写在 `style` 对象里（React 不会把它变 DOM 属性），`querySelector` 永远找不到节点 → 拖动/缩放其实一直「松手才跳位」。已挪到 props（client.js 2305–2307 有注释），拖动才真·丝滑。
+11. **GitHub 面板**（2026-11-21 中午，工位改）：右侧工具栏 `⟨⟩` → 抽屉（宽 420）→ 仓库列表（名字 / `Private` 标 / 描述 / 语言 / 「N 天前推过」）→ 点开看 README 前 40 行 + 最近 5 条提交 + 未关 issue。8 秒 AbortController 超时、5 分钟内存缓存、「刷新」才绕缓存；失败态带「点这去浏览器看」。**纯前端直连 `api.github.com`，`index.js` 没动。**
 
 ### 宿主接口（全部 `/bluefish-workbench/` 下，exact + query）
 
@@ -53,7 +57,7 @@ node "%TEMP%\wb_test\test_client_render.mjs"                          → 应「
 
 ### 客户端结构
 
-`client.js` ~291KB / v4.9（6866 行）：`WorkbenchOverlay`（state 全在这）→ `Overview`（控制室）/ `Scene`（项目页）/ `Console`（对话）/ `TeamPanel`（任务板）/ `FloatWin` + `WinDock` + `SideTools`（浮窗 / 收纳格 / 工具栏）/ `LinkTipCard`（链接悬停预览）/ `CostMeter` + `CtxMeter`（顶栏）/ `SessionPicker` / `FilePreview` / `DirPicker` / `LocalFiles` / `Terminal` / `ChatImg`。
+`client.js` ~305KB / v5.1（7178 行）：`WorkbenchOverlay`（state 全在这）→ `Overview`（控制室）/ `Scene`（项目页）/ `Console`（对话）/ `TeamPanel`（任务板）/ `GitHubPanel`（GitHub 抽屉）/ `FloatWin` + `WinDock` + `SideTools`（浮窗 / 收纳格 / 工具栏）/ `LinkTipCard`（链接悬停预览）/ `CostMeter` + `CtxMeter`（顶栏）/ `SessionPicker` / `FilePreview` / `DirPicker` / `LocalFiles` / `Terminal` / `ChatImg`。
 宿主 `index.js` ~95KB / v2.2：`loadProjects` / `readChat`（带每轮费用）/ `readActivity`（带步骤输出）/ `readCost` / `readCommands` / `runCommand` / `listRefs` / `saveInboxFile` / `claimPrompt` + 各路由。
 
 ### 踩过的坑（都别再踩）
@@ -78,6 +82,8 @@ node "%TEMP%\wb_test\test_client_render.mjs"                          → 应「
 - **终端是流式一次性命令**：不能交互、`cd` 不保留、不能 Ctrl+C、不能跑 REPL。真 PTY 要接 DSH 的 `terminals` / `terminalController`（还没做）。
 - 浮窗内容按类型渲染（html / pdf / 图片 / 文本 / 网页），其它类型提示用预览面板。
 - 没做 OCR。
+- **GitHub 面板只看公开仓库**（不带 token）：`bluefish-workbench` 自己是 private，不会出现在面板里。要看私有仓库得加只读 token，存哪、怎么存得先跟阿冉商量。
+- GitHub API 60 次/小时按 IP 算，面板有 5 分钟缓存，别狂点刷新。
 
 ### 下一步候选（等阿冉挑）
 
@@ -86,6 +92,7 @@ node "%TEMP%\wb_test\test_client_render.mjs"                          → 应「
 - 控制室数字点击跳转
 - 浮窗四边缩放（现在只做了右下角）
 - 链接预览卡联网抓网页标题（现在纯本地）
+- GitHub 面板加只读 token（看私有仓库；token 存哪先跟阿冉商量）
 
 ### 压缩后第一句
 
