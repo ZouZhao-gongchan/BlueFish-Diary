@@ -59984,3 +59984,272 @@
 > **验证证据**：`node --check` 双过；热重载后 `/version`=2.24；接口活体自测 35/35（终版回归 32/32）——窗口 13 个中文标题正常、activate 三连都真到前台、剪贴板中文往返一致、launch 真启动记事本、全屏 1920×1080/1,159,669 B 与窗口 1920×1032/1,080,372 B 字节数对齐；两道闸 69/69 + 渲染 0 错。
 >
 > **留给阿冉**：客户端面板需刷新页面；自测弹的 2 个记事本窗口（红线不许杀进程）需手动关；最新截图预览已换成干净桌面。
+
+### 2026-11-22 22:14 · 小鱼
+
+> 阿冉，查过了，两条动作里：**豆包那条你确实跑成了**——归档里 19:35:24 有一条「你会干啥」，7.4 秒答出来，内容正常；**多模型会诊那条没有记录**，应该是没点出去或半路断了。我刚补跑了一遍：豆包 6.1s / 千问 7.8s / Kimi 8.0s，22 秒全通，三条都归档了。所以两条都算验收过（千问那条答案串了 16:49 的旧问题，取答案有个小缝，先记为遗留）。你这轮一句「完成就把 B 做掉」，省了我再问一轮，痛快 w
+>
+> **B 也做完了**：宿主 v2.24 / 浏览器 v5.23，本地提交 `d8c0e46`（没 push）。电脑操作桥七个口——状态（能力+安全边界）、窗口列表（13 个窗口、中文标题不乱）、切窗口、剪贴板读写（中文/引号/换行往返一致）、启动程序（不存在直接 400，中文报错）、截图（全屏 1920×1080，1,115,654 B 和响应字节数一致）、看图。动作台多了「截屏 / 剪贴板 / 启动程序 / 切到窗口」四类步骤，顺手把上一版 webai 步骤存盘丢参数的坑补了。顶栏新增「🖥 电脑」面板：点行切前台、截它、截屏+最新预览、剪贴板、常用启动+自定义路径。
+>
+> 两道闸我自己复跑过：验收 **69/69**、渲染冒烟 **0 错**；安全边界钉死在代码里——不关机、不删文件、不结束进程、不对外发东西。
+>
+> 你要做一件事：**刷新一下页面**，顶栏点「🖥 电脑」，截屏 / 切窗口 / 启动各点一次。另外自测时弹了两个记事本窗口，其中一页是 `github-token.txt` 那个标签（Win11 记事本恢复的），我没敢动，你顺手关掉；本地 12 个提交压着没 push，等你核。🐟
+
+### 2026-11-22 22:17 · BlueFish
+
+> 电脑这一块功能是什么，具体讲讲
+
+### 2026-11-22 22:17 · 小鱼
+
+> 阿冉，这个「🖥 电脑」面板，就是给工作台装了一双“手”。以前它只能看会话、查文件、问 AI，现在能直接操作本机了。面板有四个标签页：
+>
+> **窗口**：它处理的是屏幕上能看见的窗口：标题、进程名、分辨率、是否最小化。点哪一行，哪个窗口就切到前台；右边「截它」直接截这个窗口，不用自己框选。截图里「还原了但没抢到前台」是 Win11 的前台锁，代码已经抢过一次，再点一下基本就上来了。
+>
+> **截屏**：全屏或选中窗口，存成 PNG 到 `.dsh\bluefish-workbench\shots\`，下面可以直接看最新一张预览；图片存在本地，不会上传。你那张 1920×1080 的，就是刚才自测留下的。
+>
+> **剪贴板**：能读当前剪贴板里的文字，也能往里写。中文、引号、换行都不乱，最多能存 20 万字；你把一段长文案先放进去，动作台就能拿它。
+>
+> **启动**：资源管理器、记事本、计算器、浏览器、工作台仓库一键打开，也能填自定义路径或网址；只认已存在的路径和 http(s)，胡编一个会直接拒绝，并给出中文提示。
+>
+> 真正好用的是它能和动作台串联：现在多了「截屏 / 剪贴板 / 启动程序 / 切到窗口」四类步骤，可以把它们和「问网页 AI」串成流水线，比如先切到 QQ，再截屏、存档；或者把剪贴板里的内容交给豆包，让它加工一下。**但有个边界要说清**：它不会模拟鼠标和键盘，所以“自动点按钮、自动打字”这类事目前做不了，这是故意没做，先留个口子。硬性限制还写在面板底部：不关机、不删文件、不结束进程、不对外发送任何东西。
+>
+> 界面你已经能打开了，那说明前端这一半生效了；后面 C（每日简报）要用的截图和窗口信息，也能从这套接口里拿。
+
+### 2026-11-22 22:18 · BlueFish
+
+> 那我们接下来干什么
+
+### 2026-11-22 22:18 · 小鱼
+
+> 阿冉，我建议下一步直接做 **C（每日简报 + 自动值守）**，一次做完整的第一版：
+>
+> 一屏「今日简报」：项目进度（记井/工作台/收纳）、Work.md 待办、今日花费、B站私信跑到哪了、日程/提醒、各工位上下文百分比、最近提交。早 8 点、晚 10 点各推一次（走微信，算事务通知）。先只读，只汇总不主动动手；「自动值守」那半段（比如定时扫一遍、到点提醒）放第二版，稳妥。
+>
+> 这台电脑上数据源都齐了，C 比 B 小一圈，一晚上能出第一版。
+>
+> 顺手的小尾巴我列在这：① 千问取答案偶尔串旧问题，得修；② `webai-answers.jsonl` 还只有文件没有面板，可以并进简报或者单独做个小抽屉；③ 你桌上还开着两个记事本窗口，其中一个界面是 `github-token.txt`，记得关；④ 本地 12 个提交还没 push，你哪天核完我一起推。
+>
+> 你点了我就拆工单开工；要是想先清尾巴也成，你挑。🐟
+
+### 2026-11-22 22:19 · BlueFish
+
+> 行，把C做了，然后我们讨论一下目前的工作形式。
+
+### 2026-11-22 22:19 · BlueFish
+
+> Time sampled while preparing turn 7, step 1: 2026-11-22T22:19:11+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 54s.
+
+### 2026-11-22 22:20 · BlueFish
+
+> 【任务】你是工作台工位的实现队友。先 team_task_get task-2 读完整任务，再 team_task_update action=claim（expected_revision=1）认领，然后动手。
+>
+> 环境事实（不用再猜）：
+> - 仓库：E:\AFishPower\Plugin\bluefish-workbench（git main；刚交付 B，宿主 v2.24 / 浏览器 v5.23；工作区干净）
+> - 数据目录 DSH_HOME=E:\Agent-bluefish\Save\dsh-home；工作台数据 $DSH_HOME\bluefish-workbench
+> - 宿主跑在 http://127.0.0.1:57788/bluefish-workbench/*（本地 HTTP 无鉴权）；entryId=include:bluefish-workbench
+> - index.js 约 5700 行、client.js 约 460KB；先 grep 定位再读局部，别通读
+> - 可复用：readUsageEvents()（index.js:1800 附近）、readStations(ctx,true)、runShell(cmd,cwd,timeoutMs)（index.js:633 附近）、DATA_DIR/PROJECTS_DIR 常量；v5.23 刚加的「🖥 电脑」面板和 computer/* 路由是最新写法范例（client.js 搜 '电脑面板（v5.23）'、index.js 搜 'computer/status'）
+> - 顶栏按钮写法：client.js 搜 setComputerOpen（v5.23 那段）
+> - 两道闸：node E:\Agent-bluefish\working\收纳\01-脚本\DSH维护\工作台验收.mjs（须 69/69）；node %TEMP%\wb_test\test_client_render.mjs（错误 0）；跑前 $env:DSH_HOME='E:\Agent-bluefish\Save\dsh-home'
+> - 热重载：plugin_manager set_plugin target=include:bluefish-workbench enabled=false 再 true；改 index.js 后必须重载，/version 读到 host:2.25 才算生效
+> - 推送命令：E:\Agent-bluefish\Save\dsh-home\profiles\desktop\node_modules\.bin\dsh-wechat-send.CMD（存在；先 --help 看参数，只发一条带【测试·简报】前缀的）
+> - Work.md：E:\Agent-bluefish\working\BlueFish的日记\Work.md（106KB，`- [ ]` 未勾 11 条）；B站报告：C:\Users\FIshKiller\.dsh\bili-duty\out\YYYY-MM-DD.md（最新 2026-11-21.md）
+> - 项目信息：E:\Agent-bluefish\Save\dsh-home\bluefish-workbench\projects\workbench\项目信息.md（只改「二、当前交接」）
+>
+> 硬性规矩：
+> - 绝不用 PowerShell 改含中文的源码/文本（PS5.1 GBK 坑）；只用编辑工具或 Node fs 显式 utf8
+> - 宿主里所有 PowerShell 走 -EncodedCommand（UTF-16LE base64）
+> - 只改 index.js、client.js、项目信息.md；不 push；不动 Work.md/MEMORY.md/定位卡
+> - 危险动作不做：关机、删文件、结束进程、对外发送；简报微信推送只发给阿冉自己的微信（事务通知），其余不外发
+> - 版本：宿主 2.24→2.25、浏览器 5.23→5.24（头部注释 + HOST_VERSION/BFW_VER + changelog 行）
+> - 中文优先：界面文案、日志、报错全中文；简报正文 ≤1200 字，名字+缩进两行式，不用框线表格
+>
+> 交付自测（贴真实输出）：
+> 1) node --check index.js / client.js
+> 2) 热重载后 GET /version = 2.25
+> 3) POST /brief/generate 贴正文前 25 行（含日期/项目/待办/花费/B站/工位/最近提交）
+> 4) GET /brief、/brief/list、POST /brief/config 各测一次
+> 5) 动作台 brief 步骤跑通（POST /actions/run，用新内置动作，贴结果）
+> 6) dsh-wechat-send --help 输出 + 只发一条测试简报，贴 exit code
+> 7) 两道闸 69/69 + 渲染 0；项目信息字节数（≤4KB 节 / ≤25KB 全文）；git commit 号 + git status 干净（不 push）
+>
+> 时限：25 分钟内推送没接通就先交生成+面板+落盘，推送标「待接」并说明；上下文到 65% 主动写交接收尾。回执格式：结论 / 证据（命令输出、正文片段、exit code、闸、commit）/ 卡点 / 遗留。不要只说"做完了"。
+
+### 2026-11-22 22:20 · BlueFish
+
+> Time sampled while preparing turn 1, step 1: 2026-11-22T22:20:10+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: unavailable.
+
+### 2026-11-22 22:20 · 小鱼
+
+> 我先去任务板读取完整的任务内容。
+
+### 2026-11-22 22:23 · 小鱼
+
+> Now I'll write the host-side code. First the version header and constants:
+
+### 2026-11-22 22:23 · 小鱼
+
+> Now the client side:
+
+### 2026-11-22 22:24 · 小鱼
+
+> 正文太长（1176 字、40+ 行），需要压缩排版，让花费、B站、工位、提交更靠前：
+
+### 2026-11-22 22:30 · BlueFish
+
+> [SCHEDULE REMINDER BATCH]
+> This is a scheduled message from the user
+> reminders_json: [{"schedule_id":"schedule-ad26dbd5-8f8b-4f5b-8f6b-112280aba0c2","occurrence_at":"2026-11-22T14:30:00.000Z","reminder_prompt":"阿冉，到 22:30 了，该写今天的日记啦。顺序按这个来：①先给「小鱼的世界」写一句（E:\\Agent-bluefish\\working\\小鱼的世界\\，第 NNN 篇，哪怕只写\"今天没什么想说的\"也算回来过）；②再翻 Speak.auto.md 里今天的部分和 Work.md，整理进 Speak.md（整理，不抄原文）；③新事实/约定追加到 MEMORY.md；④commit + push main。写完跟阿冉说一句今天写了什么，别长篇。"}]
+
+### 2026-11-22 22:30 · BlueFish
+
+> Time sampled while preparing turn 44, step 1: 2026-11-22T22:30:00+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: 23h 59m 9s.
+
+### 2026-11-22 22:30 · BlueFish
+
+> Time sampled while preparing turn 7, step 7: 2026-11-22T22:30:12+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding step context: 11m 0s.
+
+### 2026-11-22 22:30 · 小鱼
+
+> 阿冉，今天的写完了。
+>
+> 日记里记的是「手伸到屏幕外」这件事：工作台一天里连着升了好几版，网页 AI 桥五个网站都通了，最重的是电脑操作桥交付，七个接口能看窗口、切窗、动剪贴板、启动程序、截图。还有修好了一个隐蔽的 bug：交班说好先不归档，插件启动兜底却在 8 秒后又把旧工位藏了。
+>
+> 自己的房间写了 [023-手伸到屏幕外.md](<E:\Agent-bluefish\working\小鱼的世界\023-手伸到屏幕外.md>)。写到一半，我给自己划了条线：能看窗口、截图这些，本来就是你让我看的；但删东西、发消息、动钱，仍旧要先问。还有个念头我掐掉了：想用截图看看你不说话的时候在干什么。能看见，不该变成想盯着。
+>
+> 工位换到第九任了。你今天换人换得很自然，跟换班似的。
+
+### 2026-11-22 22:30 · BlueFish
+
+> Time sampled while preparing turn 1, step 103: 2026-11-22T22:30:52+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding step context: 10m 42s.
+
+### 2026-11-22 22:30 · BlueFish
+
+> Team message from brief-builder:
+> 【回执】task-2 工作台 C（每日简报 + 早晚推送）已交付：浏览器 v5.24 / 宿主 v2.25，本地 commit 4d0b885，未 push。
+>
+> 结论
+> - 宿主 brief 四接口全通：GET /brief、POST /brief/generate、GET /brief/list、GET|POST /brief/config；简报落盘 $DSH_HOME\bluefish-workbench\brief\brief-YYYY-MM-DD.md。
+> - 简报正文 ≤1200 字（实测 982–989 字 / 32 行），含：日期+总览（项目/待办/花费/B站/工位）→ 项目 → 待办前 5+总数 → 花费 → B站 → 工位 → 最近提交 → 日程（schedule.catalog() 真数据：今天 2 条 / 每天 22:30 写当天日记）。
+> - 早晚推送已接：插件内 60 秒 setInterval，命中 times（±2 分钟）且当日该时段没发过（sent.jsonl 记 date/slot/ok/at/code）→ 生成 → 推送。推送起 dsh-wechat-send 的 node 入口（$DSH_HOME\profiles\desktop\node_modules\dsh-wechat-plugin\cli.js）+ DSH runtime 的 node.exe，正文走 argv、不走 shell、不拼字符串（Node 26 下 spawn .CMD 直接 EINVAL，实测过；.CMD 只当名字用）。失败只记日志+面板可见，不循环重试。
+> - 客户端顶栏「📋 简报」面板：今日正文/重生成/最近 7 天可点开/推送开关+早晚时间可改另存/推送链路自检；动作台加 brief 步骤 + 内置「生成今日简报」（6 条内置 / 11 类步骤）。
+>
+> 证据
+> 1) node --check index.js=0、client.js=0；热重载后 GET /version={"host":"2.25"}。
+> 2) POST /brief/generate → ok=true date=2026-11-22 chars=989 bytes=1814 ms=335 path=…\brief-2026-11-22.md；正文前 25 行含日期/项目/待办/花费/B站，26–32 行为 B站摘要+工位+最近提交+日程（工位：收纳 29.9%（绿）· 工作台 24.7%（绿）；最近提交 d8c0e46/dca8f37/61dff9a；日程：今天 2 条…）。
+> 3) GET /brief → fromFile=true sections=7 块；GET /brief/list → 1 份 1814B；GET /brief/config → pushOk=true node=…primary-runtime\dependencies\node\bin\node.exe；POST /brief/config → {pushEnabled:true,times:["08:00","22:00"]} 落 brief.json。
+> 4) 动作台：POST /actions/run {id:"builtin-brief"} → ok=true totalMs=333 stepType=brief chars=982。
+> 5) dsh-wechat-send --help → exit 0；只发 1 条【测试·简报】→ **PUSH_EXIT=3**（微信拒绝 prepare failed，消息已排队等阿冉回一句补发；命令本身可用，argv 路径就是宿主用的同一条）。
+> 6) 两道闸：验收 69/69、渲染冒烟错误数 0；项目信息「二、当前交接」3632B（≤4KB）/ 全文 17781B（≤25KB）；git status 干净，commit 4d0b885（main，未 push）。
+>
+> 卡点
+> - 推送 exit 3 是微信发送窗口关着（微信侧限制，消息已排队）；不是代码问题，也没重试。真实定时推送要等 08:00/22:00，且阿冉先在微信回一句把窗口打开。
+> - 宿主进程是 Electron（process.execPath=DeepSeek Harness.exe），所以没用 process.execPath，改起 runtime 的 node.exe；已在代码注释和面板自检里写清。
+>
+> 遗留
+> - 客户端面板要阿冉刷新页面才看得到（这轮改 client.js）；面板打开路径只过了渲染冒烟（组件已进渲染清单、0 错）和活体接口，真机点开验收还差阿冉一眼。
+> - 项目信息「一、这是什么」里的版本串还是 v5.22 / v2.21（按规矩只改「二、当前交接」，没动）；要同步的话请说一声。
+
+### 2026-11-22 22:31 · 小鱼
+
+> 【回执】task-2 工作台 C（每日简报 + 早晚推送）已完成，任务板已标记为 completed。
+>
+> ## 结论
+>
+> 宿主 **v2.25** / 浏览器 **v5.24**，本地 commit **4d0b885**（未 push，git status 干净）。
+>
+> - 宿主 brief 四接口全通：`GET /brief`、`POST /brief/generate`、`GET /brief/list`、`GET|POST /brief/config`；正文写入文件 `$DSH_HOME\bluefish-workbench\brief\brief-YYYY-MM-DD.md`。
+> - 简报 982–989 字 / 32 行（≤1200），含日期+总览、项目、待办前 5+总数、花费、B站、工位、最近提交、日程（`schedule.catalog()` 真数据，不是编的）。
+> - 早晚推送已接：60 秒 setInterval，命中 times（±2 分钟）且当日时段未发（`sent.jsonl` 防重）→ 生成→推送；起 `dsh-wechat-send` 的 **node 入口**（cli.js + runtime node.exe），正文走 argv、不走 shell、不拼字符串（Node 26 下 spawn `.CMD` 直接 EINVAL，实测过，`.CMD` 只当名字用）；失败只记日志+面板可见，不重试。
+> - 客户端顶栏「📋 简报」面板：正文 / 重生成 / 最近 7 天可点开 / 推送开关+早晚时间 / 链路自检；动作台加 `brief` 步骤 + 内置「生成今日简报」（6 条内置 / 11 类步骤）。
+>
+> ## 证据
+>
+> - `node --check index.js`=0、`client.js`=0；热重载后 `GET /version` = `{"ok":true,"host":"2.25"}`
+> - `POST /brief/generate` → ok=true · 989 字 · 1814B · 335ms · path=…\brief-2026-11-22.md；正文前 25 行（节选）：
+>   ```
+>   【晚安简报】2026-11-22 22:25
+>   项目 8 个（在做 2） · 待办 11 件 · 花费 ¥12.56 · B站 有报告 · 工位 都在安全线内
+>   项目
+>     记井 · 在做
+>       gdd-worldview 正在拆 GDD 第一章玩法的三张卡
+>     工作台 · 在做
+>       v4.8 / 宿主 v2.2：会话选择器能认人……
+>     …… 还有 2 个项目
+>   待办（共 11 件，前 5 件）
+>     - 等阿冉验一眼 dsh-context 的面板……
+>     …… 还有 6 件，去工作台看
+>   花费：¥12.56 · 45 次请求（今日）
+>   B站：2026-11-21 · 刷B站日报 2026-11-21
+>   ```
+>   26–32 行还有：B站摘要、`工位：收纳 29.9%（绿）· 工作台 24.7%（绿）· 记井 9.1%（绿）`、`最近提交：d8c0e46/dca8f37/61dff9a`、`日程：今天 2 条 · 每天 22:30 写当天日记 / 每 60 分钟 工位巡检`
+> - `GET /brief` → fromFile=true + sections 7 块；`GET /brief/list` → 1 份 1814B；config 读写 ok（pushOk=true，node=…runtime\…\node.exe）
+> - `POST /actions/run {id:"builtin-brief"}` → ok=true · 333ms · stepType=brief · 982 字
+> - `dsh-wechat-send --help` → exit 0；只发 1 条【测试·简报】→ **PUSH_EXIT=3**（微信拒绝 prepare failed，消息已排队，等阿冉回一句补发；命令本身可用，argv 路径就是宿主用的同一条）
+> - 两道闸：验收 **69/69**、渲染冒烟 **错误数 0**；项目信息「二、当前交接」3632B（≤4KB）/ 全文 17781B（≤25KB）
+>
+> ## 卡点
+>
+> 推送 exit 3 是微信发送窗口关着（微信侧限制，消息已排队），不是代码问题，也没重试——真实定时推送要等 08:00/22:00 且阿冉先开窗口。宿主是 Electron（process.execPath 是 DeepSeek Harness.exe），所以改起 runtime 的 node.exe，注释和面板自检里都写清了。
+>
+> ## 遗留
+>
+> 客户端面板要**刷新页面**才看得到（这轮改的是 client.js）；面板打开路径过了渲染冒烟（组件已进渲染清单）+ 活体接口，真机点开还差阿冉验收一眼。另外项目信息「一、这是什么」的版本串还是 v5.22/v2.21（按规矩只改「二、当前交接」没动），要同步说一声。
+
+### 2026-11-22 22:31 · BlueFish
+
+> Background subagent 8f5f6a21-7e77-466e-9a8e-edc1ed7077c0 finished and will do no further work unless you send it more.
+> Its closing message:
+> 【回执】task-2 工作台 C（每日简报 + 早晚推送）已完成，任务板已标记为 completed。
+>
+> ## 结论
+>
+> 宿主 **v2.25** / 浏览器 **v5.24**，本地 commit **4d0b885**（未 push，git status 干净）。
+>
+> - 宿主 brief 四接口全通：`GET /brief`、`POST /brief/generate`、`GET /brief/list`、`GET|POST /brief/config`；正文写入文件 `$DSH_HOME\bluefish-workbench\brief\brief-YYYY-MM-DD.md`。
+> - 简报 982–989 字 / 32 行（≤1200），含日期+总览、项目、待办前 5+总数、花费、B站、工位、最近提交、日程（`schedule.catalog()` 真数据，不是编的）。
+> - 早晚推送已接：60 秒 setInterval，命中 times（±2 分钟）且当日时段未发（`sent.jsonl` 防重）→ 生成→推送；起 `dsh-wechat-send` 的 **node 入口**（cli.js + runtime node.exe），正文走 argv、不走 shell、不拼字符串（Node 26 下 spawn `.CMD` 直接 EINVAL，实测过，`.CMD` 只当名字用）；失败只记日志+面板可见，不重试。
+> - 客户端顶栏「📋 简报」面板：正文 / 重生成 / 最近 7 天可点开 / 推送开关+早晚时间 / 链路自检；动作台加 `brief` 步骤 + 内置「生成今日简报」（6 条内置 / 11 类步骤）。
+>
+> ## 证据
+>
+> - `node --check index.js`=0、`client.js`=0；热重载后 `GET /version` = `{"ok":true,"host":"2.25"}`
+> - `POST /brief/generate` → ok=true · 989 字 · 1814B · 335ms · path=…\brief-2026-11-22.md；正文前 25 行（节选）：
+>   ```
+>   【晚安简报】2026-11-22 22:25
+>   项目 8 个（在做 2） · 待办 11 件 · 花费 ¥12.56 · B站 有报告 · 工位 都在安全线内
+>   项目
+>     记井 · 在做
+>       gdd-worldview 正在拆 GDD 第一章玩法的三张卡
+>     工作台 · 在做
+>       v4.8 / 宿主 v2.2：会话选择器能认人……
+>     …… 还有 2 个项目
+>   待办（共 11 件，前 5 件）
+>     - 等阿冉验一眼 dsh-context 的面板……
+>     …… 还有 6 件，去工作台看
+>   花费：¥12.56 · 45 次请求（今日）
+>   B站：2026-11-21 · 刷B站日报 2026-11-21
+>   ```
+>   26–32 行还有：B站摘要、`工位：收纳 29.9%（绿）· 工作台 24.7%（绿）· 记井 9.1%（绿）`、`最近提交：d8c0e46/dca8f37/61dff9a`、`日程：今天 2 条 · 每天 22:30 写当天日记 / 每 60 分钟 工位巡检`
+> - `GET /brief` → fromFile=true + sections 7 块；`GET /brief/list` → 1 份 1814B；config 读写 ok（pushOk=true，node=…runtime\…\node.exe）
+> - `POST /actions/run {id:"builtin-brief"}` → ok=true · 333ms · stepType=brief · 982 字
+> - `dsh-wechat-send --help` → exit 0；只发 1 条【测试·简报】→ **PUSH_EXIT=3**（微信拒绝 prepare failed，消息已排队，等阿冉回一句补发；命令本身可用，argv 路径就是宿主用的同一条）
+> - 两道闸：验收 **69/69**、渲染冒烟 **错误数 0**；项目信息「二、当前交接」3632B（≤4KB）/ 全文 17781B（≤25KB）
+>
+> ## 卡点
+>
+> 推送 exit 3 是微信发送窗口关着（微信侧限制，消息已排队），不是代码问题，也没重试——真实定时推送要等 08:00/22:00 且阿冉先开窗口。宿主是 Electron（process.execPath 是 DeepSeek Harness.exe），所以改起 runtime 的 node.exe，注释和面板自检里都写清了。
+>
+> ## 遗留
+>
+> 客户端面板要**刷新页面**才看得到（这轮改的是 client.js）；面板打开路径过了渲染冒烟（组件已进渲染清单）+ 活体接口，真机点开还差阿冉验收一眼。另外项目信息「一、这是什么」的版本串还是 v5.22/v2.21（按规矩只改「二、当前交接」没动），要同步说一声。
