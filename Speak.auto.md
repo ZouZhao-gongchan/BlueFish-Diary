@@ -63344,3 +63344,241 @@
 > ## 给阿冉的操作提示
 >
 > 刷新页面 → 顶栏「🌐 网页」→ 点「豆」：豆包会贴右侧内嵌预览面板（外壳开着时自动贴原生窗口），再点一次或 ✕ 收起；一直看到「外壳正在把豆包贴到这个位置…」就说明外壳还没带新版贴图能力，面板里也会提示，可点「改用右侧栏打开」。
+
+### 2026-11-26 01:06 · 小鱼
+
+> 阿冉，最小版做完了，两条线都过了我的复验。
+>
+> **外壳 v0.4.0**（commit 93a61b5）：内嵌网页视图能用了，已打包安装并在跑，接的是现在这个 DSH（桥端口换成 58823）。实测：往 DSH 页里注入一个 300,200 800×500 的红占位，视图精确贴在窗口 364,238 800×500（= guest 64,38 + 占位坐标），截图里豆包网页真的出现在红占位里，清掉占位就消失，启动时默认不建任何视图。证据在 `bluefish-shell\evidence\embed-visible.png` 和 `embed-v0.4.0-回执.md`。
+>
+> **工作台 v5.26**（commit 0669c31，未 push）：点「豆」不再开右栏，浮层右侧冒一块固定内嵌预览面板，正文放占位 `data-bfw-embed-host`，外壳自己贴；默认全关、再点或 ✕ 收起；其它五站行为不变；外壳没开时给中文提示 +「改用右侧栏打开」。验收 **85/85**、渲染冒烟 **0 错**，v5.26 隔离自测 40 项全过。
+>
+> **你来试（关键：要在小鱼工作台 v0.4.0 那个窗口里，不是原来的 DSH 窗口）**：左栏「刷新」→「工作台」→ 顶栏「🌐 网页」→ 点「豆」。右边应该直接冒出豆包、灰点变绿。要是只看到「外壳正在把豆包贴到这个位置…」没变网页，把面板截给我，我看 `/embed/status` 和外壳日志。
+>
+> 考完试就好办了——这个手感你验一下，满意我就把六个站全做成独立内嵌（各自开关、可多开、记住上次），再把这类内嵌也写进验收脚本。🐟
+
+### 2026-11-26 01:13 · BlueFish
+
+> 这个位置似乎有些许漏洞没有包满。
+> 还有就是我需要这个窗口可以顺滑的用鼠标拖动换位置。
+> 开了一个，开另一个则创建一个新的独立网页窗口。
+> 窗口需要美术设计一下，可以把外围的框设计成玻璃感。（第三幅图这种就与原先界面没有什么区分，太死板了）
+
+### 2026-11-26 01:13 · BlueFish
+
+> Time sampled while preparing turn 16, step 2: 2026-11-26T01:13:39+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding step context: unavailable.
+
+### 2026-11-26 01:14 · BlueFish
+
+> 【任务】先 team_task_get task-6 读完整任务，再 team_task_update action=claim（expected_revision=1）认领，然后动手。
+>
+> ⚠️ 协议修正（以这段为准，别按任务书那句「窗口坐标」）：`POST /embed/rect {key, rect}` 里的 rect 是 **DSH 页面 CSS 坐标**（即占位元素在 DSH 页面里的 getBoundingClientRect），外壳自己按轮询同样的方式换算：窗口坐标 = guestRect + pageRect × guestZoom。工作台不会发窗口坐标。
+>
+> 环境事实：
+> - 仓库：E:\AFishPower\Plugin\小鱼自建\bluefish-shell（v0.4.0 已装并在跑：attached DSH 49788、桥端口 58823；commit 93a61b5）
+> - v0.4.0 已有的实现：embed.js / main.js 里 WebContentsView 单实例 + 600ms 轮询 `[data-bfw-embed-host]` + 桥接口 /embed/status、/embed/show、/embed/hide、/embed/test-inject、/embed/test-clear；证据在 evidence\
+> - 工作台宿主（另一队友）会调 http://127.0.0.1:49788/bluefish-workbench/embed/rect 代理到你桥的 /embed/rect —— 协议对上即可
+> - 外壳主窗口 pid 36724（或你自己查），DSH 仍 49788；重装前先关旧壳（单实例锁），装完启动 attached
+> - 环境变量 ELECTRON_RUN_AS_NODE=1 的坑：启动安装版要照 启动小鱼外壳.cmd 先清掉（v0.4.0 队友踩过）
+> - 验证截图可用工作台宿主 POST http://127.0.0.1:49788/bluefish-workbench/computer/screenshot {mode:'window',hwnd:...} 截外壳窗口（hwnd 用 window 列表查标题「小鱼工作台」）；也可以 read_image 自己看
+> - 打包/静默安装：npm run dist → dist\小鱼工作台-0.4.1-安装包.exe → /S
+>
+> 必做验证（贴真实输出）：
+> 1) node --check 所有改的 js
+> 2) 装 v0.4.1 并启动；GET /embed/status（views 列表结构）
+> 3) test-inject 支持多次注入（带 key）：A 100,120,600,400 + B 750,300,500,420 → 等 3s → 截图看到两个独立网页并排；/embed/status 里两个 key、bounds 正确
+> 4) POST /embed/rect 把 A 挪到 300,500 → 立即截图（<300ms 后）验证已经跟着移动；再 /embed/status 核对
+> 5) test-clear → 两个视图都隐藏；截图证据
+> 6) 缝隙：在截图里核对占位区域四边是否被网页盖满（不能露出底色/虚线）；如果还有缝，把补偿写进代码再验一轮
+> 7) 证据存 evidence/embed-multi-*.png + evidence/embed-v0.4.1-回执.md；git commit（本地，不 push；仓库无远程）
+>
+> 硬性：只改 bluefish-shell；中文注释/日志；不动工作台仓库；不 push；绝不用 PowerShell 改含中文源码；上下文 65% 收尾写交接。回执：结论 / 证据（版本、接口输出、bounds、截图路径+字节、pid）/ 卡点 / 遗留。
+
+### 2026-11-26 01:14 · BlueFish
+
+> Time sampled while preparing turn 1, step 1: 2026-11-26T01:14:00+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: unavailable.
+
+### 2026-11-26 01:14 · BlueFish
+
+> 【任务】先 team_task_get task-7 读完整任务，再 team_task_update action=claim（expected_revision=1）认领，然后动手。
+>
+> 环境事实：
+> - 仓库：E:\AFishPower\Plugin\bluefish-workbench（git main；当前宿主 v2.25 / 浏览器 v5.26，工作区干净？先 git status 确认）
+> - 宿主跑在 http://127.0.0.1:49788/bluefish-workbench/*；entryId=include:bluefish-workbench
+> - v5.26 已有豆包内嵌面板（client.js 搜 DoubaoEmbedPanel / data-bfw-embed-host，约 10127 行起）；v5.25 dock 在约 9645 行 WebDock；站点列表约 130 行；BFW_VER 约 6728 行；HOST_VERSION 在 index.js 约 129 行
+> - 外壳桥 config：%APPDATA%\小鱼工作台\webai-bridge.json 与 $DSH_HOME\bluefish-workbench\webai-bridge.json（port/token；当前 port 58823）；index.js 里已有读取这两个文件的现成函数（搜 WEB_AI_BRIDGE_FILES / readBridge）
+> - 外壳 v0.4.1 协议（另一队友做）：页面里每个 `[data-bfw-embed-host]` 按 `data-bfw-embed-key` 维护一个独立 WebContentsView；`POST /embed/rect {key, rect|null}` 收 **DSH 页面 CSS 坐标**（占位 getBoundingClientRect 原样），外壳自己换算并立即 setBounds；`GET /embed/status` 回 views[]
+> - 两道闸：工作台验收 85/85 + 渲染冒烟 0 错（$env:DSH_HOME='E:\Agent-bluefish\Save\dsh-home'）；跑前确认外壳在跑（桥 58823）
+> - 热重载：plugin_manager set_plugin target=include:bluefish-workbench enabled=false 再 true；改 client.js 后阿冉要刷新页面才看得到
+> - 项目信息：E:\Agent-bluefish\Save\dsh-home\bluefish-workbench\projects\workbench\项目信息.md（只改「二、当前交接」）
+>
+> 交付自测（贴真实输出）：
+> 1) node --check index.js client.js
+> 2) 热重载后 GET /version = 2.26
+> 3) 宿主代理：GET /bluefish-workbench/embed/status（外壳在跑应 200 + views 列表）、POST /bluefish-workbench/embed/rect {key:'test-1', rect:{x:100,y:120,w:600,h:400}}（外壳会真建/移一个 view；测完发 rect:null 清掉）——贴返回；再测桥不可用分支（临时把 bridge 文件读不到？不要真改文件；用假 key 或直接说明逻辑并 grep 证据即可）
+> 4) 两道闸：85/85 + 渲染 0
+> 5) grep 证据：玻璃面板组件名+行号、六个站 data 属性、拖动 handler、默认无自动开、/embed/rect 调用点
+> 6) git commit 号 + git status 干净；项目信息字节数（节 ≤4KB / 全文 ≤25KB）
+> 7) 一句给阿冉：在外壳窗口里刷新页面 → 🌐 网页 → 点站点看到独立玻璃窗口，可拖动
+>
+> 硬性：中文文案；绝不 PowerShell 改含中文源码；不动外壳仓库；不动 Work.md/MEMORY.md/定位卡；本地 commit 不 push；上下文 65% 收尾。回执：结论 / 证据 / 卡点 / 遗留。
+
+### 2026-11-26 01:14 · BlueFish
+
+> Time sampled while preparing turn 1, step 1: 2026-11-26T01:14:00+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: unavailable.
+
+### 2026-11-26 01:14 · BlueFish
+
+> Team message from lead:
+> 补一条要求（任务外）：多窗口时点/拖某个窗口，要把它提到最上层 —— 收到 POST /embed/rect 时除了 setBounds，顺手把该 key 的 WebContentsView 重新 addChildView 到末尾（先 removeChildView 再 add，别重复叠加），这样拖动的窗口盖在其它窗口上面；不改变其它 key 的可见性。回执里说明这条做了。
+
+### 2026-11-26 01:14 · BlueFish
+
+> Team message from lead:
+> 补一条要求（任务外）：① 拖动/点击某个内嵌面板时，该面板在页面里的 z-index 要提到其它面板之上（方便压住别的面板的玻璃框）；② 面板拖动时整个玻璃框跟手（占位也跟着走，发 /embed/rect 用占位最终位置）；③ 多面板默认级联错开、别完全重叠。回执里说明这三条做了。
+
+### 2026-11-26 01:16 · 小鱼
+
+> 现在改代码。先重写 `embed.js`（多实例 + 实时 rect + 缝隙补偿 + 置顶）。
+
+### 2026-11-26 01:17 · BlueFish
+
+> background job pwsh-e3fc38a439c14a8d (pwsh: cd 'E:\AFishPower\Plugin\小鱼自建\bluefish-shell'; npm run dist 2>&1 | Select-Object -Last 40) finished [status: completed, exit code: 1]. Read its output with job_output.
+
+### 2026-11-26 01:17 · 小鱼
+
+> Now the big client rewrite. I'll write the new component block to a temp file, then splice it in with Node (UTF-8 explicit, per the no-PowerShell-on-Chinese-source rule).
+
+### 2026-11-26 01:23 · 小鱼
+
+> 发现一个设计问题：250ms 兜底轮询会把 `/embed/rect` 刚推的位置立刻弹回占位 DOM 的位置（拖动时会打架）。加一个「rect 有效期」窗口让实时位置优先，重新打包验证。
+
+### 2026-11-26 01:24 · BlueFish
+
+> Time sampled while preparing turn 1, step 109: 2026-11-26T01:24:00+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding step context: 10m 0s.
+
+### 2026-11-26 01:24 · BlueFish
+
+> Time sampled while preparing turn 16, step 6: 2026-11-26T01:24:08+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding step context: 10m 29s.
+
+### 2026-11-26 01:24 · BlueFish
+
+> Time sampled while preparing turn 1, step 62: 2026-11-26T01:24:42+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding step context: 10m 41s.
+
+### 2026-11-26 01:25 · BlueFish
+
+> Team message from wb-embed2:
+> wb-embed2（工作台 v5.27）这边宿主代理接口已就绪：POST /bluefish-workbench/embed/rect {key,rect|null}、GET /bluefish-workbench/embed/status 都会现读 webai-bridge.json 转发到你外壳。刚才你重启外壳把桥文件清掉了，我这边拿到的是「外壳没开」分支（也算测到了）。等你外壳 v0.4.1 装好、桥 58823 重新起来后，回我一句「外壳好了」，我要补测两条：① GET 宿主 embed/status 能看到 views[]；② POST embed/rect {key:'test-1',rect:{x:100,y:120,w:600,h:400}} 外壳真建/移 view，再发 rect:null 清掉。不用你做别的，只要你重启好告诉我。谢谢。
+
+### 2026-11-26 01:25 · BlueFish
+
+> Team message from shell-embed2:
+> 外壳好了 —— v0.4.1 已重装并在跑：主进程 pid 31432、窗口 hwnd 3478294（-9,0 1922×1032）、桥 127.0.0.1:59499（工作台代理每次现读 webai-bridge.json，你那边不用改端口）。GET /embed/status 现在 count=0（还没占位）。
+>
+> 一个协议细节先对齐，免得你测 test-1 时误判：POST /embed/rect **只对「已有占位元素（data-bfw-embed-key=这个 key）」或「已建好的视图」生效**——rect 不带 url/partition，没占位就没法凭空建视图。没有对应占位时我返回 {ok:true, applied:false, pending:true}，并把这个 rect 记 600ms（占位一出现就贴）。所以你要测「真建 view」，得先让 DSH 页面里有一个 data-bfw-embed-key='test-1' 的占位（你客户端注入真实面板占位就行；不方便的话我用外壳的 test-inject 先给你注一个）。
+>
+> 我这边还要跑 10 分钟左右的多实例截图证据（会来回 hide / 注入 A、B / rect 移动 / clear，状态一直在变），跑完我叫你，到时候你补测 ①② 两条；需要 test-1 占位提前说一声，我留一个给你。
+
+### 2026-11-26 01:26 · BlueFish
+
+> Team message from wb-embed2:
+> 收到，端口 59499 我这边已经能通：宿主 GET /bluefish-workbench/embed/status → 200 {ok:true, views:[]}；POST /bluefish-workbench/embed/rect {key:'test-1',rect:{x:100,y:120,w:600,h:400}} → 200 {ok:true,key:'test-1',applied:false,pending:true,note:'视图还没建好…'}，再发 rect:null → {ok:true,hidden:true}。协议细节我理解一致：假 key 没占位就是 pending，不算错。
+>
+> 那就麻烦你 10 分钟截图跑完后，用 test-inject 给我留一个 key='test-1' 的占位（x=300,y=200,w=600,h=400，url/partition 用默认的就行），注好回我一句；我补测「真建 view + /embed/rect 移动后 bounds 跟着变 + rect:null 后 visible=false」，测完不删你的占位（只发 rect:null 压住），要不要 clear 你收尾时自己定。你截图跑的时候我这边不动，免得状态互相干扰。
+
+### 2026-11-26 01:29 · BlueFish
+
+> Team message from shell-embed2:
+> test-1 占位已经注好，你可以开始补测了：key='test-1'，页面坐标 (300,200,600,400)，url/partition 用默认豆包。当前我这边 GET /embed/status 里 test-1 的 bounds = {x:364,y:238,width:601,height:401}（窗口坐标 = guestRect(64,38) + 页面坐标，宽高 +1px 补缝），visible=true、loading=false。
+>
+> 你可以按计划测：① GET 宿主 embed/status 看 views[]（现在有 3 个：A/B 是隐藏的测试残留，test-1 可见）；② POST embed/rect {key:'test-1',rect:{x:100,y:120,w:600,h:400}} → 我外壳立即 setBounds（你回读 status 应该看到 bounds={164,158,601,401}，注意推完 600ms 内轮询不会把它拽回 DOM 位置，这是给拖动留的有效期）；再发 rect:null → 该视图 visible=false（status 里 test-1 变 visible:false，其它 key 的可见性不动）。
+>
+> 我这边不再动外壳状态了，等你测完。你测完留个回执给我（结论/证据/坑），我把 test-1 占位和 A/B 残留一起 clear 收尾。
+
+### 2026-11-26 01:29 · BlueFish
+
+> Team message from wb-embed2:
+> 【回执】补测全过，test-1 你可以 clear 了。
+>
+> 结论：宿主 v2.26 两条代理 → 外壳 v0.4.1 端到端通，真建视图、实时 rect 立即生效、rect:null 只隐藏该视图不动别家。
+>
+> 证据（全走 http://127.0.0.1:49788/bluefish-workbench，宿主现读桥 59499）：
+> ① GET /embed/status → 200 ok=true count=3，views[]：[A visible=false bounds=null]、[B visible=false]、[test-1 visible=true bounds={x:364,y:238,width:601,height:401}, loading=false]。
+> ② POST /embed/rect {key:'test-1',rect:{x:100,y:120,w:600,h:400}} → 200 {"ok":true,"key":"test-1","applied":true,"bounds":{"x":164,"y":158,"width":601,"height":401},"at":"2026-11-25T17:29:06.282Z"}；立刻回读 status：test-1 bounds={164,158,601,401} visible=true（= 页面坐标 + guestRect(64,38)，和你说的一模一样）。
+> ③ POST /embed/rect {key:'test-1',rect:null} → 200 {"ok":true,"key":"test-1","hidden":true,"applied":true}；回读 status：test-1 visible=false bounds=null，A/B 可见性没变。
+> ④ 桥不在分支也测到了：你先前重装外壳把桥文件清掉的那段时间，宿主 POST /embed/rect → 200 {ok:false,error:'外壳没开'}、GET /embed/status 同。
+>
+> 坑/说明：① 假 key 无占位回 applied:false pending:true 我们前端当正常、不重试（外壳 600ms 有效期跟着占位走）；② 我们客户端拖动时每帧推的都是「占位页面坐标」，外壳加的 +1px 补缝我这边不用管；③ test-1 我测完只发了 rect:null，占位还在，你 clear 随便。合作顺利，谢谢！
+
+### 2026-11-26 01:29 · 小鱼
+
+> 【回执】task-7 完成（工作台 v5.27 / 宿主 v2.26）
+>
+> **结论**：六站独立内嵌玻璃窗口已交付，宿主两条代理接口端到端打通真实外壳 v0.4.1（真建 view、实时 rect、rect:null 收窗）。commit `cda9bf8`（本地，未 push），工作区干净。只改了 `client.js`、`index.js`；外壳仓库只读未碰，Work.md / MEMORY.md / 定位卡未动。
+>
+> **证据**
+> - `node --check index.js client.js` → 均 OK；热重载后 `GET /bluefish-workbench/version` = `{"ok":true,"host":"2.26",...}`
+> - 两道闸：验收「结果：85 项通过，0 项失败」；渲染冒烟「错误数: 0 ✓ 全路径渲染无抛错」
+> - 宿主代理端到端（桥 59499 + 外壳 test-inject 的真实 test-1 占位）：GET status 200 `views` 3 个（test-1 bounds 364·238·601·401）→ POST rect `{100,120,600,400}` 外壳回 `applied:true`、bounds→164·158·601·401（=页面坐标+guestRect 64/38，立即生效）→ `rect:null` 后 test-1 `visible=false`、A/B 可见性不动；桥文件不在时两条均 200 `{ok:false,error:'外壳没开'}`
+> - 行为探针 `%TEMP%\wb_test\embed_probe.mjs`（迷你 React 跑真 client.js）全过 0 错：默认全关 0 占位 / 豆包面板 533·96·451·507 / 拖 +80+40→567·136 且 `/embed/rect` 收到 `{key:'doubao-1',rect:{574,181,437,455}}` / 二级面板 503·128 不重叠 / 关闭发 `rect:null` / 桥不在给中文提示 +「改用右侧栏打开」
+> - grep 行号：`WebDock` client.js:9673、`WebEmbedPanel` :10165（玻璃 `backdrop-filter blur(18px) saturate(1.2)` :10363、标题条拖动 `onTitleDown` :10314、z 提升 `raisePanel` :9873、级联 :9824、占位四属性 :10454-10457、默认全关 `useState({})` :9684、发 rect :9808、关闭发 null :9846、判桥 :9754）；宿主 `HOST_VERSION 2.26` index.js:159、`embedBridgeRequest` :269、`/embed/rect` :6135、`/embed/status` :6160
+> - 项目信息「二、当前交接」已更新：节 3413 B ≤4KB、全文 17586 B ≤25KB
+>
+> **lead 补的三条都做了**：① 点/拖任意面板时 `raisePanel` 把 z 提到最上（探针验证 z 4→5 压过另一块）；② 拖动整块玻璃框+占位一起跟手，rect 用占位最终位置（松手后按真实 `getBoundingClientRect` 补发）；③ 多面板默认级联错开（右上起每次左上错 30/32px，整块 clamp 在视口内）。
+>
+> **卡点**：无。**遗留/边界**：① 面板内部网页区域的点击不触发 z 提升（原生 view 盖住内部，页面收不到事件；点标题条/玻璃边即可）；② 桥不在时「改用右侧栏」开的 tab 由 DSH 右栏自己关，dock 不再追踪；③ 位置不落盘、刷新回级联位。外壳侧 test-1 占位已请 shell-embed2 收尾 clear。
+>
+> **给阿冉一句**：在外壳窗口里刷新页面 → 顶栏「🌐 网页」→ 点任意站，就能看到它自己的独立玻璃窗口，拖标题条随便挪，多开几个会错开叠——试试手感 🐟
+
+### 2026-11-26 01:29 · BlueFish
+
+> Background subagent 41bdfaeb-f2e0-4451-bb66-d5902d41b227 finished and will do no further work unless you send it more.
+> Its closing message:
+> 【回执】task-7 完成（工作台 v5.27 / 宿主 v2.26）
+>
+> **结论**：六站独立内嵌玻璃窗口已交付，宿主两条代理接口端到端打通真实外壳 v0.4.1（真建 view、实时 rect、rect:null 收窗）。commit `cda9bf8`（本地，未 push），工作区干净。只改了 `client.js`、`index.js`；外壳仓库只读未碰，Work.md / MEMORY.md / 定位卡未动。
+>
+> **证据**
+> - `node --check index.js client.js` → 均 OK；热重载后 `GET /bluefish-workbench/version` = `{"ok":true,"host":"2.26",...}`
+> - 两道闸：验收「结果：85 项通过，0 项失败」；渲染冒烟「错误数: 0 ✓ 全路径渲染无抛错」
+> - 宿主代理端到端（桥 59499 + 外壳 test-inject 的真实 test-1 占位）：GET status 200 `views` 3 个（test-1 bounds 364·238·601·401）→ POST rect `{100,120,600,400}` 外壳回 `applied:true`、bounds→164·158·601·401（=页面坐标+guestRect 64/38，立即生效）→ `rect:null` 后 test-1 `visible=false`、A/B 可见性不动；桥文件不在时两条均 200 `{ok:false,error:'外壳没开'}`
+> - 行为探针 `%TEMP%\wb_test\embed_probe.mjs`（迷你 React 跑真 client.js）全过 0 错：默认全关 0 占位 / 豆包面板 533·96·451·507 / 拖 +80+40→567·136 且 `/embed/rect` 收到 `{key:'doubao-1',rect:{574,181,437,455}}` / 二级面板 503·128 不重叠 / 关闭发 `rect:null` / 桥不在给中文提示 +「改用右侧栏打开」
+> - grep 行号：`WebDock` client.js:9673、`WebEmbedPanel` :10165（玻璃 `backdrop-filter blur(18px) saturate(1.2)` :10363、标题条拖动 `onTitleDown` :10314、z 提升 `raisePanel` :9873、级联 :9824、占位四属性 :10454-10457、默认全关 `useState({})` :9684、发 rect :9808、关闭发 null :9846、判桥 :9754）；宿主 `HOST_VERSION 2.26` index.js:159、`embedBridgeRequest` :269、`/embed/rect` :6135、`/embed/status` :6160
+> - 项目信息「二、当前交接」已更新：节 3413 B ≤4KB、全文 17586 B ≤25KB
+>
+> **lead 补的三条都做了**：① 点/拖任意面板时 `raisePanel` 把 z 提到最上（探针验证 z 4→5 压过另一块）；② 拖动整块玻璃框+占位一起跟手，rect 用占位最终位置（松手后按真实 `getBoundingClientRect` 补发）；③ 多面板默认级联错开（右上起每次左上错 30/32px，整块 clamp 在视口内）。
+>
+> **卡点**：无。**遗留/边界**：① 面板内部网页区域的点击不触发 z 提升（原生 view 盖住内部，页面收不到事件；点标题条/玻璃边即可）；② 桥不在时「改用右侧栏」开的 tab 由 DSH 右栏自己关，dock 不再追踪；③ 位置不落盘、刷新回级联位。外壳侧 test-1 占位已请 shell-embed2 收尾 clear。
+>
+> **给阿冉一句**：在外壳窗口里刷新页面 → 顶栏「🌐 网页」→ 点任意站，就能看到它自己的独立玻璃窗口，拖标题条随便挪，多开几个会错开叠——试试手感 🐟
+
+### 2026-11-26 01:30 · BlueFish
+
+> Team message from shell-embed2:
+> 【回执 · task-6 外壳 v0.4.1】已完成，task-6 已标 completed。仓库 bluefish-shell 本地 commit **6d78abb**（未 push，无远程），只改了 bluefish-shell 的 5 个文件（embed.js/webai.js/main.js/README/package.json）。回执全文：`E:\AFishPower\Plugin\小鱼自建\bluefish-shell\evidence\embed-v0.4.1-回执.md`。
+>
+> 【结论】**通过**。① 多实例：一 key 一个 WebContentsView，A=豆包、B=千问同时并排；② `/embed/rect`（工作台宿主 v2.26 代理 → 外壳桥）立即 setBounds，截图在发出请求后 **165.6ms** 拍到已移动（<300ms）；③ 缝隙：四边逐像素核对 0 暗像素、0 虚线红，右/下各 +1px 补偿；④ test-clear 后两个视图都 hidden；⑤ 你补的「推 rect 时把该 key 提到最上层」也做了：重叠区像素 before=B 红页 (192,57,43) → after=A 豆包白 (255,255,255)，B 独占处颜色不变、B 仍 visible=true。
+>
+> 【证据】**版本 v0.4.1**（标题栏显示，安装包 `dist\小鱼工作台-0.4.1-安装包.exe` 108,676,816 bytes，/S 装到 %LOCALAPPDATA%）；安装版在跑：**pid 31432**、hwnd 3478294、attached DSH 49788、**桥 59499**（每次重启会变，宿主现读 webai-bridge.json）。接口真实输出：
+> - 双注入后 status：A bounds={164,158,601,401}、B bounds={814,338,501,421}（=guestRect 64,38 + 页面坐标，宽高+1），count=2 visibleCount=2。
+> - rect 移动：POST 代理 {key:'A',rect:{300,500,600,400}} → `{"ok":true,"applied":true,"bounds":{"x":364,"y":538,"width":601,"height":401}}`，rect 往返 112.4ms；截图后 status 回读 A=364,538、B 不变。
+> - 清完：removed=2，count=2 visibleCount=0，两区回到 DSH 深色（meanLuma 41.1/36.7）。
+> 截图（都在 evidence\，**注意 evidence/ 在本仓库 .gitignore 里，是本地证据不进 git**）：embed-multi-two-pages.png 1,116,875B / embed-multi-calib-red.png 1,074,314B / embed-multi-rect-before.png 933,512B / embed-multi-rect-after.png 850,177B / embed-multi-zorder-b-top.png 845,494B / embed-multi-zorder-a-top.png 823,728B / embed-multi-cleared.png 1,141,836B / embed-multi-gap-zoom-a.png 40,964B / embed-multi-gap-zoom-b.png 203,617B / embed-multi-final-clean.png 1,129,403B，另有 status/meta/analysis json 若干个。
+>
+> 【一个设计修正】验证时发现「推来的 rect 250ms 内会被兜底轮询用占位 DOM 位置拽回去」——加了 `RECT_HOLD_MS=600`：推来的 rect 600ms 内优先于轮询，拖动不打架；超时回 DOM 为准。真实拖动时 DOM 也跟着动，不冲突。
+>
+> 【卡点】**无阻塞。** wb-embed2 已补测全过（宿主 embed/status 看到 views[]；推 test-1 rect → bounds={164,158,601,401} 立刻生效；rect:null → 只隐藏该视图，A/B 可见性不动），他们回执见回执 md 第八节。收尾状态：所有占位已 clear、三个视图全隐藏，外壳 v0.4.1 继续在跑（桥 59499）可直接给阿冉试。
+>
+> 【遗留】① 隐藏视图不销毁（WebContents 留着秒贴，隐藏超 10 分钟才回收）；② 置顶只对被推 rect 的 key 保持，前端点一下推一次当前 rect 即可置顶；③ 安装包未签名，SmartScreen 提示照旧；④ evidence/ 被 .gitignore，若要随仓库存档证据需先改 .gitignore。
