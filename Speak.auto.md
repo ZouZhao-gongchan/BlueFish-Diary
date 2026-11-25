@@ -63632,3 +63632,163 @@
 >
 > ## 卡点 / 遗留
 > - 无阻塞。遗留：隐藏视图不销毁（10 分钟才回收）；置顶只对被推 rect 的 key 保持（前端点一下推当前 rect 即可）；安装包未签名；`evidence/` 被 .gitignore，要随仓库留证据需先改 .gitignore。
+
+### 2026-11-26 01:32 · 小鱼
+
+> 阿冉，你提的三条都改好了，外壳升到 v0.4.1、工作台 v5.27 / 宿主 v2.26。
+>
+> **缝隙**：四边先取整、右和下各补 1px，逐像素核对过占位边缘 0 暗像素、0 虚线红。我独立复验：注入一个页面坐标 300,200 700×450 的占位，外壳实际 bounds 364,238 **701×451**，刚好盖满不露边。
+>
+> **拖动**：标题条就是拖动手柄，整块玻璃框跟手走；中点每帧把位置推给外壳直接 setBounds，实测推过去 200ms 内就跟上，还加了 600ms 优先期，防止兜底轮询把位置拽回去。
+>
+> **多开**：六个站各自一个独立原生窗口，可同屏多开；点哪块/拖哪块哪块自动置顶；默认级联错开不叠死。**玻璃感**也上了：16 圆角、半透明底 + 18px 模糊 + 1px 高光边 + 内衬 6px，标题条带站名和 ✕——不再是之前那种死板横幅。
+>
+> **怎么试**：在小鱼工作台 v0.4.1 那个窗口里，左栏「刷新」→「工作台」→ 顶栏「🌐 网页」→ 点任意站（比如豆包 + 千问各开一个，拖标题条随便挪）。证据图在 `bluefish-shell\evidence\embed-multi-two-pages.png`，两页并排就是那种效果。
+>
+> 边界说一下：点网页内部不会置顶（要点头条/玻璃边）；位置不落盘，刷新回默认级联位；隐藏窗口 10 分钟后才回收，再开会稍慢。本地都没 push：工作台 ahead 3，外壳本地 commit `6d78abb`（无远程）。
+>
+> 你先摸摸手感，觉得哪还不对——比如想要拖边缩放、位置记忆、吸附对齐——我接着改。🐟
+
+### 2026-11-26 01:35 · BlueFish
+
+> [SCHEDULE REMINDER BATCH]
+> This is a scheduled message from the user
+> reminders_json: [{"schedule_id":"schedule-a348ac3c-f231-426a-ae69-9c4cff98b0aa","occurrence_at":"2026-11-25T17:35:11.928Z","reminder_prompt":"跑工位巡检：node \"E:\\AFishPower\\Plugin\\bluefish-workbench\\tools\\station-patrol.mjs\" --go\n输出里有「交班完成」→ 把项目名 + 新工位 id + 交接文件路径转述给我；没到红线就只回一句「正常」；脚本报错就连错误一起告诉我。别的都不要做。\n\n新房间第一次开工：先读 E:\\Agent-bluefish\\working\\BlueFish的日记\\Work.md 顶部「🐟 小鱼工作台 · 交接」+ E:\\Agent-bluefish\\working\\BlueFish的日记\\交接速览.md，知道工位是哪间、派单怎么派。工作台项目和我的绑定不用改（项目页「会话 · 专属」还指着我）。"}]
+
+### 2026-11-26 01:35 · BlueFish
+
+> Time sampled while preparing turn 73, step 1: 2026-11-26T01:35:12+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: 59m 53s.
+
+### 2026-11-26 01:35 · 小鱼
+
+> 正常
+
+### 2026-11-26 01:39 · BlueFish
+
+> 两个页面重合，黑色方框是不是不应该被覆盖呀。下面白色内容部分都成功覆盖在顶部，而黑色介绍方框则被压在下面。
+> 不是很合适。还有就是可以把你所说的拖变缩放，位置记忆，吸附对齐做一下。
+
+### 2026-11-26 01:39 · BlueFish
+
+> Time sampled while preparing turn 17, step 1: 2026-11-26T01:39:01+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding model-visible message: 6m 16s.
+
+### 2026-11-26 01:39 · BlueFish
+
+> 【任务】先 team_task_get task-8 读完整任务，再 team_task_update action=claim（expected_revision=1）认领，然后动手。
+>
+> 环境事实：
+> - 仓库：E:\AFishPower\Plugin\bluefish-workbench（git main；当前 v5.27 / 宿主 v2.26，工作区干净；先 git status 确认）
+> - 只改 client.js（约 470KB；先 grep 定位再读局部）
+> - v5.27 内嵌面板：组件 WebEmbedPanel（client.js 约 10165 行起）、WebDock（约 9673）、发 rect 函数约 9808、关闭发 null 约 9846、玻璃样式约 10363、拖动 onTitleDown 约 10314、级联 raisePanel 约 9873、占位四属性约 10454
+> - 宿主已有 POST /bluefish-workbench/embed/rect {key, rect|null}（页面 CSS 坐标）——拖动/缩放/置顶都用它，宿主 v2.26 不动
+> - 外壳 v0.4.1 在跑（attached DSH 49788，桥端口每次重启变，宿主现读）；原生视图永远在 DOM 之上，所以**必须用禁止重叠来解决黑框被盖**（任务书里有说明）
+> - 两道闸：工作台验收 85/85 + 渲染冒烟 0 错（$env:DSH_HOME='E:\Agent-bluefish\Save\dsh-home'）
+> - 现有探针：%TEMP%\wb_test\embed_probe.mjs（wb-embed2 写的迷你 React 跑真 client.js）= 可照这个套路写 v5.28 的几何探针；%TEMP%\wb_test\test_client_render.mjs 是渲染冒烟
+> - 热重载：plugin_manager set_plugin include:bluefish-workbench false→true；阿冉要刷新页面才看到 UI
+> - 项目信息：E:\Agent-bluefish\Save\dsh-home\bluefish-workbench\projects\workbench\项目信息.md（只改「二、当前交接」）
+>
+> 关键实现建议：
+> - 面板几何统一存 {x,y,w,h}（页面 CSS 坐标，相对视口）；容器 position:fixed; left/top/width/height 直接用。
+> - 碰撞/吸附/推开的纯函数放到模块级（便于探针单测）：rectsOverlap(a,b,gap=8)、resolveOverlap(rect, others, viewport)、snapRect(rect, others, viewport, threshold=8)、findFreeSlot(others, viewport, size) 等。
+> - 拖动/缩放用 pointer events + setPointerCapture；rAF 节流；每次几何变化后调用 pushEmbedRect(key, rect)（占位 getBoundingClientRect 页面坐标或直接从几何算——注意玻璃边/标题条与占位 inner 的偏移，要换算准：原生视图只盖占位，占位 = 面板内衬区域，别用整块面板 rect 直接发）。
+> - 持久化：localStorage `bfw-embed-pos-v1`（site key → {x,y,w,h}）；刷新恢复时 clamp+防重叠校验；默认全关不落盘。
+> - 置顶：pointerdown 在框体即 raisePanel + pushEmbedRect（推一次当前 rect → 外壳把该 key 视图提到最上）。
+>
+> 硬性：中文文案；绝不 PowerShell 改含中文源码；只改 client.js；不 push；不动 Work.md/MEMORY.md/定位卡；上下文 65% 收尾。回执：结论 / 证据（node --check、两道闸、探针输出、grep 行号、commit）/ 卡点 / 遗留。
+
+### 2026-11-26 01:39 · BlueFish
+
+> Time sampled while preparing turn 1, step 1: 2026-11-26T01:39:30+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding model-visible message: unavailable.
+
+### 2026-11-26 01:45 · 小鱼
+
+> Now I have the full picture. Let me write the new geometry module block first.
+
+### 2026-11-26 01:49 · BlueFish
+
+> Time sampled while preparing turn 17, step 6: 2026-11-26T01:49:38+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding step context: 10m 36s.
+
+### 2026-11-26 01:50 · BlueFish
+
+> Time sampled while preparing turn 1, step 45: 2026-11-26T01:50:34+08:00[Asia/Shanghai]
+> Browser time zone for this request: unavailable. Ask the user to clarify otherwise-unqualified dates and times.
+> Elapsed since the preceding step context: 11m 3s.
+
+### 2026-11-26 01:59 · BlueFish
+
+> Team message from wb-embed3:
+> 【回执】task-8 工作台 v5.28 完成（只改 client.js，本地 commit 71c2b3a，未 push）
+>
+> 结论：
+> v5.27 → v5.28 已交付。内嵌面板两两禁止相交（间隙≥8px，原生 WebContentsView 不再压掉下层玻璃框）+ 8 向拖边缩放（最小 320×240、碰别人停在间隙）+ 每站位置尺寸记忆（localStorage bfw-embed-pos-v1，只存几何不落盘开关）+ 8px 吸附 + 1px accent 参考线（松手消失）+ 点框体置顶并推一次 rect。宿主 v2.26 / 外壳 v0.4.1 未动；已 hot reload（include:bluefish-workbench false→true，applied），阿冉刷新页面即可见。
+>
+> 证据：
+> - node --check client.js OK；两道闸：工作台验收 85/85（热重载后复跑）、渲染冒烟 错误数 0（DSH_HOME=E:\Agent-bluefish\Save\dsh-home）
+> - 几何探针 %TEMP%\wb_test\embed_geom_probe.mjs：62 项断言全过、0 错误（迷你 React 跑真 client.js）。覆盖：纯几何 12 项 / 默认全关 0 占位且不写位置 / 一级 533·96·451·507、二级自动找空位 44·128 不重叠 / 拖 +80+40 → 567·136 且 embed/rect 收内衬矩形 574·181·437·455 / 拖去压别家 → 推开到 503·136 间隙正好 8 并亮参考线 / 缩放撞面板停在 495 / 吸附 7px 吸、9px 不吸 / 位置恢复 600·100、越界 clamp 618·462、非法重叠回落且不重叠 / 三块两两不重叠 / 关闭先发 rect:null / 桥不在中文兜底
+> - grep（当前 client.js 行号）：rectsOverlap 258 / clampRect 264 / resolveOverlap 276 / snapRect 311 / snapEdges 352 / resizeByHandles 412 / alignGuides 470 / findFreeSlot 517 / gridLayout 556 / EMBED_POS_KEY 594 / readEmbedPosMap 595 / saveEmbedPos 625 / openPanel 10237 / toggleSite 10460（openPanel 只被用户点击的 toggleSite 调用 = 默认全关无自动开）/ fitPanels 10322 / setGuideLines 10352 / updatePanelRect 10368
+> - 版本串：头部第 2 行 v5.28 / BFW_VER v5.28（7154 行）/ changelog 第 81 行 v5.28 七条
+> - git：71c2b3a（1 file changed, 701 insertions/71 deletions），工作区干净；GET /bluefish-workbench/version 200（host 2.26，pid 17704）
+> - 项目信息已更新：E:\Agent-bluefish\Save\dsh-home\bluefish-workbench\projects\workbench\项目信息.md「二、当前交接」（3331 bytes ≤4KB，其余节未动）
+>
+> 卡点：无。
+>
+> 遗留（已知边界）：
+> ① 面板内部网页区域点不到置顶（原生 view 盖住、页面收不到事件）——点标题条/玻璃边即可，保持现状；② 小视口下第 3+ 块会按 20% 缩尺寸、实在放不下缩成 320×240 网格（「不许压」的取舍）；③ 位置记忆在本机 localStorage，换浏览器/清缓存会丢；④ 旧探针 %TEMP%\wb_test\embed_probe.mjs 仍是 v5.27 断言（未改），v5.28 以 embed_geom_probe.mjs 为准。
+>
+> 给阿冉的一句话：外壳窗口里刷新 → 🌐 网页 → 开两个站，互相靠近会被吸住/推开，不会再压黑框；拖边缩放、刷新后位置还在。
+
+### 2026-11-26 01:59 · 小鱼
+
+> 【回执】task-8 · 工作台 v5.28 —— 已完成并认领销账（task-8 → completed）
+>
+> **结论**
+> v5.27 → v5.28 交付，只改 client.js，本地 commit `71c2b3a`（未 push）。核心：内嵌面板两两**禁止相交**（间隙≥8px，原生 WebContentsView 不会再压掉下层玻璃框）+ 8 向拖边缩放（最小 320×240，碰到别家停在间隙处）+ 每站位置尺寸记忆（localStorage `bfw-embed-pos-v1`，只存几何、不落盘开关）+ 8px 吸附 + 1px accent 参考线（松手消失）+ 点框体置顶并推一次 rect。宿主 v2.26 / 外壳 v0.4.1 未动；已 hot reload（`include:bluefish-workbench` false→true，applied），阿冉刷新页面即可见。
+>
+> **证据**
+> - `node --check client.js` OK；两道闸：工作台验收 **85/85**（热重载后复跑）、渲染冒烟 **错误数 0**
+> - 几何探针 `%TEMP%\wb_test\embed_geom_probe.mjs`：**62 项断言全过、0 错误**（纯几何 12 / 默认全关 0 占位且不写位置 / 一级 533·96·451·507、二级自动找空位 44·128 / 拖 +80+40 → 567·136 且 embed/rect 收 574·181·437·455 / 拖去压别家 → 推开到 503·136 间隙正好 8 / 缩放停在 495 / 吸附 7px 吸 9px 不吸 / 恢复 600·100、越界 clamp 618·462、非法位回落 / 三块两两不重叠 / 关闭发 rect:null / 桥不在兜底）
+> - grep 行号：rectsOverlap 258 / clampRect 264 / resolveOverlap 276 / snapRect 311 / snapEdges 352 / resizeByHandles 412 / alignGuides 470 / findFreeSlot 517 / gridLayout 556 / EMBED_POS_KEY 594 / readEmbedPosMap 595 / saveEmbedPos 625 / openPanel 10237 / toggleSite 10460（openPanel 只被用户点击调用 = 默认全关无自动开）/ fitPanels 10322 / setGuideLines 10352 / updatePanelRect 10368
+> - 版本串：头部 v5.28 / BFW_VER v5.28（7154）/ changelog 第 81 行；git 工作区干净；`GET /bluefish-workbench/version` 200（host 2.26）
+> - 项目信息「二、当前交接」已覆盖：`...\projects\workbench\项目信息.md`（3331 bytes ≤4KB，其余节未动）
+>
+> **卡点**：无。
+>
+> **遗留**：① 网页内部点击仍点不到置顶（原生层盖住，点标题条/玻璃边即可）；② 小视口第 3+ 块会缩成 320×240 网格（「不许压」的取舍）；③ 位置记忆仅本机 localStorage；④ 旧探针 `embed_probe.mjs` 仍是 v5.27 断言（未改），v5.28 以 `embed_geom_probe.mjs` 为准。
+>
+> 给阿冉：外壳窗口里刷新 → 🌐 网页 → 开两个站，互相靠近会被吸住/推开，不会再压黑框；拖边缩放、刷新后位置还在。
+
+### 2026-11-26 02:01 · BlueFish
+
+> Background subagent 1bd7d2e6-1de4-40a4-b2da-e166d4472522 finished and will do no further work unless you send it more.
+> Its closing message:
+> 【回执】task-8 · 工作台 v5.28 —— 已完成并认领销账（task-8 → completed）
+>
+> **结论**
+> v5.27 → v5.28 交付，只改 client.js，本地 commit `71c2b3a`（未 push）。核心：内嵌面板两两**禁止相交**（间隙≥8px，原生 WebContentsView 不会再压掉下层玻璃框）+ 8 向拖边缩放（最小 320×240，碰到别家停在间隙处）+ 每站位置尺寸记忆（localStorage `bfw-embed-pos-v1`，只存几何、不落盘开关）+ 8px 吸附 + 1px accent 参考线（松手消失）+ 点框体置顶并推一次 rect。宿主 v2.26 / 外壳 v0.4.1 未动；已 hot reload（`include:bluefish-workbench` false→true，applied），阿冉刷新页面即可见。
+>
+> **证据**
+> - `node --check client.js` OK；两道闸：工作台验收 **85/85**（热重载后复跑）、渲染冒烟 **错误数 0**
+> - 几何探针 `%TEMP%\wb_test\embed_geom_probe.mjs`：**62 项断言全过、0 错误**（纯几何 12 / 默认全关 0 占位且不写位置 / 一级 533·96·451·507、二级自动找空位 44·128 / 拖 +80+40 → 567·136 且 embed/rect 收 574·181·437·455 / 拖去压别家 → 推开到 503·136 间隙正好 8 / 缩放停在 495 / 吸附 7px 吸 9px 不吸 / 恢复 600·100、越界 clamp 618·462、非法位回落 / 三块两两不重叠 / 关闭发 rect:null / 桥不在兜底）
+> - grep 行号：rectsOverlap 258 / clampRect 264 / resolveOverlap 276 / snapRect 311 / snapEdges 352 / resizeByHandles 412 / alignGuides 470 / findFreeSlot 517 / gridLayout 556 / EMBED_POS_KEY 594 / readEmbedPosMap 595 / saveEmbedPos 625 / openPanel 10237 / toggleSite 10460（openPanel 只被用户点击调用 = 默认全关无自动开）/ fitPanels 10322 / setGuideLines 10352 / updatePanelRect 10368
+> - 版本串：头部 v5.28 / BFW_VER v5.28（7154）/ changelog 第 81 行；git 工作区干净；`GET /bluefish-workbench/version` 200（host 2.26）
+> - 项目信息「二、当前交接」已覆盖：`...\projects\workbench\项目信息.md`（3331 bytes ≤4KB，其余节未动）
+>
+> **卡点**：无。
+>
+> **遗留**：① 网页内部点击仍点不到置顶（原生层盖住，点标题条/玻璃边即可）；② 小视口第 3+ 块会缩成 320×240 网格（「不许压」的取舍）；③ 位置记忆仅本机 localStorage；④ 旧探针 `embed_probe.mjs` 仍是 v5.27 断言（未改），v5.28 以 `embed_geom_probe.mjs` 为准。
+>
+> 给阿冉：外壳窗口里刷新 → 🌐 网页 → 开两个站，互相靠近会被吸住/推开，不会再压黑框；拖边缩放、刷新后位置还在。
+
+### 2026-11-26 02:01 · BlueFish
+
+> Time sampled while preparing turn 17, step 9: 2026-11-26T02:01:20+08:00[Asia/Shanghai]
+> Browser time zone for this request: Asia/Shanghai. Interpret otherwise-unqualified dates and times in this zone.
+> Elapsed since the preceding step context: 11m 42s.
