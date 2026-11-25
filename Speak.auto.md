@@ -63582,3 +63582,53 @@
 > 【卡点】**无阻塞。** wb-embed2 已补测全过（宿主 embed/status 看到 views[]；推 test-1 rect → bounds={164,158,601,401} 立刻生效；rect:null → 只隐藏该视图，A/B 可见性不动），他们回执见回执 md 第八节。收尾状态：所有占位已 clear、三个视图全隐藏，外壳 v0.4.1 继续在跑（桥 59499）可直接给阿冉试。
 >
 > 【遗留】① 隐藏视图不销毁（WebContents 留着秒贴，隐藏超 10 分钟才回收）；② 置顶只对被推 rect 的 key 保持，前端点一下推一次当前 rect 即可置顶；③ 安装包未签名，SmartScreen 提示照旧；④ evidence/ 被 .gitignore，若要随仓库存档证据需先改 .gitignore。
+
+### 2026-11-26 01:30 · 小鱼
+
+> task-6 已完成并已向 Lead 回执。收尾状态：外壳 v0.4.1 在跑（pid 31432，attached DSH 49788，桥 59499），所有测试占位已 clear、三个视图全隐藏，仓库工作区干净（本地 commit `6d78abb`，未 push）。
+>
+> ## 结论
+> **通过**，三件事 + 你补的置顶都做了：
+>
+> 1. **多实例**：`data-bfw-embed-key` 一 key 一个 `WebContentsView`；test-inject 注入 A 豆包 (100,120,600,400) + B 千问 (750,300,500,420)，一张截图里两块独立网页并排；z 顺序按占位顺序，消失的 key 隐藏并从 `contentView` 摘掉。
+> 2. **实时 rect**：`POST /embed/rect {key, rect:{x,y,w,h}|null}`，rect 收 **DSH 页面 CSS 坐标**、外壳自己按 `guestRect + pageRect×zoom` 换算。经宿主代理移动 A 到 (300,500)：响应 bounds `{x:364,y:538,width:601,height:401}`，截图在请求后 **165.6ms** 拍到已移动。
+> 3. **缝隙**：四边各自取整后右/下各 +1px 补缝；截图逐像素核对四边内 2px **0 暗像素**、占位虚线红 **0 px**（标定红 bbox 与计算坐标完全一致）。
+> 4. **拖动置顶**：收到 rect 时 `removeChildView + addChildView` 把该 key 提到最上层；重叠区 before=B 红页 (192,57,43) → after=A 豆包白 (255,255,255)，B 独占处颜色不变、B 仍 `visible:true`（不动别家可见性）。
+>
+> **验证时额外修掉一个真问题**：推来的 rect 会在 250ms 兜底轮询时被占位 DOM 位置拽回去 → 加 `RECT_HOLD_MS=600`（推来的位置 600ms 内优先，拖动不打架）。
+>
+> ## 证据
+> - 回执全文：[embed-v0.4.1-回执.md](<E:\AFishPower\Plugin\小鱼自建\bluefish-shell\evidence\embed-v0.4.1-回执.md>)
+> - 版本：v0.4.1（标题栏 + `dist\小鱼工作台-0.4.1-安装包.exe` 108,676,816 B，`/S` 装到 %LOCALAPPDATA%）；`node --check embed.js/main.js/webai.js` 全 OK
+> - 截图（`evidence\`，**该目录在 .gitignore，证据是本地的不进 git**）：`embed-multi-two-pages.png` 1,116,875B、`embed-multi-calib-red.png` 1,074,314B、`embed-multi-rect-before/after.png` 933,512/850,177B、`embed-multi-zorder-b-top/a-top.png` 845,494/823,728B、`embed-multi-cleared.png` 1,141,836B、`embed-multi-gap-zoom-a/b.png` 40,964/203,617B、`embed-multi-final-clean.png` 1,129,403B
+> - `test-clear`：removed=2 → `count=2 visibleCount=0`，两区回到 DSH 深色底（meanLuma 41.1/36.7）、红 0
+> - 联调：wb-embed2 补测全过（宿主 v2.26 两条代理 → 外壳 v0.4.1 端到端通，真建视图、rect 立即生效、rect:null 只隐藏该视图），对方回执已并入回执 md 第八节
+>
+> ## 卡点 / 遗留
+> - 无阻塞。遗留：隐藏视图不销毁（10 分钟才回收）；置顶只对被推 rect 的 key 保持（前端点一下推当前 rect 即可）；安装包未签名；`evidence/` 被 .gitignore，要随仓库留证据需先改 .gitignore。
+
+### 2026-11-26 01:30 · BlueFish
+
+> Background subagent 4e58babe-c69d-4a37-bc4d-cc4599c75fc9 finished and will do no further work unless you send it more.
+> Its closing message:
+> task-6 已完成并已向 Lead 回执。收尾状态：外壳 v0.4.1 在跑（pid 31432，attached DSH 49788，桥 59499），所有测试占位已 clear、三个视图全隐藏，仓库工作区干净（本地 commit `6d78abb`，未 push）。
+>
+> ## 结论
+> **通过**，三件事 + 你补的置顶都做了：
+>
+> 1. **多实例**：`data-bfw-embed-key` 一 key 一个 `WebContentsView`；test-inject 注入 A 豆包 (100,120,600,400) + B 千问 (750,300,500,420)，一张截图里两块独立网页并排；z 顺序按占位顺序，消失的 key 隐藏并从 `contentView` 摘掉。
+> 2. **实时 rect**：`POST /embed/rect {key, rect:{x,y,w,h}|null}`，rect 收 **DSH 页面 CSS 坐标**、外壳自己按 `guestRect + pageRect×zoom` 换算。经宿主代理移动 A 到 (300,500)：响应 bounds `{x:364,y:538,width:601,height:401}`，截图在请求后 **165.6ms** 拍到已移动。
+> 3. **缝隙**：四边各自取整后右/下各 +1px 补缝；截图逐像素核对四边内 2px **0 暗像素**、占位虚线红 **0 px**（标定红 bbox 与计算坐标完全一致）。
+> 4. **拖动置顶**：收到 rect 时 `removeChildView + addChildView` 把该 key 提到最上层；重叠区 before=B 红页 (192,57,43) → after=A 豆包白 (255,255,255)，B 独占处颜色不变、B 仍 `visible:true`（不动别家可见性）。
+>
+> **验证时额外修掉一个真问题**：推来的 rect 会在 250ms 兜底轮询时被占位 DOM 位置拽回去 → 加 `RECT_HOLD_MS=600`（推来的位置 600ms 内优先，拖动不打架）。
+>
+> ## 证据
+> - 回执全文：[embed-v0.4.1-回执.md](<E:\AFishPower\Plugin\小鱼自建\bluefish-shell\evidence\embed-v0.4.1-回执.md>)
+> - 版本：v0.4.1（标题栏 + `dist\小鱼工作台-0.4.1-安装包.exe` 108,676,816 B，`/S` 装到 %LOCALAPPDATA%）；`node --check embed.js/main.js/webai.js` 全 OK
+> - 截图（`evidence\`，**该目录在 .gitignore，证据是本地的不进 git**）：`embed-multi-two-pages.png` 1,116,875B、`embed-multi-calib-red.png` 1,074,314B、`embed-multi-rect-before/after.png` 933,512/850,177B、`embed-multi-zorder-b-top/a-top.png` 845,494/823,728B、`embed-multi-cleared.png` 1,141,836B、`embed-multi-gap-zoom-a/b.png` 40,964/203,617B、`embed-multi-final-clean.png` 1,129,403B
+> - `test-clear`：removed=2 → `count=2 visibleCount=0`，两区回到 DSH 深色底（meanLuma 41.1/36.7）、红 0
+> - 联调：wb-embed2 补测全过（宿主 v2.26 两条代理 → 外壳 v0.4.1 端到端通，真建视图、rect 立即生效、rect:null 只隐藏该视图），对方回执已并入回执 md 第八节
+>
+> ## 卡点 / 遗留
+> - 无阻塞。遗留：隐藏视图不销毁（10 分钟才回收）；置顶只对被推 rect 的 key 保持（前端点一下推当前 rect 即可）；安装包未签名；`evidence/` 被 .gitignore，要随仓库留证据需先改 .gitignore。
