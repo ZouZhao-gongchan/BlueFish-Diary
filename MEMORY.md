@@ -70,3 +70,4 @@
 - 2026-11-26：工作台 v5.28（commit 71c2b3a，只改 client.js，未 push）：内嵌面板改为两两禁止相交（间隙≥8px，解决原生 WebContentsView 盖住下层玻璃框的问题）+ 8 向拖边缩放（最小 320×240）+ 每站位置尺寸记忆（localStorage bfw-embed-pos-v1，不落盘开关）+ 8px 吸附与参考线 + 点框体置顶推 rect。Lead 复跑：两道闸 85/85 + 渲染 0；几何探针 62 项全过。
 - 2026-11-26：工作台 v5.29（commit 111ebae，只改 client.js，未 push）：修内嵌窗口标题条 ✕ 点了没反应——根因是标题条 pointerdown 就 setPointerCapture + preventDefault 把后续 click 吞掉（Headless Chromium 实测旧模式 click=0、新模式 pointerup=1/click=1）；修法：✕ 标 data-bfw-embed-nodrag + stopPropagation 不触发拖拽，关闭走 pointerup+click 双通道，标题条 onTitleDown 加 nodrag 守卫。复跑两道闸 85/85 + 渲染 0 + 几何探针 62 项全过。
 - 2026-11-26 深夜工作台工位交接（第 9 任 → 第 10 任，旧工位 session-39dc1e56 先不归档）：当前 v5.29 / 宿主 v2.26 / 外壳 v0.4.1；待办①push 5 个本地提交（8025d3a→111ebae）②验收脚本 85→~93（补 /embed 代理与面板）③千问取答案串台修复④下一步三件套：一键平铺+位置记忆后端化、网页 AI 工作区（会诊+归档检索）、动作台联动。
+- 2026-11-26：调度中心台账：脚本 收纳\01-脚本\DSH维护\待回执清单.mjs（344 行，只读判协同板超时；「未送达」判为待带不催；无派单时间的按板子 mtime 下界判 ≥N 分钟；--cron 去重追加写 待回执.log，状态在 待回执.state.json）。
