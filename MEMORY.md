@@ -23,11 +23,11 @@
 
 ## 三、现在
 
-- **小鱼工作台**（v5.5 / 宿主 v2.4）：DSH 插件 `@local/bluefish-workbench`，源码 `E:\AFishPower\Plugin\bluefish-workbench`（独立 git 仓库 → `git@github.com:ZouZhao-gongchan/bluefish-workbench.git`，private）。
+- **小鱼工作台**（浏览器 v5.31 / 宿主 v2.27 / 外壳 v0.4.1；**数字会过期，以仓库 `git log -1` 为准**）：DSH 插件 `@local/bluefish-workbench`，源码 `E:\AFishPower\Plugin\bluefish-workbench`（独立 git 仓库 → `git@github.com:ZouZhao-gongchan/bluefish-workbench.git`，private）。
   **细节全在 `Work.md` 顶部「🐟 小鱼工作台 · 交接」那节**（版本 / 接口 / 能力 / 坑 / 边界 / 下一步 / 改法三条命令）。
   **改之前先读 `收纳\02-文档\设计\工作台-修改指标.md`**：写给人用的，不是给日志看的；三条底线=不打断使用者 / 中文优先 / 写清干什么。
-  改完必跑两道闸：`工作台验收.mjs`（44/44）+ `%TEMP%\wb_test\test_client_render.mjs`（错误数 0）。
-  **这间只调度不干重活**：改代码/跑验收派给工位会话 `session-c394d88e-b71e-4dea-a588-0d2338fe5b74`（规则见 Work.md「派单」）。
+  改完必跑两道闸：`工作台验收.mjs`（应全 PASS，项数以脚本输出为准）+ 渲染冒烟（错误数 0；`%TEMP%\wb_test` 被系统清过，丢了要重建）。
+  **这间只调度不干重活**：改代码/跑验收派给工位会话——**别抄死 id**（旧 id 已换过好几任），用 `GET /bluefish-workbench/stations` 查当前绑「工作台」卡那间（规则见 Work.md「派单」）。
 - **交接速览**：`BlueFish的日记\交接速览.md`（`生成交接速览.mjs` 从工作台数据生成）。**换会话开工先读它**。
 - **插件已升（2026-11-20）**：fish-memory 1.6.3 / cost-meter 1.9.80 / bili-scroll 2.5.2；**DSH 保持 0.2.1-rc.3**（better-sidebar 0.30+ 和 dsh-mobile 0.8.x 要 0.2.2 线才动）。备份 `Backups\plugin-upgrade-20261120\`。
 - **刷B站**：只私信（dmMode=only，UID 552164191），perDay=8，峰谷开。报告 `C:\Users\FIshKiller\.dsh\bili-duty\out\`，归档 `digest/`。
